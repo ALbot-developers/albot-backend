@@ -1,5 +1,6 @@
-# albot-api
-albot-webからAPI部分を切り分けて、Restfulな設計を基本に再実装します。
+# albot-backend
+albot-webからAPI部分を切り分けて、Restfulな設計を基本に再実装します。  
+FastAPIを使用します。
 
 ## 仕様策定Todo:
 - [x] shard API
