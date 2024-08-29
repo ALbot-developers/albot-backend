@@ -29,15 +29,15 @@ jwt=<token>
 ```
 
 # Endpoints (/api)
-## Shards API
-- `GET /api/v2/shards/assign` : シャードの割当を行い、環境変数を配信します。
-- `POST /api/v2/shards/release` : シャードの終了時に、割当を解除します。
+## Shards API `/api/v2/shards/assign`
+- `GET` : シャードの割当を行い、環境変数を配信します。
+- `POST` : シャードの終了時に、割当を解除します。
 ```json
 {
   "shard_id": 0
 }
 ```
-## Guilds data API
+## Guilds data API `/api/v2/guilds/{guild_id}/`
 ### Dict API `/api/v2/guilds/{guild_id}/dict`
 - `GET` : 辞書の一覧を取得します。
 - `POST` : 辞書のエントリーを追加します。
