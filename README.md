@@ -10,13 +10,14 @@ FastAPIを使用します。
 - [x] trusted roles api
 - [x] connection states api
 - [x] metrics api
-- [ ] message link expand preference api
-- [ ] connection command api
+- [x] message link expand preference api
+- [x] connection command api
 - [ ] subscription api (activate, renew, cancel)
 - [ ] is guild subscribed api (should be moved to other endpoints)
 - [ ] cached settings api (might replace connection command api)
 
 # Authentication
+## 認証方法
 * 各シャードからの認証には、Bearerトークンを使用します。
 ```http
 Authorization
@@ -27,16 +28,38 @@ Bearer <token>
 Cookie
 jwt=<token>
 ```
+## 認証エンドポイント `/api/v2/oauth2/url`
+- `GET`
+```json
+{
+  "url": "https://discord.com/api/oauth2/authorize?client_id=123456789012345678&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fv2%2Foauth2%2Fcallback&response_type=code&scope=identify%20guilds"
+}
+```
 
-# Endpoints (/api)
-## Shards API `/api/v2/shards/assign`
+# Endpoints (`/api/v2`)
+## Shards API `/api/v2/shards/`
+### Assign API `/api/v2/shards/assign`
 - `GET` : シャードの割当を行い、環境変数を配信します。
+
+### Release API `/api/v2/shards/release`
 - `POST` : シャードの終了時に、割当を解除します。
 ```json
 {
   "shard_id": 0
 }
 ```
+
+### Connection commands API `/api/v2/shards/{shard_id}/connection_commands`
+- `GET` : シャードに接続するサーバーの接続コマンドを取得します。
+```json
+{
+  "commands": {
+    "123456789012345678": "t.con",
+    "234567890123456789": "召喚"
+  }
+}
+```
+
 ## Guilds data API `/api/v2/guilds/{guild_id}/`
 ### Dict API `/api/v2/guilds/{guild_id}/dict`
 - `GET` : 辞書の一覧を取得します。
@@ -137,6 +160,33 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
   }
 }
 ```
+### Message link expand preference API `/api/v2/guilds/{guild_id}/message_link_expand_preference`
+- `GET`: サーバーのメッセージリンク展開設定を取得します。
+```json
+{
+  "enabled": true
+}
+```
+- `PUT`: サーバーのメッセージリンク展開設定を更新します。
+```json
+{
+  "enabled": true
+}
+```
+### Connection command API `/api/v2/guilds/{guild_id}/connection_command`
+- `GET`: サーバーの接続コマンドを取得します。
+```json
+{
+  "command": "召喚"
+}
+```
+- `POST`: サーバーの接続コマンドを更新します。
+```json
+{
+  "command": "召喚"
+}
+```
+
 ## Metrics API `/api/v2/metrics`
 - `GET` : メトリクスを取得します。
 ```json
