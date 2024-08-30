@@ -2,6 +2,27 @@
 albot-webからAPI部分を切り分けて、Restfulな設計を基本に再実装します。  
 FastAPIを使用します。
 
+# Table of Contents
+- [仕様策定Todo](#仕様策定Todo)
+- [Authentication](#Authentication)
+  - [認証方法](#認証方法)
+  - [認証エンドポイント `/api/v2/oauth2/url`](#認証エンドポイント-apiv2oauth2url)
+- [Endpoints (`/api/v2`)](#Endpoints-apiv2)
+  - [Shards `/api/v2/shards/`](#Shards-API-apiv2shards)
+    - [Assign API `/api/v2/shards/assign`](#Assign-API-apiv2shardsassign)
+    - [Release API `/api/v2/shards/release`](#Release-API-apiv2shardsrelease)
+    - [Connection commands API `/api/v2/shards/{shard_id}/connection_commands`](#Connection-commands-API-apiv2shardsshard_idconnection_commands)
+  - [Guilds data `/api/v2/guilds/{guild_id}/`](#Guilds-data-API-apiv2guildsguild_id)
+    - [Dict API `/api/v2/guilds/{guild_id}/dict`](#Dict-API-apiv2guildsguild_iddict)
+    - [Settings API `/api/v2/guilds/{guild_id}/settings`](#Settings-API-apiv2guildsguild_idsettings)
+    - [Character usage API `/api/v2/guilds/{guild_id}/character_usage`](#Character-usage-API-apiv2guildsguild_idcharacter_usage)
+    - [Trusted roles API `/api/v2/guilds/{guild_id}/trusted_roles`](#Trusted-roles-API-apiv2guildsguild_idtrusted_roles)
+    - [Connection states API `/api/v2/guilds/{guild_id}/connection_states`](#Connection-states-API-apiv2guildsguild_idconnection_states)
+    - [Message link expand preference API `/api/v2/guilds/{guild_id}/message_link_expand_preference`](#Message-link-expand-preference-API-apiv2guildsguild_idmessage_link_expand_preference)
+    - [Connection command API `/api/v2/guilds/{guild_id}/connection_command`](#Connection-command-API-apiv2guildsguild_idconnection_command)
+  - [Metrics API `/api/v2/metrics`](#Metrics-API-apiv2metrics)
+- [変数名の変更案](#変数名の変更案)
+
 ## 仕様策定Todo:
 - [x] shard API
 - [x] dict api
