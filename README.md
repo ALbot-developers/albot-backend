@@ -4,6 +4,7 @@ FastAPIを使用します。
 
 # Table of Contents
 - [仕様策定Todo](#仕様策定Todo)
+- [実装Todo](#実装Todo)
 - [Authentication](#Authentication)
   - [認証方法](#認証方法)
   - [認証エンドポイント `/api/v2/oauth2/url`](#認証エンドポイント-apiv2oauth2url)
@@ -41,6 +42,19 @@ FastAPIを使用します。
 - [ ] is guild subscribed api (should be moved to other endpoints)
 - [ ] cached settings api (might replace connection command api)
 
+
+## 実装Todo:
+- [x] shard API
+- [] dict api
+- [] settings api
+- [] character usage api
+- [] trusted roles api
+- [] connection states api
+- [] metrics api
+- [] message link expand preference api
+- [] connection command api
+- [] subscription api (activate, renew, cancel)
+
 # Authentication
 ## 認証方法
 * 各シャードからの認証には、Bearerトークンを使用します。
@@ -66,7 +80,7 @@ jwt=<token>
 ### Assign API `/api/v2/shards/assign`
 - `GET` : シャードの割当を行い、環境変数を配信します。
 
-### Release API `/api/v2/shards/release`
+### Release API `/api/v2/shards/{shard_id}/release`
 - `POST` : シャードの終了時に、割当を解除します。
 ```json
 {
