@@ -20,6 +20,10 @@ FastAPIを使用します。
     - [Connection states API `/api/v2/guilds/{guild_id}/connection_states`](#Connection-states-API-apiv2guildsguild_idconnection_states)
     - [Message link expand preference API `/api/v2/guilds/{guild_id}/message_link_expand_preference`](#Message-link-expand-preference-API-apiv2guildsguild_idmessage_link_expand_preference)
     - [Connection command API `/api/v2/guilds/{guild_id}/connection_command`](#Connection-command-API-apiv2guildsguild_idconnection_command)
+  - [Subscriptions `/api/v2/subscriptions/{subscription_id}/`](#Subscription-API-apiv2subscriptionssubscription_id)
+    - [Activation API `/api/v2/subscriptions/{subscription_id}/activate`](#Activation-API-apiv2subscriptionssubscription_idactivate)
+    - [Renew API `/api/v2/subscriptions/{subscription_id}/renew`](#Renew-API-apiv2subscriptionssubscription_idrenew)
+    - [Cancel API `/api/v2/subscriptions/{subscription_id}/cancel`](#Cancel-API-apiv2subscriptionssubscription_idcancel)
   - [Metrics API `/api/v2/metrics`](#Metrics-API-apiv2metrics)
 - [変数名の変更案](#変数名の変更案)
 
@@ -33,7 +37,7 @@ FastAPIを使用します。
 - [x] metrics api
 - [x] message link expand preference api
 - [x] connection command api
-- [ ] subscription api (activate, renew, cancel)
+- [x] subscription api (activate, renew, cancel)
 - [ ] is guild subscribed api (should be moved to other endpoints)
 - [ ] cached settings api (might replace connection command api)
 
@@ -226,5 +230,23 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
   }
 }
 ```
+## Subscription API `/api/v2/subscriptions/{subscription_id}/`
+### Activation API `/api/v2/subscriptions/{subscription_id}/activate`
+- `POST`: サブスクリプションを有効化します。
+```json
+{
+  "guild_id": "123456789012345678"
+}
+```
+### Renew API `/api/v2/subscriptions/{subscription_id}/renew`
+- `POST`: サブスクリプションを更新します。
+```json
+{
+  "new_subscription_plan": "monthly1"
+}
+```
+### Cancel API `/api/v2/subscriptions/{subscription_id}/cancel`
+- `POST`: サブスクリプションをキャンセルします。
+
 # 変数名の変更案
 - `read_name` -> `read_sender_name`
