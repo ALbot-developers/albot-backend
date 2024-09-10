@@ -19,12 +19,12 @@ async def lifespan(_app: FastAPI):
         # アプリケーションが終了する際に接続プールを閉じる
         await pool.close()
 
-app = FastAPI()
 
 API_VERSION = "v2"
 ENDPOINT_PREFIX = f"/api/{API_VERSION}"
 
 app = FastAPI(debug=True, lifespan=lifespan)
+app.include_router(shards.router, prefix=f"{ENDPOINT_PREFIX}/shards", tags=["shards"])
 
 
 @app.get("/")
