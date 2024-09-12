@@ -1,6 +1,6 @@
 import asyncpg
 
-connection_pool: asyncpg.pool.Pool
+connection_pool = None
 
 
 async def create_db_pool():

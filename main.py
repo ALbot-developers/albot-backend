@@ -2,11 +2,14 @@ from contextlib import asynccontextmanager
 from uuid import uuid4
 import urllib.parse
 
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Request
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import RedirectResponse
 
+import envs
 from db_connection import create_db_pool
+from oauth2 import exchange_code, get_user_info, get_oauth2_url
 from routes import shards
-from sessions import SessionData, get_verifier, get_cookie
 
 
 @asynccontextmanager
@@ -24,6 +27,8 @@ API_VERSION = "v2"
 ENDPOINT_PREFIX = f"/api/{API_VERSION}"
 
 app = FastAPI(debug=True, lifespan=lifespan)
+# noinspection PyTypeChecker
+app.add_middleware(SessionMiddleware, secret_key=envs.SESSION_SECRET)
 app.include_router(shards.router, prefix=f"{ENDPOINT_PREFIX}/shards", tags=["shards"])
 
 
@@ -32,27 +37,27 @@ async def root():
     return {"status": "running"}
 
 
-@app.get("/oauth2/url")
-async def get_oauth2_url(response: Response):
-    session = uuid4()
+@app.get("/oauth2/login")
+async def oauth2_redirect(request: Request):
     state = str(uuid4())[0:8]
-    data = SessionData(oauth2_state=state)
-    verifier = get_verifier()
-    await verifier.backend.create(session, data)
-    cookie = get_cookie()
-    cookie.attach_to_response(response, session)
-    return {
-        "url": f"https://discord.com/oauth2/authorize"
-               f"?client_id=727508841368911943"
-               f"&redirect_uri={urllib.parse.quote(app.url_path_for('oauth2_callback'))}"
-               f"&response_type=code"
-               f"&scope=identify%20guilds"
-               f"&state={state}"
-               f"&prompt=none"
-    }
+    request.session["state"] = state
+    request.session["redirect"] = request.query_params.get("redirect", "/")
+    url = get_oauth2_url(
+        request.url_for(
+            "oauth2_callback", _external=True
+        ), state
+    )
+    return RedirectResponse(url)
 
 
 @app.get("/oauth2/callback")
-async def oauth2_callback(code: str):
-    # set jwt token
-    return {"code": code}
+async def oauth2_callback(code: str, state: str, request: Request):
+    if state != request.session.get("state"):
+        return {"error": "Invalid state"}
+    redirect = request.session.get("redirect", "/")
+    del request.session["state"], request.session["redirect"]
+    access_token, refresh_token = await exchange_code(code, app.url_path_for("oauth2_callback"))
+    request.session["access_token"] = access_token
+    request.session["refresh_token"] = refresh_token
+    request.session["user_info"] = await get_user_info(access_token)
+    return RedirectResponse(redirect)
