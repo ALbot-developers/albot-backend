@@ -1,6 +1,6 @@
+import urllib.parse
 from contextlib import asynccontextmanager
 from uuid import uuid4
-import urllib.parse
 
 from fastapi import FastAPI, Request
 from starlette.middleware.sessions import SessionMiddleware
@@ -59,5 +59,6 @@ async def oauth2_callback(code: str, state: str, request: Request):
     access_token, refresh_token = await exchange_code(code, app.url_path_for("oauth2_callback"))
     request.session["access_token"] = access_token
     request.session["refresh_token"] = refresh_token
-    request.session["user_info"] = await get_user_info(access_token)
+    user_info = await get_user_info(access_token)
+    request.session["user_info"] = user_info.to_json()
     return RedirectResponse(redirect)

@@ -1,9 +1,9 @@
-import urllib.parse
 from typing import Tuple
 
 import aiohttp
 
 import envs
+from type_specifications.discord_api import UserPIIResponse
 
 DISCORD_BASE_URL = 'https://discord.com/api'
 
@@ -19,12 +19,13 @@ def get_oauth2_url(redirect_uri, state):
         f"&prompt=none"
     )
 
-async def get_user_info(access_token):
+
+async def get_user_info(access_token) -> UserPIIResponse:
     async with aiohttp.ClientSession() as session:
         async with session.get(DISCORD_BASE_URL + '/users/@me',
                                headers={'Authorization': f'Bearer {access_token}'}) as res_info:
             res_dict = await res_info.json()
-            return res_dict
+            return UserPIIResponse.from_json(res_dict)
 
 
 async def exchange_code(code, redirect_url) -> Tuple[str, str]:
