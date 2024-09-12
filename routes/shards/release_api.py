@@ -7,7 +7,7 @@ from db_connection import connection_pool
 router = APIRouter()
 
 
-@router.get("/{shard_id}/release")
+@router.post("/{shard_id}/release")
 async def release_shard(shard_id: int, _auth=Security(lambda: verify_token("bearer"))):
     async with connection_pool.acquire() as conn:
         conn: asyncpg.connection.Connection
