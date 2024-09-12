@@ -43,8 +43,8 @@ async def oauth2_redirect(request: Request):
     request.session["state"] = state
     request.session["redirect"] = request.query_params.get("redirect", "/")
     url = get_oauth2_url(
-        request.url_for(
-            "oauth2_callback", _external=True
+        urllib.parse.quote(
+            str(request.url_for("oauth2_callback", _external=True))
         ), state
     )
     return RedirectResponse(url)
