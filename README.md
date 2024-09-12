@@ -45,8 +45,8 @@ FastAPIを使用します。
 
 ## 実装Todo:
 - [x] shard API
-- [ ] dict api
-- [ ] settings api
+- [x] dict api
+- [x] settings api
 - [ ] character usage api
 - [ ] trusted roles api
 - [ ] connection states api
@@ -97,13 +97,6 @@ Bearer <token>
 ## Guilds data API `/api/v2/guilds/{guild_id}/`
 ### Dict API `/api/v2/guilds/{guild_id}/dict`
 - `GET` : 辞書の一覧を取得します。
-- `POST` : 辞書のエントリーを追加します。
-```json
-{
-  "key1": "value1",
-  "key2": "value2"
-}
-```
 - `PUT` : 辞書をリクエストデータで置き換えます。
 ```json
 {
@@ -111,6 +104,8 @@ Bearer <token>
   "key2": "value2"
 }
 ```
+
+- `DELETE` : 辞書を削除します。
 ### Settings API `/api/v2/guilds/{guild_id}/settings`
 - `GET` : サーバーの読み上げ設定を取得します。
 - `DELETE` : サーバーの読み上げ設定を削除します。(初期化)

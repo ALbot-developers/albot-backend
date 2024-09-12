@@ -9,7 +9,7 @@ from starlette.responses import RedirectResponse
 import envs
 from db_connection import create_db_pool
 from oauth2 import exchange_code, get_user_info, get_oauth2_url
-from routes import shards
+from routes import shards, guilds
 
 
 @asynccontextmanager
@@ -29,7 +29,8 @@ ENDPOINT_PREFIX = f"/api/{API_VERSION}"
 app = FastAPI(debug=True, lifespan=lifespan)
 # noinspection PyTypeChecker
 app.add_middleware(SessionMiddleware, secret_key=envs.SESSION_SECRET)
-app.include_router(shards.router, prefix=f"{ENDPOINT_PREFIX}/shards", tags=["shards"])
+app.include_router(shards.router.router, prefix=f"{ENDPOINT_PREFIX}/shards", tags=["shards"])
+app.include_router(guilds.router.router, prefix=f"{ENDPOINT_PREFIX}/guilds", tags=["guilds"])
 
 
 @app.get("/")
