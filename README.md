@@ -63,13 +63,12 @@ Authorization
 Bearer <token>
 ```
 * WEBダッシュボードからの認証には、Cookieを使用したFastAPIのSessionを使用します。
-## 認証エンドポイント `/api/v2/oauth2/url`
-- `GET`
-```json
-{
-  "url": "https://discord.com/api/oauth2/authorize?client_id=123456789012345678&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fv2%2Foauth2%2Fcallback&response_type=code&scope=identify%20guilds"
-}
-```
+## ユーザーの認証フロー
+1. ユーザーが`/oauth2/login` にアクセスします。
+2. サーバーがsessionにstateを保存して、Discord OAuth2の認証URLにリダイレクトします。
+3. ユーザーがDiscordアカウントで認証します。
+4. Discordがcallback URL`/oauth2/callback`にリダイレクトします。
+5. サーバーがstateを検証し、アクセストークンを取得、sessionに保存します。
 
 # Endpoints (`/api/v2`)
 ## Shards API `/api/v2/shards/`
