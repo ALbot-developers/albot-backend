@@ -45,15 +45,15 @@ FastAPIを使用します。
 
 ## 実装Todo:
 - [x] shard API
-- [] dict api
-- [] settings api
-- [] character usage api
-- [] trusted roles api
-- [] connection states api
-- [] metrics api
-- [] message link expand preference api
-- [] connection command api
-- [] subscription api (activate, renew, cancel)
+- [ ] dict api
+- [ ] settings api
+- [ ] character usage api
+- [ ] trusted roles api
+- [ ] connection states api
+- [ ] metrics api
+- [ ] message link expand preference api
+- [ ] connection command api
+- [ ] subscription api (activate, renew, cancel)
 
 # Authentication
 ## 認証方法
@@ -62,11 +62,7 @@ FastAPIを使用します。
 Authorization
 Bearer <token>
 ```
-* WEBダッシュボードからの認証には、httpOnly Cookieに保存したjwtトークンを使用します。
-```http
-Cookie
-jwt=<token>
-```
+* WEBダッシュボードからの認証には、Cookieを使用したFastAPIのSessionを使用します。
 ## 認証エンドポイント `/api/v2/oauth2/url`
 - `GET`
 ```json
