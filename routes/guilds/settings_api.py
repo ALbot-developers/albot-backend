@@ -26,10 +26,10 @@ async def get_guild_settings(guild_id: int, _auth=Security(lambda: verify_token(
 async def update_guild_settings(guild_id: int, data: dict, _auth=Security(lambda: verify_token("all"))):
     async with connection_pool.acquire() as conn:
         conn: asyncpg.connection.Connection
-        # guild_idのデータを更新
-        data = SettingsData.from_dict(data)
+        # convert the data to a SettingsData object (to validate the data)
+        settings_data = SettingsData.from_dict(data)
         # get all attributes with values
-        attributes = {k: v for k, v in data.__dict__.items() if v is not None}
+        attributes = {k: v for k, v in settings_data.__dict__.items() if v is not None}
         # create a query string with placeholders for the attributes
         query = (
             f"UPDATE settings_data"
