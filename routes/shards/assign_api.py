@@ -2,14 +2,14 @@ import asyncpg
 from fastapi import APIRouter, Security
 
 from auth import verify_token
-from db_connection import connection_pool
+from db_connection import get_connection_pool
 
 router = APIRouter()
 
 
 @router.get("/assign")
 async def assign_shard(_auth=Security(lambda: verify_token("bearer"))):
-    async with connection_pool.acquire() as conn:
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # SQLクエリを実行
         # is_assignedがfalseのshard_idのデータを取得

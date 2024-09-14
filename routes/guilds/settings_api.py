@@ -2,29 +2,33 @@ import asyncpg
 from fastapi import APIRouter, Security
 
 from auth import verify_token
-from db_connection import connection_pool
+from db_connection import get_connection_pool
 from type_specifications.database import SettingsData
 
 router = APIRouter()
 
 
-@router.get("/{guild_id}/settings")
-async def get_guild_settings(guild_id: int, _auth=Security(lambda: verify_token("all"))):
-    async with connection_pool.acquire() as conn:
+async def get_guild_settings(guild_id: int):
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
         row = await conn.fetchval('SELECT * FROM settings_data WHERE guild_id = $1', guild_id)
         # convert the row to a dictionary
-        settings_data = SettingsData.from_dict(dict(row))
+        return SettingsData.from_dict(dict(row))
+
+
+@router.get("/{guild_id}/settings")
+async def get_guild_settings_api(guild_id: int, _auth=Security(lambda: verify_token("all"))):
+    settings = await get_guild_settings(guild_id)
     return {
         "message": "Fetched guild data.",
-        "data": settings_data.to_json()
+        "data": settings.to_json()
     }
 
 
 @router.post("/{guild_id}/settings")
 async def update_guild_settings(guild_id: int, data: dict, _auth=Security(lambda: verify_token("all"))):
-    async with connection_pool.acquire() as conn:
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # convert the data to a SettingsData object (to validate the data)
         settings_data = SettingsData.from_dict(data)
@@ -45,7 +49,7 @@ async def update_guild_settings(guild_id: int, data: dict, _auth=Security(lambda
 
 @router.delete("/{guild_id}/settings")
 async def delete_guild_settings(guild_id: int, _auth=Security(lambda: verify_token("all"))):
-    async with connection_pool.acquire() as conn:
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを削除
         await conn.execute('DELETE FROM settings_data WHERE guild_id = $1', guild_id)

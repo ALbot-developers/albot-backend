@@ -7,7 +7,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import RedirectResponse
 
 import envs
-from db_connection import get_connection_pool
+from db_connection import create_connection_pool
 from oauth2 import exchange_code, get_user_info, get_oauth2_url
 from routes.guilds import router as guilds
 from routes.shards import router as shards
@@ -16,7 +16,7 @@ from routes.shards import router as shards
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     # アプリケーションが起動する際に接続プールを作成
-    pool = await get_connection_pool()
+    pool = await create_connection_pool()
     try:
         yield  # アプリケーションが実行されている間
     finally:

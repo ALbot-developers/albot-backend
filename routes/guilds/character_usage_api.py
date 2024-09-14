@@ -10,10 +10,8 @@ from type_specifications.api_response import CharacterUsageAPIResponse, Characte
 router = APIRouter()
 
 
-@router.get("/{guild_id}/character_usage", response_model=CharacterUsageAPIResponse)
-async def get_guild_character_usage(guild_id: int, _auth=Security(lambda: verify_token("all"))):
-    pool = await get_connection_pool()
-    async with pool.acquire() as conn:
+async def get_guild_character_usage(guild_id: int):
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
         row = await conn.fetchrow(
@@ -31,17 +29,21 @@ async def get_guild_character_usage(guild_id: int, _auth=Security(lambda: verify
             monthly_quota=quotas["standard"],
             used_characters=row['standard_count_now']
         )
+    return CharacterUsages(wavenet=wavenet, standard=standard)
+
+
+@router.get("/{guild_id}/character_usage", response_model=CharacterUsageAPIResponse)
+async def get_guild_character_usage_api(guild_id: int, _auth=Security(lambda: verify_token("all"))):
     return CharacterUsageAPIResponse(
         message="Fetched guild data.",
-        data=CharacterUsages(wavenet=wavenet, standard=standard)
+        data=await get_guild_character_usage(guild_id)
     )
 
 
 @router.post("/{guild_id}/character_usage")
 async def update_guild_character_usage(guild_id: int, payload: CharacterUsages, _auth=Security(lambda: verify_token("bearer"))):
     # update used characters
-    pool = await get_connection_pool()
-    async with pool.acquire() as conn:
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         if payload.wavenet:
             await conn.execute(

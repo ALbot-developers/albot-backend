@@ -1,15 +1,16 @@
 import asyncpg
 from fastapi import APIRouter, Security
 
+import envs
 from auth import verify_token
-from db_connection import connection_pool
+from db_connection import get_connection_pool
 
 router = APIRouter()
 
 
 @router.get("/{shard_id}/connection_commands")
 async def get_connection_commands(shard_id: int, _auth=Security(lambda: verify_token("bearer"))):
-    async with connection_pool.acquire() as conn:
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # shard_idのデータを取得
         rows = await conn.fetch(

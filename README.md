@@ -58,7 +58,7 @@ class APIResponse(BaseModel):
 - [x] settings api
 - [x] character usage api
 - [x] trusted roles api
-- [ ] connection states api
+- [x] connection states api
 - [ ] metrics api
 - [ ] message link expand preference api
 - [ ] connection command api

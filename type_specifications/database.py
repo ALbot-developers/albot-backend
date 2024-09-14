@@ -6,7 +6,7 @@ class SettingsData:
     def __init__(
             self, guild_id: Optional[int] = None,
             lang: Optional[str] = None,
-            word_limit: Optional[int] = None,
+            character_limit: Optional[int] = None,
             speech_speed: Optional[float] = None,
             read_name: Optional[bool] = None,
             custom_voice: Optional[str] = None,
@@ -14,12 +14,12 @@ class SettingsData:
             read_name_on_join: Optional[bool] = None,
             read_name_on_leave: Optional[bool] = None,
             read_guild: Optional[bool] = None,
-            read_not_joined_user: Optional[bool] = None,
+            read_not_joined_users: Optional[bool] = None,
             audio_api: Optional[Literal["gtts", "openai"]] = None
     ):
         self.guild_id = guild_id
         self.lang = lang
-        self.word_limit = word_limit
+        self.character_limit = character_limit
         self.speech_speed = speech_speed
         self.read_name = read_name
         self.custom_voice = custom_voice
@@ -27,15 +27,17 @@ class SettingsData:
         self.read_name_on_join = read_name_on_join
         self.read_name_on_leave = read_name_on_leave
         self.read_guild = read_guild
-        self.read_not_joined_user = read_not_joined_user
+        self.read_not_joined_users = read_not_joined_users
         self.audio_api = audio_api
 
+    # テーブルから取得したデータをSettingsDataクラスに変換
     @classmethod
     def from_dict(cls, data: dict):
         return cls(
             guild_id=data.get('guild_id'),
             lang=data.get('lang'),
-            word_limit=data.get('word_limit'),
+            # todo: データベースもword_limitからcharacter_limitに変更する
+            character_limit=data.get('word_limit'),
             speech_speed=data.get('speech_speed'),
             read_name=data.get('read_name'),
             custom_voice=data.get('custom_voice'),
@@ -43,7 +45,7 @@ class SettingsData:
             read_name_on_join=data.get('read_name_on_join'),
             read_name_on_leave=data.get('read_name_on_leave'),
             read_guild=data.get('read_guild'),
-            read_not_joined_user=data.get('read_not_joined_user'),
+            read_not_joined_users=data.get('read_not_joined_users'),
             audio_api=data.get('audio_api')
         )
 

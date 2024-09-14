@@ -5,8 +5,7 @@ import asyncpg
 from fastapi import APIRouter, Security
 
 from auth import verify_token
-from db_connection import connection_pool
-from type_specifications.database import SettingsData
+from db_connection import get_connection_pool
 
 router = APIRouter()
 
@@ -25,7 +24,7 @@ class TrustedRolesDataResponse:
 
 @router.get("/{guild_id}/trusted_roles", response_model=TrustedRolesDataResponse)
 async def get_guild_trusted_roles(guild_id: int, _auth=Security(lambda: verify_token("all"))):
-    async with connection_pool.acquire() as conn:
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
         row = await conn.fetchrow('SELECT is_enabled, role_ids FROM trusted_roles WHERE guild_id = $1', guild_id)
@@ -41,7 +40,7 @@ async def get_guild_trusted_roles(guild_id: int, _auth=Security(lambda: verify_t
 
 @router.put("/{guild_id}/trusted_roles")
 async def update_guild_trusted_roles(guild_id: int, data: TrustedRolesData, _auth=Security(lambda: verify_token("all"))):
-    async with connection_pool.acquire() as conn:
+    async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを更新
         # is_enabledとrole_idsがnullでない場合のみそれぞれ更新

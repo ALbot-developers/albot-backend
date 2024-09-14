@@ -1,0 +1,483 @@
+{
+  "de-DE": {
+    "wavenet": {
+      "F": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE",
+      "E": "MALE"
+    },
+    "standard": {
+      "E": "MALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "F": "FEMALE"
+    }
+  },
+  "en-GB": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE",
+      "F": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE",
+      "F": "FEMALE"
+    }
+  },
+  "en-IN": {
+    "wavenet": {
+      "D": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    },
+    "standard": {
+      "D": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    }
+  },
+  "hi-IN": {
+    "wavenet": {
+      "D": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    },
+    "standard": {
+      "D": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    }
+  },
+  "id-ID": {
+    "wavenet": {
+      "D": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    },
+    "standard": {
+      "D": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    }
+  },
+  "ar-XA": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE",
+      "D": "FEMALE"
+    }
+  },
+  "cmn-CN": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE",
+      "D": "FEMALE"
+    },
+    "standard": {
+      "D": "FEMALE",
+      "C": "MALE",
+      "B": "MALE",
+      "A": "FEMALE"
+    }
+  },
+  "cmn-TW": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE"
+    }
+  },
+  "cs-CZ": {
+    "wavenet": {
+      "A": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "da-DK": {
+    "wavenet": {
+      "A": "FEMALE",
+      "C": "MALE",
+      "D": "FEMALE",
+      "E": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "C": "MALE",
+      "D": "FEMALE",
+      "E": "FEMALE"
+    }
+  },
+  "el-GR": {
+    "wavenet": {
+      "A": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "en-AU": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    }
+  },
+  "en-US": {
+    "wavenet": {
+      "G": "FEMALE",
+      "H": "FEMALE",
+      "I": "MALE",
+      "J": "MALE",
+      "A": "MALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE",
+      "E": "FEMALE",
+      "F": "FEMALE"
+    },
+    "standard": {
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE",
+      "E": "FEMALE",
+      "G": "FEMALE",
+      "H": "FEMALE",
+      "I": "MALE",
+      "J": "MALE"
+    }
+  },
+  "es-ES": {
+    "wavenet": {
+      "B": "MALE"
+    },
+    "standard": {
+      "B": "MALE",
+      "A": "FEMALE"
+    }
+  },
+  "fi-FI": {
+    "wavenet": {
+      "A": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "fil-PH": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "FEMALE",
+      "C": "MALE",
+      "D": "MALE"
+    },
+    "standard": {
+      "B": "FEMALE",
+      "C": "MALE",
+      "D": "MALE",
+      "A": "FEMALE"
+    }
+  },
+  "fr-CA": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    }
+  },
+  "fr-FR": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE",
+      "E": "FEMALE"
+    },
+    "standard": {
+      "E": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    }
+  },
+  "hu-HU": {
+    "wavenet": {
+      "A": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "it-IT": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "FEMALE",
+      "C": "MALE",
+      "D": "MALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "FEMALE",
+      "C": "MALE",
+      "D": "MALE"
+    }
+  },
+  "ja-JP": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "FEMALE",
+      "C": "MALE",
+      "D": "MALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "C": "MALE",
+      "B": "FEMALE",
+      "D": "MALE"
+    }
+  },
+  "ko-KR": {
+    "wavenet": {
+      "B": "FEMALE",
+      "C": "MALE",
+      "D": "MALE",
+      "A": "FEMALE"
+    },
+    "standard": {
+      "B": "FEMALE",
+      "C": "MALE",
+      "D": "MALE",
+      "A": "FEMALE"
+    }
+  },
+  "nb-NO": {
+    "wavenet": {
+      "E": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE",
+      "E": "FEMALE"
+    }
+  },
+  "nl-NL": {
+    "wavenet": {
+      "B": "MALE",
+      "C": "MALE",
+      "D": "FEMALE",
+      "E": "FEMALE",
+      "A": "FEMALE"
+    },
+    "standard": {
+      "B": "MALE",
+      "C": "MALE",
+      "D": "FEMALE",
+      "E": "FEMALE",
+      "A": "FEMALE"
+    }
+  },
+  "pl-PL": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE",
+      "D": "FEMALE",
+      "E": "FEMALE"
+    },
+    "standard": {
+      "E": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE",
+      "D": "FEMALE"
+    }
+  },
+  "pt-BR": {
+    "wavenet": {
+      "A": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "pt-PT": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE",
+      "D": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "MALE",
+      "D": "FEMALE"
+    }
+  },
+  "ru-RU": {
+    "wavenet": {
+      "E": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    },
+    "standard": {
+      "E": "FEMALE",
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    }
+  },
+  "sk-SK": {
+    "wavenet": {
+      "A": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "sv-SE": {
+    "wavenet": {
+      "A": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "tr-TR": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "FEMALE",
+      "E": "MALE"
+    },
+    "standard": {
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "FEMALE",
+      "E": "MALE",
+      "A": "FEMALE"
+    }
+  },
+  "uk-UA": {
+    "wavenet": {
+      "A": "FEMALE"
+    },
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "vi-VN": {
+    "wavenet": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    },
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    }
+  },
+  "yue-HK": {
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE",
+      "C": "FEMALE",
+      "D": "MALE"
+    }
+  },
+  "th-TH": {
+    "standard": {
+      "A": "FEMALE"
+    }
+  },
+  "bn-IN": {
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE"
+    }
+  },
+  "gu-IN": {
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE"
+    }
+  },
+  "kn-IN": {
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE"
+    }
+  },
+  "ml-IN": {
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE"
+    }
+  },
+  "ta-IN": {
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE"
+    }
+  },
+  "te-IN": {
+    "standard": {
+      "A": "FEMALE",
+      "B": "MALE"
+    }
+  }
+}
