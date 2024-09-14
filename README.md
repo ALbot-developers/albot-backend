@@ -4,7 +4,16 @@ FastAPIを使用します。
 
 # Table of Contents
 - [仕様策定Todo](#仕様策定Todo)
-- [実装Todo](#実装Todo)
+- [実装Todo](#実装Todo)from pydantic import BaseModel
+
+class CharacterUsage(BaseModel):
+    monthly_quota: int
+    used_characters: int
+    remaining_characters: int
+
+class APIResponse(BaseModel):
+    wavenet: CharacterUsage
+    standard: CharacterUsage
 - [Authentication](#Authentication)
   - [認証方法](#認証方法)
   - [認証エンドポイント `/api/v2/oauth2/url`](#認証エンドポイント-apiv2oauth2url)
@@ -47,8 +56,8 @@ FastAPIを使用します。
 - [x] shard API
 - [x] dict api
 - [x] settings api
-- [ ] character usage api
-- [ ] trusted roles api
+- [x] character usage api
+- [x] trusted roles api
 - [ ] connection states api
 - [ ] metrics api
 - [ ] message link expand preference api
@@ -122,17 +131,15 @@ Bearer <token>
 {
   "wavenet": {
     "monthly_quota": 1000000,        // Wavenet音声の月の使用可能文字数
-    "used_characters": 250000,       // Wavenet音声の使用済み文字数
-    "remaining_characters": 750000   // Wavenet音声の残り使用可能文字数
+    "used_characters": 250000        // Wavenet音声の使用済み文字数
   },
   "standard": {
     "monthly_quota": 500000,         // Standard音声の月の使用可能文字数
-    "used_characters": 150000,       // Standard音声の使用済み文字数
-    "remaining_characters": 350000   // Standard音声の残り使用可能文字数
+    "used_characters": 150000        // Standard音声の使用済み文字数
   }
 }
 ```
-- `POST` : サーバーの文字数使用状況を更新します。(increment)
+- `POST` : サーバーの文字数使用状況を更新します。文字数が増えた場合のみUPDATEします。
 ```json
 {
   "wavenet": {
@@ -140,17 +147,6 @@ Bearer <token>
   },
   "standard": {
     "used_characters": 15000
-  }
-}
-```
-- `PUT`: サーバーの文字数使用状況をリクエストデータで上書きします。(replace)
-```json
-{
-  "wavenet": {
-    "used_characters": 50000
-  },
-  "standard": {
-    "used_characters": 30000
   }
 }
 ```
