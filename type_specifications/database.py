@@ -37,7 +37,7 @@ class SettingsData:
             guild_id=data.get('guild_id'),
             lang=data.get('lang'),
             # todo: データベースもword_limitからcharacter_limitに変更する
-            character_limit=data.get('word_limit'),
+            character_limit=data.get('character_limit'),
             speech_speed=data.get('speech_speed'),
             read_name=data.get('read_name'),
             custom_voice=data.get('custom_voice'),

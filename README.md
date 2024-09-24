@@ -16,11 +16,11 @@ class APIResponse(BaseModel):
     standard: CharacterUsage
 - [Authentication](#Authentication)
   - [認証方法](#認証方法)
-  - [認証エンドポイント `/api/v2/oauth2/url`](#認証エンドポイント-apiv2oauth2url)
+  - [ユーザーの認証フロー](#ユーザーの認証フロー)
 - [Endpoints (`/api/v2`)](#Endpoints-apiv2)
   - [Shards `/api/v2/shards/`](#Shards-API-apiv2shards)
     - [Assign API `/api/v2/shards/assign`](#Assign-API-apiv2shardsassign)
-    - [Release API `/api/v2/shards/release`](#Release-API-apiv2shardsrelease)
+    - [Release API `/api/v2/shards/{shard_id}/release`](#Release-API-apiv2shardsshard_idrelease)
     - [Connection commands API `/api/v2/shards/{shard_id}/connection_commands`](#Connection-commands-API-apiv2shardsshard_idconnection_commands)
   - [Guilds data `/api/v2/guilds/{guild_id}/`](#Guilds-data-API-apiv2guildsguild_id)
     - [Dict API `/api/v2/guilds/{guild_id}/dict`](#Dict-API-apiv2guildsguild_iddict)
@@ -60,8 +60,8 @@ class APIResponse(BaseModel):
 - [x] trusted roles api
 - [x] connection states api
 - [ ] metrics api
-- [ ] message link expand preference api
-- [ ] connection command api
+- [x] message link expand preference api
+- [x] connection command api
 - [ ] subscription api (activate, renew, cancel)
 
 # Authentication
@@ -130,12 +130,12 @@ Bearer <token>
 ```json
 {
   "wavenet": {
-    "monthly_quota": 1000000,        // Wavenet音声の月の使用可能文字数
-    "used_characters": 250000        // Wavenet音声の使用済み文字数
+    "monthly_quota": 1000000,
+    "used_characters": 250000
   },
   "standard": {
-    "monthly_quota": 500000,         // Standard音声の月の使用可能文字数
-    "used_characters": 150000        // Standard音声の使用済み文字数
+    "monthly_quota": 500000,
+    "used_characters": 150000
   }
 }
 ```
