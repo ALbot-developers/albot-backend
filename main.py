@@ -1,16 +1,14 @@
-import urllib.parse
 from contextlib import asynccontextmanager
-from uuid import uuid4
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import RedirectResponse
 
 import envs
-from db_connection import create_connection_pool
-from oauth2 import exchange_code, get_user_info, get_oauth2_url
 from routes.guilds import router as guilds
+from routes.oauth2 import router as oauth2
 from routes.shards import router as shards
+from routes.users import router as users
+from utils.db_connection import create_connection_pool
 
 
 @asynccontextmanager
@@ -27,40 +25,15 @@ async def lifespan(_app: FastAPI):
 API_VERSION = "v2"
 ENDPOINT_PREFIX = f"/api/{API_VERSION}"
 
-app = FastAPI(debug=True, lifespan=lifespan)
+app = FastAPI(lifespan=lifespan)
 # noinspection PyTypeChecker
 app.add_middleware(SessionMiddleware, secret_key=envs.SESSION_SECRET)
+app.include_router(oauth2.router, prefix=f"{ENDPOINT_PREFIX}/oauth2", tags=["oauth2"])
 app.include_router(shards.router, prefix=f"{ENDPOINT_PREFIX}/shards", tags=["shards"])
 app.include_router(guilds.router, prefix=f"{ENDPOINT_PREFIX}/guilds", tags=["guilds"])
+app.include_router(users.router, prefix=f"{ENDPOINT_PREFIX}/users", tags=["users"])
 
 
 @app.get("/")
 async def root():
     return {"status": "running"}
-
-
-@app.get("/oauth2/login")
-async def oauth2_redirect(request: Request):
-    state = str(uuid4())[0:8]
-    request.session["state"] = state
-    request.session["redirect"] = request.query_params.get("redirect", "/")
-    url = get_oauth2_url(
-        urllib.parse.quote(
-            str(request.url_for("oauth2_callback", _external=True))
-        ), state
-    )
-    return RedirectResponse(url)
-
-
-@app.get("/oauth2/callback")
-async def oauth2_callback(code: str, state: str, request: Request):
-    if state != request.session.get("state"):
-        return {"error": "Invalid state"}
-    redirect = request.session.get("redirect", "/")
-    del request.session["state"], request.session["redirect"]
-    access_token, refresh_token = await exchange_code(code, app.url_path_for("oauth2_callback"))
-    request.session["access_token"] = access_token
-    request.session["refresh_token"] = refresh_token
-    user_info = await get_user_info(access_token)
-    request.session["user_info"] = user_info.to_json()
-    return RedirectResponse(redirect)

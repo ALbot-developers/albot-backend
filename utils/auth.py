@@ -1,8 +1,10 @@
 from typing import Literal
 
+import jwt
 from fastapi import Security, HTTPException, Cookie
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import jwt
+
+from type_specifications.auth import AuthenticationResponse
 
 # 固定のBearerトークン
 FIXED_BEARER_TOKEN = "your_fixed_token"
@@ -18,7 +20,7 @@ bearer_scheme = HTTPBearer(auto_error=False)
 # トークンを検証するヘルパー関数
 def validate_bearer_token(authorization: HTTPAuthorizationCredentials):
     if authorization and authorization.credentials == FIXED_BEARER_TOKEN:
-        return {"auth_type": "bearer", "message": "Authenticated with Bearer token"}
+        return AuthenticationResponse(auth_type="bearer", message="Authenticated with Bearer token")
     return None
 
 
@@ -26,7 +28,7 @@ def validate_jwt_token(jwt_token: str):
     if jwt_token:
         try:
             payload = jwt.decode(jwt_token, SECRET_KEY, algorithms=[ALGORITHM])
-            return {"auth_type": "jwt", "message": "Authenticated with JWT", "payload": payload}
+            return AuthenticationResponse(auth_type="jwt", message="Authenticated with JWT token", payload=payload)
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=403, detail="JWT token has expired")
         except jwt.InvalidTokenError:
@@ -39,7 +41,7 @@ def verify_token(
         auth_method: Literal["bearer", "jwt", "all"],
         authorization: HTTPAuthorizationCredentials = Security(bearer_scheme),
         jwt_token: str = Cookie(None)
-):
+) -> AuthenticationResponse:
     """
     認証方法に基づいてBearerトークンまたはJWTトークンを検証します。
 

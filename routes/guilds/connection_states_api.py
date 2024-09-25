@@ -5,11 +5,11 @@ from typing import Literal
 import time
 from fastapi import APIRouter, Security
 
-from auth import verify_token
 from routes.guilds.character_usage_api import get_guild_character_usage
 from routes.guilds.dict_api import get_guild_dict
 from routes.guilds.settings_api import get_guild_settings
 from type_specifications.api_response import CharacterUsages
+from utils.auth import verify_token
 
 router = APIRouter()
 
