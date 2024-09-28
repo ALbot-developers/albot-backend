@@ -1,5 +1,6 @@
-import dotenv
 import os
+
+import dotenv
 
 dotenv.load_dotenv()
 
@@ -7,3 +8,7 @@ SHARD_COUNT = 20
 SESSION_SECRET = os.environ["SESSION_SECRET"]
 DISCORD_CLIENT_ID = os.environ["DISCORD_CLIENT_ID"]
 DISCORD_CLIENT_SECRET = os.environ["DISCORD_CLIENT_SECRET"]
+MONTHLY1_PRICE_ID = os.environ['MONTHLY1_PRICE_ID']
+MONTHLY2_PRICE_ID = os.environ['MONTHLY2_PRICE_ID']
+YEARLY1_PRICE_ID = os.environ['YEARLY1_PRICE_ID']
+YEARLY2_PRICE_ID = os.environ['YEARLY2_PRICE_ID']

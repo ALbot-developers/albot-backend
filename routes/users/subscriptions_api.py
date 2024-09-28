@@ -1,11 +1,11 @@
 import asyncpg
 from fastapi import APIRouter, Security, Request, Response
 
-from type_specifications.api_payload import SubscriptionAPIPayload
+from type_specifications.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload
 from type_specifications.database import SubscriptionData
 from utils.auth import verify_token
 from utils.db_connection import get_connection_pool
-from utils.subscription import activate_subscription, cancel_subscription
+from utils.subscription import activate_subscription, cancel_subscription, renew_subscription
 
 router = APIRouter()
 
@@ -40,7 +40,7 @@ async def activate_subscriptions_api(
         sub_id: str,
         request: Request,
         response: Response,
-        payload: SubscriptionAPIPayload,
+        payload: ActivateSubscriptionAPIPayload,
         _auth=Security(lambda: verify_token("jwt"))
 ):
     if not await subscription_exists(request.session["user_id"], sub_id):
@@ -48,14 +48,10 @@ async def activate_subscriptions_api(
         return {
             "message": "Subscription not found."
         }
-    res = await activate_subscription(sub_id, payload.guild_id)
-    if not res:
-        response.status_code = 400
-        return {
-            "message": "Failed to activate subscription."
-        }
+    status, message = await activate_subscription(sub_id, payload.guild_id)
+    response.status_code = status
     return {
-        "message": "Successfully activated."
+        "message": message
     }
 
 
@@ -71,12 +67,28 @@ async def cancel_subscriptions_api(
         return {
             "message": "Subscription not found."
         }
-    res = await cancel_subscription(sub_id)
-    if not res:
+    status, message = await cancel_subscription(sub_id)
+    response.status_code = status
+    return {
+        "message": message
+    }
+
+
+@router.post("/{sub_id}/renew")
+async def renew_subscriptions_api(
+        sub_id: str,
+        payload: RenewSubscriptionAPIPayload,
+        request: Request,
+        response: Response,
+        _auth=Security(lambda: verify_token("jwt"))
+):
+    if not await subscription_exists(request.session["user_id"], sub_id):
         response.status_code = 400
         return {
-            "message": "Failed to activate subscription."
+            "message": "Subscription not found."
         }
+    status, message = await renew_subscription(sub_id, payload.new_plan)
+    response.status_code = status
     return {
-        "message": "Successfully canceled."
+        "message": message
     }
