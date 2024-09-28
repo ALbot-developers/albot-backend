@@ -62,7 +62,7 @@ class APIResponse(BaseModel):
 - [ ] metrics api
 - [x] message link expand preference api
 - [x] connection command api
-- [ ] subscription api (activate, cancel) (renewは未実装)
+- [x] subscription api (activate, renew, cancel)
 
 # Authentication
 ## 認証方法

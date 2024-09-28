@@ -7,6 +7,7 @@ import envs
 from routes.guilds import router as guilds
 from routes.oauth2 import router as oauth2
 from routes.shards import router as shards
+from routes.subscriptions import router as subscriptions
 from routes.users import router as users
 from utils.db_connection import create_connection_pool
 
@@ -32,6 +33,7 @@ app.include_router(oauth2.router, prefix=f"{ENDPOINT_PREFIX}/oauth2", tags=["oau
 app.include_router(shards.router, prefix=f"{ENDPOINT_PREFIX}/shards", tags=["shards"])
 app.include_router(guilds.router, prefix=f"{ENDPOINT_PREFIX}/guilds", tags=["guilds"])
 app.include_router(users.router, prefix=f"{ENDPOINT_PREFIX}/users", tags=["users"])
+app.include_router(subscriptions.router, prefix=f"{ENDPOINT_PREFIX}/subscriptions", tags=["subscriptions"])
 
 
 @app.get("/")
