@@ -119,6 +119,16 @@ Bearer <token>
 }
 ```
 
+## Activation API `/api/v2/users/me/subscriptions/{subscription_id}/activate`
+
+- `POST`: ユーザーのサブスクリプションを有効化します。
+
+```json
+{
+  "guild_id": 123456789012345678
+}
+```
+
 ### Cancel API `/api/v2/users/me/subscriptions/{subscription_id}/cancel`
 
 - `POST`: ユーザーのサブスクリプションをキャンセルします。
