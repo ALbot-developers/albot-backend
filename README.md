@@ -14,6 +14,7 @@ FastAPIを使用します。
     - [Connection commands API `/api/v2/shards/{shard_id}/connection_commands`](#Connection-commands-API-apiv2shardsshard_idconnection_commands)
   - [User(me) Subscription `/api/v2/users/me/subscriptions`](#Userme-Subscription-API-apiv2usersmesubscriptions)
       - [GET `/api/v2/users/me/subscriptions`](#GET-apiv2usersmesubscriptions)
+    - [Activation API `/api/v2/users/me/subscriptions/{subscription_id}/activate`](#Activation-API-apiv2usersmesubscriptionssubscription_idactivate)
       - [Cancel API `/api/v2/users/me/subscriptions/{subscription_id}/cancel`](#Cancel-API-apiv2usersmesubscriptionssubscription_idcancel)
       - [Renew API `/api/v2/users/me/subscriptions/{subscription_id}/renew`](#Renew-API-apiv2usersmesubscriptionssubscription_idrenew)
   - [Guilds data `/api/v2/guilds/{guild_id}/`](#Guilds-data-API-apiv2guildsguild_id)
