@@ -4,17 +4,7 @@ FastAPIを使用します。
 
 # Table of Contents
 - [仕様策定Todo](#仕様策定Todo)
-- [実装Todo](#実装Todo)from pydantic import BaseModel
-
-class CharacterUsage(BaseModel):
-    monthly_quota: int
-    used_characters: int
-    remaining_characters: int
-
-class APIResponse(BaseModel):
-    wavenet: CharacterUsage
-    standard: CharacterUsage
-- [Authentication](#Authentication)
+- [実装Todo](#実装Todo)
   - [認証方法](#認証方法)
   - [ユーザーの認証フロー](#ユーザーの認証フロー)
 - [Endpoints (`/api/v2`)](#Endpoints-apiv2)
@@ -22,6 +12,10 @@ class APIResponse(BaseModel):
     - [Assign API `/api/v2/shards/assign`](#Assign-API-apiv2shardsassign)
     - [Release API `/api/v2/shards/{shard_id}/release`](#Release-API-apiv2shardsshard_idrelease)
     - [Connection commands API `/api/v2/shards/{shard_id}/connection_commands`](#Connection-commands-API-apiv2shardsshard_idconnection_commands)
+  - [User(me) Subscription `/api/v2/users/me/subscriptions`](#Userme-Subscription-API-apiv2usersmesubscriptions)
+      - [GET `/api/v2/users/me/subscriptions`](#GET-apiv2usersmesubscriptions)
+      - [Cancel API `/api/v2/users/me/subscriptions/{subscription_id}/cancel`](#Cancel-API-apiv2usersmesubscriptionssubscription_idcancel)
+      - [Renew API `/api/v2/users/me/subscriptions/{subscription_id}/renew`](#Renew-API-apiv2usersmesubscriptionssubscription_idrenew)
   - [Guilds data `/api/v2/guilds/{guild_id}/`](#Guilds-data-API-apiv2guildsguild_id)
     - [Dict API `/api/v2/guilds/{guild_id}/dict`](#Dict-API-apiv2guildsguild_iddict)
     - [Settings API `/api/v2/guilds/{guild_id}/settings`](#Settings-API-apiv2guildsguild_idsettings)
@@ -30,7 +24,7 @@ class APIResponse(BaseModel):
     - [Connection states API `/api/v2/guilds/{guild_id}/connection_states`](#Connection-states-API-apiv2guildsguild_idconnection_states)
     - [Message link expand preference API `/api/v2/guilds/{guild_id}/message_link_expand_preference`](#Message-link-expand-preference-API-apiv2guildsguild_idmessage_link_expand_preference)
     - [Connection command API `/api/v2/guilds/{guild_id}/connection_command`](#Connection-command-API-apiv2guildsguild_idconnection_command)
-  - [Subscriptions `/api/v2/subscriptions/{subscription_id}/`](#Subscription-API-apiv2subscriptionssubscription_id)
+  - [Subscriptions `/api/v2/subscriptions/{subscription_id}/`](#Subscription-API-server-apiv2subscriptionssubscription_id)
     - [Activation API `/api/v2/subscriptions/{subscription_id}/activate`](#Activation-API-apiv2subscriptionssubscription_idactivate)
     - [Renew API `/api/v2/subscriptions/{subscription_id}/renew`](#Renew-API-apiv2subscriptionssubscription_idrenew)
     - [Cancel API `/api/v2/subscriptions/{subscription_id}/cancel`](#Cancel-API-apiv2subscriptionssubscription_idcancel)
@@ -39,6 +33,7 @@ class APIResponse(BaseModel):
 
 ## 仕様策定Todo:
 - [x] shard API
+- [x] user (subscription) api
 - [x] dict api
 - [x] settings api
 - [x] character usage api
@@ -54,6 +49,7 @@ class APIResponse(BaseModel):
 
 ## 実装Todo:
 - [x] shard API
+- [x] user (subscription) api
 - [x] dict api
 - [x] settings api
 - [x] character usage api
@@ -100,6 +96,40 @@ Bearer <token>
     "123456789012345678": "t.con",
     "234567890123456789": "召喚"
   }
+}
+```
+
+## User(me) Subscription API `/api/v2/users/me/subscriptions`
+
+### GET `/api/v2/users/me/subscriptions`
+
+- ユーザーのサブスクリプションを取得します。
+
+```json
+{
+  "subscriptions": [
+    {
+      "sub_id": "sub_abcd1234",
+      "guild_id": 123456789012345678,
+      "plan": "monthly1",
+      "sub_start": "2021-01-01T00:00:00",
+      "last_updated": "2021-01-01T00:00:00"
+    }
+  ]
+}
+```
+
+### Cancel API `/api/v2/users/me/subscriptions/{subscription_id}/cancel`
+
+- `POST`: ユーザーのサブスクリプションをキャンセルします。
+
+### Renew API `/api/v2/users/me/subscriptions/{subscription_id}/renew`
+
+- `POST`: ユーザーのサブスクリプションを更新します。
+
+```json
+{
+  "new_plan": "monthly1"
 }
 ```
 
@@ -230,7 +260,8 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
   }
 }
 ```
-## Subscription API `/api/v2/subscriptions/{subscription_id}/`
+
+## Subscription API (server) `/api/v2/subscriptions/{subscription_id}/`
 ### Activation API `/api/v2/subscriptions/{subscription_id}/activate`
 - `POST`: サブスクリプションを有効化します。
 ```json
