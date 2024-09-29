@@ -12,7 +12,10 @@ EXISTING_COMMANDS = ("t.help", "t.id", "t.status", "t.expand", "t.act", "t.dict"
 
 
 @router.get("/{guild_id}/connection_command")
-async def get_guild_connection_command(guild_id: int, _auth=Security(lambda: verify_token("jwt"))):
+async def get_guild_connection_command(
+        guild_id: int,
+        _auth=Security(lambda: verify_token("jwt"))
+):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
@@ -26,8 +29,12 @@ async def get_guild_connection_command(guild_id: int, _auth=Security(lambda: ver
 
 
 @router.put("/{guild_id}/connection_command")
-async def update_guild_connection_command(response: Response, guild_id: int, data: Dict[Literal["command"], str],
-                                          _auth=Security(lambda: verify_token("jwt"))):
+async def update_guild_connection_command(
+        response: Response,
+        guild_id: int,
+        data: Dict[Literal["command"], str],
+        _auth=Security(lambda: verify_token("jwt"))
+):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを更新
