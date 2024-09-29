@@ -12,11 +12,11 @@ FastAPIを使用します。
     - [Assign API](#Assign-API-apiv2shardsassign)
     - [Release API](#Release-API-apiv2shardsshard_idrelease)
     - [Connection commands API](#Connection-commands-API-apiv2shardsshard_idconnection_commands)
-  - [User(me) subscriptions](#Userme-Subscription-API-apiv2usersmesubscriptions)
-    - [List subscriptions](#GET-apiv2usersmesubscriptions)
-    - [Activation API](#Activation-API-apiv2usersmesubscriptionssubscription_idactivate)
-    - [Cancel API](#Cancel-API-apiv2usersmesubscriptionssubscription_idcancel)
-    - [Renew API](#Renew-API-apiv2usersmesubscriptionssubscription_idrenew)
+  - [Users](#Users-API-apiv2users)
+    - [List subscriptions](#list-subscriptions-apiv2usersusersubscriptions)
+    - [Activate subscription](#Activate-subscription-apiv2usersusersubscriptionssubscription_idactivate)
+    - [Cancel subscription](#Cancel-subscription-apiv2usersusersubscriptionssubscription_idcancel)
+    - [Renew subscription](#Renew-subscription-apiv2usersusersubscriptionssubscription_idrenew)
   - [Guilds data](#Guilds-data-API-apiv2guildsguild_id)
     - [Dict API](#Dict-API-apiv2guildsguild_iddict)
     - [Settings API](#Settings-API-apiv2guildsguild_idsettings)
@@ -100,11 +100,16 @@ Bearer <token>
 }
 ```
 
-## User(me) Subscription API `/api/v2/users/me/subscriptions`
+## Users API `/api/v2/users/`
 
-### GET `/api/v2/users/me/subscriptions`
+* **/me/**  
+  ログイン中のユーザーにアクセス。jwtトークンでのみ認証します。
+* **/{user_id}/**
+  任意のユーザーの情報にアクセス。bearerトークンでの認証が必要です。
 
-- ユーザーのサブスクリプションを取得します。
+### List subscriptions `/api/v2/users/{user}/subscriptions`
+
+- `GET`: ユーザーのサブスクリプションを取得します。
 
 ```json
 {
@@ -120,7 +125,7 @@ Bearer <token>
 }
 ```
 
-## Activation API `/api/v2/users/me/subscriptions/{subscription_id}/activate`
+### Activate subscription `/api/v2/users/{user}/subscriptions/{subscription_id}/activate`
 
 - `POST`: ユーザーのサブスクリプションを有効化します。
 
@@ -130,11 +135,11 @@ Bearer <token>
 }
 ```
 
-### Cancel API `/api/v2/users/me/subscriptions/{subscription_id}/cancel`
+### Cancel subscription `/api/v2/users/{user}/subscriptions/{subscription_id}/cancel`
 
 - `POST`: ユーザーのサブスクリプションをキャンセルします。
 
-### Renew API `/api/v2/users/me/subscriptions/{subscription_id}/renew`
+### Renew subscription `/api/v2/users/{user}/subscriptions/{subscription_id}/renew`
 
 - `POST`: ユーザーのサブスクリプションを更新します。
 

@@ -1,12 +1,13 @@
 import calendar
 import math
 from datetime import datetime
-from typing import Literal
+from typing import Literal, List
 
 import asyncpg
 import stripe
 
 import envs
+from type_specifications.database import SubscriptionData
 from utils.db_connection import get_connection_pool
 
 QUOTAS = {
@@ -20,6 +21,13 @@ PRICE_IDS = {
     'yearly1': envs.YEARLY1_PRICE_ID,
     'yearly2': envs.YEARLY2_PRICE_ID
 }
+
+
+async def subscription_exists(user_id: int, sub_id: str):
+    async with get_connection_pool().acquire() as conn:
+        conn: asyncpg.connection.Connection
+        row = await conn.fetchrow("SELECT * FROM subscriptions WHERE user_id=$1 and sub_id=$2", user_id, sub_id)
+        return row is not None
 
 
 def create_remaining_payment(subscription, old_plan: str):
@@ -40,7 +48,20 @@ def create_remaining_payment(subscription, old_plan: str):
     )
 
 
-async def cancel_subscription(sub_id: str) -> tuple[int, str]:
+async def list_subscriptions(user_id: int) -> List[SubscriptionData]:
+    async with get_connection_pool().acquire() as conn:
+        conn: asyncpg.connection.Connection
+        res = await conn.fetch("SELECT * FROM subscriptions WHERE user_id = $1", user_id)
+        subscriptions = []
+        for row in res:
+            subscription = SubscriptionData.from_dict(dict(row))
+            subscriptions.append(subscription)
+    return subscriptions
+
+
+async def cancel_subscription(sub_id: str, user_id: int) -> tuple[int, str]:
+    if not await subscription_exists(user_id, sub_id):
+        return 400, "Subscription not found."
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         row = await conn.fetchrow('SELECT * FROM subscriptions WHERE sub_id = $1', sub_id)
@@ -51,7 +72,9 @@ async def cancel_subscription(sub_id: str) -> tuple[int, str]:
     return 200, "Successfully canceled."
 
 
-async def activate_subscription(sub_id: str, guild_id: int) -> tuple[int, str]:
+async def activate_subscription(sub_id: str, user_id: int, guild_id: int) -> tuple[int, str]:
+    if not await subscription_exists(user_id, sub_id):
+        return 400, "Subscription not found."
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         row = await conn.fetchrow('SELECT * FROM subscriptions WHERE sub_id = $1', sub_id)
@@ -80,7 +103,9 @@ async def activate_subscription(sub_id: str, guild_id: int) -> tuple[int, str]:
     return 200, "Successfully activated."
 
 
-async def renew_subscription(sub_id: str, new_plan: str) -> tuple[int, str]:
+async def renew_subscription(sub_id: str, user_id: int, new_plan: str) -> tuple[int, str]:
+    if not await subscription_exists(user_id, sub_id):
+        return 400, "Subscription not found."
     new_price_id = PRICE_IDS[new_plan]
     old_sub = stripe.Subscription.retrieve(sub_id)
     async with get_connection_pool().acquire() as conn:

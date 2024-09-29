@@ -14,6 +14,7 @@ async def assign_shard(_auth=Security(lambda: verify_token("bearer"))):
         # SQLクエリを実行
         # is_assignedがfalseのshard_idのデータを取得
         row = await conn.fetchrow('SELECT * FROM shard_data WHERE is_assigned = false LIMIT 1')
+        total_shards = await conn.fetchval('SELECT COUNT(*) FROM shard_data')
         # shard_idを取得
         shard_id = row['shard_id']
         tts_key = row["tts_key"]
@@ -23,6 +24,7 @@ async def assign_shard(_auth=Security(lambda: verify_token("bearer"))):
     return {
         "message": "Shard assigned.",
         "data": {
+            "shard_count": int(total_shards),
             "shard_id": shard_id,
             "discord_token": "bot_token",
             "sentry_dsn": "sentry_dsn",
