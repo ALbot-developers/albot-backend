@@ -1,3 +1,5 @@
+import time
+
 import asyncpg
 from fastapi import APIRouter, Security
 

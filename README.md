@@ -40,7 +40,6 @@ FastAPIを使用します。
 - [x] message link expand preference api
 - [x] connection command api
 - [x] subscription api (activate, renew, cancel)
-- [ ] is guild subscribed api (should be moved to other endpoints)
 - [ ] cached settings api (might replace connection command api)
 
 
