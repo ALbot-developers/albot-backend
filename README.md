@@ -83,7 +83,7 @@ Bearer <token>
 
 - `GET` : シャードに接続するサーバーの接続コマンドを取得します。  
   __Options__
-  - updated_after: 指定日時以降に更新されたコマンドのみ取得します。epoch秒で指定します。
+  - changes_only (boolean): 前回fetch以降に更新されたコマンドのみ取得します。epoch秒で指定します。
 ```json
 {
   "commands": {
