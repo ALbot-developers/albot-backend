@@ -2,7 +2,7 @@ import asyncpg
 from fastapi import APIRouter, Security
 
 from type_specifications.database import SettingsData
-from utils.auth import verify_token
+from utils.auth import verify_all_tokens
 from utils.db_connection import get_connection_pool
 
 router = APIRouter()
@@ -18,7 +18,7 @@ async def get_guild_settings(guild_id: int):
 
 
 @router.get("/{guild_id}/settings")
-async def get_guild_settings_api(guild_id: int, _auth=Security(lambda: verify_token("all"))):
+async def get_guild_settings_api(guild_id: int, _auth=Security(verify_all_tokens)):
     settings = await get_guild_settings(guild_id)
     return {
         "message": "Fetched guild data.",
@@ -27,7 +27,7 @@ async def get_guild_settings_api(guild_id: int, _auth=Security(lambda: verify_to
 
 
 @router.post("/{guild_id}/settings")
-async def update_guild_settings(guild_id: int, data: dict, _auth=Security(lambda: verify_token("all"))):
+async def update_guild_settings(guild_id: int, data: dict, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # convert the data to a SettingsData object (to validate the data)
@@ -48,7 +48,7 @@ async def update_guild_settings(guild_id: int, data: dict, _auth=Security(lambda
 
 
 @router.delete("/{guild_id}/settings")
-async def delete_guild_settings(guild_id: int, _auth=Security(lambda: verify_token("all"))):
+async def delete_guild_settings(guild_id: int, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを削除

@@ -9,7 +9,7 @@ from routes.guilds.character_usage_api import get_guild_character_usage
 from routes.guilds.dict_api import get_guild_dict
 from routes.guilds.settings_api import get_guild_settings
 from type_specifications.api_response import CharacterUsages
-from utils.auth import verify_token
+from utils.auth import verify_bearer_token
 
 router = APIRouter()
 
@@ -113,8 +113,10 @@ async def create_connection_states(guild_id: int, options: ConnectionStatesOptio
 
 
 @router.post("/{guild_id}/connection_states")
-async def create_connection_states_api(guild_id: int, data: ConnectionStatesOptions,
-                                       _auth=Security(lambda: verify_token("bearer"))):
+async def create_connection_states_api(
+        guild_id: int, data: ConnectionStatesOptions,
+        _auth=Security(verify_bearer_token)
+):
     # connection_statesデータを作成
     connection_states = await create_connection_states(guild_id, data)
     return {

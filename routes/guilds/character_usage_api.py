@@ -4,7 +4,7 @@ import asyncpg
 from fastapi import APIRouter, Security
 
 from type_specifications.api_response import CharacterUsageAPIResponse, CharacterUsage, CharacterUsages
-from utils.auth import verify_token
+from utils.auth import verify_all_tokens, verify_bearer_token
 from utils.db_connection import get_connection_pool
 
 router = APIRouter()
@@ -33,7 +33,7 @@ async def get_guild_character_usage(guild_id: int):
 
 
 @router.get("/{guild_id}/character_usage", response_model=CharacterUsageAPIResponse)
-async def get_guild_character_usage_api(guild_id: int, _auth=Security(lambda: verify_token("all"))):
+async def get_guild_character_usage_api(guild_id: int, _auth=Security(verify_all_tokens)):
     return CharacterUsageAPIResponse(
         message="Fetched guild data.",
         data=await get_guild_character_usage(guild_id)
@@ -41,7 +41,10 @@ async def get_guild_character_usage_api(guild_id: int, _auth=Security(lambda: ve
 
 
 @router.post("/{guild_id}/character_usage")
-async def update_guild_character_usage(guild_id: int, payload: CharacterUsages, _auth=Security(lambda: verify_token("bearer"))):
+async def update_guild_character_usage(
+        guild_id: int, payload: CharacterUsages,
+        _auth=Security(verify_bearer_token)
+):
     # update used characters
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection

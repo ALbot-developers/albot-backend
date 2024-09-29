@@ -3,7 +3,7 @@ import json
 import asyncpg
 from fastapi import APIRouter, Security
 
-from utils.auth import verify_token
+from utils.auth import verify_all_tokens
 from utils.db_connection import get_connection_pool
 
 router = APIRouter()
@@ -18,7 +18,7 @@ async def get_guild_dict(guild_id: int):
 
 
 @router.get("/{guild_id}/dict")
-async def get_guild_dict_api(guild_id: int, _auth=Security(lambda: verify_token("all"))):
+async def get_guild_dict_api(guild_id: int, _auth=Security(verify_all_tokens)):
     return {
         "message": "Fetched guild data.",
         "data": await get_guild_dict(guild_id)
@@ -26,7 +26,7 @@ async def get_guild_dict_api(guild_id: int, _auth=Security(lambda: verify_token(
 
 
 @router.put("/{guild_id}/dict")
-async def replace_guild_dict(guild_id: int, data: dict, _auth=Security(lambda: verify_token("all"))):
+async def replace_guild_dict(guild_id: int, data: dict, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを更新
@@ -37,7 +37,7 @@ async def replace_guild_dict(guild_id: int, data: dict, _auth=Security(lambda: v
 
 
 @router.delete("/{guild_id}/dict")
-async def delete_guild_dict(guild_id: int, _auth=Security(lambda: verify_token("all"))):
+async def delete_guild_dict(guild_id: int, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを削除

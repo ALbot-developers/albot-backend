@@ -1,14 +1,14 @@
 import asyncpg
 from fastapi import APIRouter, Security
 
-from utils.auth import verify_token
+from utils.auth import verify_bearer_token
 from utils.db_connection import get_connection_pool
 
 router = APIRouter()
 
 
 @router.post("/{shard_id}/release")
-async def release_shard(shard_id: int, _auth=Security(lambda: verify_token("bearer"))):
+async def release_shard(shard_id: int, _auth=Security(verify_bearer_token)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # is_assignedをfalseに更新

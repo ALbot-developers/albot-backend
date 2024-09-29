@@ -1,13 +1,9 @@
-from typing import Literal
-
 import jwt
 from fastapi import Security, HTTPException, Cookie
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+from envs import BEARER_TOKEN
 from type_specifications.auth import AuthenticationResponse
-
-# 固定のBearerトークン
-FIXED_BEARER_TOKEN = "your_fixed_token"
 
 # JWTシークレットキー
 SECRET_KEY = "your_jwt_secret"
@@ -19,7 +15,7 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 # トークンを検証するヘルパー関数
 def validate_bearer_token(authorization: HTTPAuthorizationCredentials):
-    if authorization and authorization.credentials == FIXED_BEARER_TOKEN:
+    if authorization and authorization.credentials == BEARER_TOKEN:
         return AuthenticationResponse(auth_type="bearer", message="Authenticated with Bearer token")
     return None
 
@@ -36,30 +32,32 @@ def validate_jwt_token(jwt_token: str):
     return None
 
 
-# 認証のための関数
-def verify_token(
-        auth_method: Literal["bearer", "jwt", "all"],
+# Bearerトークンの検証
+def verify_bearer_token(
+        authorization: HTTPAuthorizationCredentials = Security(bearer_scheme)
+) -> AuthenticationResponse:
+    result = validate_bearer_token(authorization)
+    if result:
+        return result
+    raise HTTPException(status_code=403, detail="Invalid or missing Bearer token")
+
+
+# JWTトークンの検証
+def verify_jwt_token(
+        jwt_token: str = Cookie(None)
+) -> AuthenticationResponse:
+    result = validate_jwt_token(jwt_token)
+    if result:
+        return result
+    raise HTTPException(status_code=403, detail="Invalid or missing JWT token")
+
+
+# BearerトークンまたはJWTトークンの検証
+def verify_all_tokens(
         authorization: HTTPAuthorizationCredentials = Security(bearer_scheme),
         jwt_token: str = Cookie(None)
 ) -> AuthenticationResponse:
-    """
-    認証方法に基づいてBearerトークンまたはJWTトークンを検証します。
-
-    :param auth_method: 使用する認証方法 ("bearer", "jwt", "all")
-    :param authorization: Authorizationヘッダー (Bearerトークン)
-    :param jwt_token: Cookie内のJWTトークン
-    """
-    if auth_method == "bearer":
-        result = validate_bearer_token(authorization)
-    elif auth_method == "jwt":
-        result = validate_jwt_token(jwt_token)
-    elif auth_method == "all":
-        result = validate_bearer_token(authorization) or validate_jwt_token(jwt_token)
-    else:
-        raise HTTPException(status_code=403, detail="Unsupported authentication method")
-
+    result = validate_bearer_token(authorization) or validate_jwt_token(jwt_token)
     if result:
         return result
-
-    # 認証に失敗した場合
     raise HTTPException(status_code=403, detail="Invalid or missing Bearer/JWT token")

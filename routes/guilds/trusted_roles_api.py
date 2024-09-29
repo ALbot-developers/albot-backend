@@ -4,7 +4,7 @@ from typing import List
 import asyncpg
 from fastapi import APIRouter, Security
 
-from utils.auth import verify_token
+from utils.auth import verify_all_tokens
 from utils.db_connection import get_connection_pool
 
 router = APIRouter()
@@ -23,7 +23,7 @@ class TrustedRolesDataResponse:
 
 
 @router.get("/{guild_id}/trusted_roles", response_model=TrustedRolesDataResponse)
-async def get_guild_trusted_roles(guild_id: int, _auth=Security(lambda: verify_token("all"))):
+async def get_guild_trusted_roles(guild_id: int, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
@@ -39,7 +39,7 @@ async def get_guild_trusted_roles(guild_id: int, _auth=Security(lambda: verify_t
 
 
 @router.put("/{guild_id}/trusted_roles")
-async def update_guild_trusted_roles(guild_id: int, data: TrustedRolesData, _auth=Security(lambda: verify_token("all"))):
+async def update_guild_trusted_roles(guild_id: int, data: TrustedRolesData, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを更新
