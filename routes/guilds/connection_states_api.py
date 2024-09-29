@@ -1,8 +1,8 @@
 import json
+import time
 from dataclasses import dataclass
 from typing import Literal
 
-import time
 from fastapi import APIRouter, Security
 
 from routes.guilds.character_usage_api import get_guild_character_usage
@@ -21,7 +21,6 @@ with open("gtts_languages.json") as f:
 class ConnectionStatesOptions:
     guild_id: int
     vc_id: int
-    target_id: int
     read_guild: bool = None
     read_name: bool = None
     speech_speed: float = None
@@ -90,10 +89,11 @@ async def create_connection_states(guild_id: int, options: ConnectionStatesOptio
         options.translate if options.translate else settings_data.translate or False
     )
     voices = set_voice(language_code, settings_data.custom_voice)
+    read_guild = settings_data.read_guild if options.read_guild is None else options.read_guild
     return ConnectionState(
         guild_id=guild_id,
         vc_id=options.vc_id,
-        target_id=options.target_id,
+        target_id=guild_id if read_guild else options.vc_id,
         service="gtts",
         language_code=language_code,
         translate=translate,
