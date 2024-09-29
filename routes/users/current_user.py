@@ -13,7 +13,7 @@ async def list_subscriptions_api(request: Request, _auth=Security(lambda: verify
     subscriptions = await list_subscriptions(user_id)
     return {
         "message": "Fetched subscriptions.",
-        "subscriptions": subscriptions
+        "data": subscriptions
     }
 
 

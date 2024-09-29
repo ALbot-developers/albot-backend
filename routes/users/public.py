@@ -15,7 +15,7 @@ async def list_subscriptions_api(
     subscriptions = await list_subscriptions(user_id)
     return {
         "message": "Fetched subscriptions.",
-        "subscriptions": subscriptions
+        "data": subscriptions
     }
 
 
