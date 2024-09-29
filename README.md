@@ -78,11 +78,6 @@ Bearer <token>
 
 ### Release API `/api/v2/shards/{shard_id}/release`
 - `POST` : シャードの終了時に、割当を解除します。
-```json
-{
-  "shard_id": 0
-}
-```
 
 ### Connection commands API `/api/v2/shards/{shard_id}/connection_commands`
 
