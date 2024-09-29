@@ -1,7 +1,7 @@
 import json
 import time
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Optional
 
 from fastapi import APIRouter, Security
 
@@ -19,14 +19,13 @@ with open("gtts_languages.json") as f:
 
 @dataclass
 class ConnectionStatesOptions:
-    guild_id: int
     vc_id: int
-    read_guild: bool = None
-    read_name: bool = None
-    speech_speed: float = None
-    lang: str = None
-    character_limit: int = None
-    translate: bool = None
+    read_guild: Optional[bool] = None
+    read_name: Optional[bool] = None
+    speech_speed: Optional[float] = None
+    lang: Optional[str] = None
+    character_limit: Optional[int] = None
+    translate: Optional[bool] = None
 
 
 @dataclass
@@ -46,6 +45,7 @@ class ConnectionState:
     speech_speed: float
     character_limit: int
     character_usage: CharacterUsages
+    read_guild: bool
     read_name_on_join: bool
     read_name_on_leave: bool
     read_not_joined_users: bool
@@ -106,6 +106,7 @@ async def create_connection_states(guild_id: int, options: ConnectionStatesOptio
         speech_speed=options.speech_speed if options.speech_speed else settings_data.speech_speed or 1.0,
         character_limit=options.character_limit if options.character_limit else settings_data.character_limit or 100,
         character_usage=await get_guild_character_usage(guild_id),
+        read_guild=read_guild,
         read_name_on_join=settings_data.read_name_on_join,
         read_name_on_leave=settings_data.read_name_on_leave,
         read_not_joined_users=settings_data.read_not_joined_users
@@ -114,11 +115,12 @@ async def create_connection_states(guild_id: int, options: ConnectionStatesOptio
 
 @router.post("/{guild_id}/connection_states")
 async def create_connection_states_api(
-        guild_id: int, data: ConnectionStatesOptions,
+        guild_id: int,
+        options: ConnectionStatesOptions,
         _auth=Security(verify_bearer_token)
 ):
     # connection_statesデータを作成
-    connection_states = await create_connection_states(guild_id, data)
+    connection_states = await create_connection_states(guild_id, options)
     return {
         "message": "Updated guild data.",
         "data": connection_states

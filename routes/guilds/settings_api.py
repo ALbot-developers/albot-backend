@@ -12,7 +12,7 @@ async def get_guild_settings(guild_id: int):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
-        row = await conn.fetchval('SELECT * FROM settings_data WHERE guild_id = $1', guild_id)
+        row = await conn.fetchrow('SELECT * FROM settings_data WHERE guild_id = $1', guild_id)
         # convert the row to a dictionary
         return SettingsData.from_dict(dict(row))
 
