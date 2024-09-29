@@ -48,7 +48,7 @@ def create_remaining_payment(subscription, old_plan: str):
     )
 
 
-async def list_subscriptions(user_id: int) -> List[SubscriptionData]:
+async def list_user_subscriptions(user_id: int) -> List[SubscriptionData]:
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         res = await conn.fetch("SELECT * FROM subscriptions WHERE user_id = $1", user_id)

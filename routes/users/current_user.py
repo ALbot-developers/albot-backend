@@ -2,7 +2,7 @@ from fastapi import APIRouter, Security, Request, Response
 
 from type_specifications.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload
 from utils.auth import verify_token
-from utils.subscription import activate_subscription, cancel_subscription, renew_subscription, list_subscriptions
+from utils.subscription import activate_subscription, cancel_subscription, renew_subscription, list_user_subscriptions
 
 router = APIRouter()
 
@@ -10,7 +10,7 @@ router = APIRouter()
 @router.get("/subscriptions")
 async def list_subscriptions_api(request: Request, _auth=Security(lambda: verify_token("jwt"))):
     user_id: int = request.session["user_id"]
-    subscriptions = await list_subscriptions(user_id)
+    subscriptions = await list_user_subscriptions(user_id)
     return {
         "message": "Fetched subscriptions.",
         "data": {
