@@ -17,7 +17,7 @@ FastAPIを使用します。
     - [Activate subscription](#Activate-subscription-apiv2usersusersubscriptionssubscription_idactivate)
     - [Cancel subscription](#Cancel-subscription-apiv2usersusersubscriptionssubscription_idcancel)
     - [Renew subscription](#Renew-subscription-apiv2usersusersubscriptionssubscription_idrenew)
-  - [Guilds data](#Guilds-data-API-apiv2guildsguild_id)
+  - [Guilds data](#guilds-api-apiv2guildsguild_id)
     - [Dict API](#Dict-API-apiv2guildsguild_iddict)
     - [Settings API](#Settings-API-apiv2guildsguild_idsettings)
     - [Character usage API](#Character-usage-API-apiv2guildsguild_idcharacter_usage)
@@ -25,10 +25,6 @@ FastAPIを使用します。
     - [Connection states API](#Connection-states-API-apiv2guildsguild_idconnection_states)
     - [Message link expand preference API](#Message-link-expand-preference-API-apiv2guildsguild_idmessage_link_expand_preference)
     - [Connection command API](#Connection-command-API-apiv2guildsguild_idconnection_command)
-  - [Subscriptions](#Subscription-API-server-apiv2subscriptionssubscription_id)
-    - [Activation API](#Activation-API-apiv2subscriptionssubscription_idactivate)
-    - [Renew API](#Renew-API-apiv2subscriptionssubscription_idrenew)
-    - [Cancel API](#Cancel-API-apiv2subscriptionssubscription_idcancel)
   - [Metrics API](#Metrics-API-apiv2metrics)
 - [変数名の変更案](#変数名の変更案)
 
@@ -90,7 +86,10 @@ Bearer <token>
 ```
 
 ### Connection commands API `/api/v2/shards/{shard_id}/connection_commands`
-- `GET` : シャードに接続するサーバーの接続コマンドを取得します。
+
+- `GET` : シャードに接続するサーバーの接続コマンドを取得します。  
+  __Options__
+  - updated_after: 指定日時以降に更新されたコマンドのみ取得します。epoch秒で指定します。
 ```json
 {
   "commands": {
@@ -149,7 +148,7 @@ Bearer <token>
 }
 ```
 
-## Guilds data API `/api/v2/guilds/{guild_id}/`
+## Guilds API `/api/v2/guilds/{guild_id}/`
 ### Dict API `/api/v2/guilds/{guild_id}/dict`
 - `GET` : 辞書の一覧を取得します。
 - `PUT` : 辞書をリクエストデータで置き換えます。
@@ -258,6 +257,24 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
 }
 ```
 
+### Subscriptions API `/api/v2/subscriptions`
+
+- `GET`: サーバーのサブスクリプションを取得します。
+
+```json
+{
+  "subscriptions": [
+    {
+      "sub_id": "sub_abcd1234",
+      "guild_id": 123456789012345678,
+      "plan": "monthly1",
+      "sub_start": "2021-01-01T00:00:00",
+      "last_updated": "2021-01-01T00:00:00"
+    }
+  ]
+}
+```
+
 ## Metrics API `/api/v2/metrics`
 - `GET` : メトリクスを取得します。
 ```json
@@ -277,23 +294,6 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
 }
 ```
 
-## Subscription API (server) `/api/v2/subscriptions/{subscription_id}/`
-### Activation API `/api/v2/subscriptions/{subscription_id}/activate`
-- `POST`: サブスクリプションを有効化します。
-```json
-{
-  "guild_id": "123456789012345678"
-}
-```
-### Renew API `/api/v2/subscriptions/{subscription_id}/renew`
-- `POST`: サブスクリプションを更新します。
-```json
-{
-  "new_subscription_plan": "monthly1"
-}
-```
-### Cancel API `/api/v2/subscriptions/{subscription_id}/cancel`
-- `POST`: サブスクリプションをキャンセルします。
 
 # 変数名の変更案
 - `read_name` -> `read_sender_name`
