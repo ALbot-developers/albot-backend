@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Security, Request, Response
 
 from type_specifications.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload
-from utils.auth import verify_jwt_token
+from utils.auth import verify_session
 from utils.subscription import activate_subscription, cancel_subscription, renew_subscription, list_user_subscriptions
 
 router = APIRouter()
 
 
 @router.get("/subscriptions")
-async def list_subscriptions_api(request: Request, _auth=Security(verify_jwt_token)):
+async def list_subscriptions_api(request: Request, _auth=Security(verify_session)):
     user_id: int = request.session["user_id"]
     subscriptions = await list_user_subscriptions(user_id)
     return {
@@ -25,7 +25,7 @@ async def activate_subscriptions_api(
         request: Request,
         response: Response,
         payload: ActivateSubscriptionAPIPayload,
-        _auth=Security(verify_jwt_token)
+        _auth=Security(verify_session)
 ):
     status, message = await activate_subscription(sub_id, request.session["user_id"], payload.guild_id)
     response.status_code = status
@@ -39,7 +39,7 @@ async def cancel_subscriptions_api(
         sub_id: str,
         request: Request,
         response: Response,
-        _auth=Security(verify_jwt_token)
+        _auth=Security(verify_session)
 ):
     status, message = await cancel_subscription(sub_id, request.session["user_id"])
     response.status_code = status
@@ -54,7 +54,7 @@ async def renew_subscriptions_api(
         payload: RenewSubscriptionAPIPayload,
         request: Request,
         response: Response,
-        _auth=Security(verify_jwt_token)
+        _auth=Security(verify_session)
 ):
     status, message = await renew_subscription(sub_id, request.session["user_id"], payload.new_plan)
     response.status_code = status

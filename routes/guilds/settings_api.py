@@ -22,7 +22,7 @@ async def get_guild_settings_api(guild_id: int, _auth=Security(verify_all_tokens
     settings = await get_guild_settings(guild_id)
     return {
         "message": "Fetched guild data.",
-        "data": settings.to_json()
+        "data": settings
     }
 
 

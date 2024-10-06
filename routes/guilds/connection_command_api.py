@@ -3,7 +3,7 @@ from typing import Dict, Literal
 import asyncpg
 from fastapi import APIRouter, Security, Response
 
-from utils.auth import verify_jwt_token
+from utils.auth import verify_session
 from utils.db_connection import get_connection_pool
 
 router = APIRouter()
@@ -14,7 +14,7 @@ EXISTING_COMMANDS = ("t.help", "t.id", "t.status", "t.expand", "t.act", "t.dict"
 @router.get("/{guild_id}/connection_command")
 async def get_guild_connection_command(
         guild_id: int,
-        _auth=Security(verify_jwt_token)
+        _auth=Security(verify_session)
 ):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
@@ -33,7 +33,7 @@ async def update_guild_connection_command(
         response: Response,
         guild_id: int,
         data: Dict[Literal["command"], str],
-        _auth=Security(verify_jwt_token)
+        _auth=Security(verify_session)
 ):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
