@@ -148,14 +148,35 @@ Bearer <token>
 - `PUT` : 辞書をリクエストデータで置き換えます。
 ```json
 {
-  "key1": "value1",
-  "key2": "value2"
+  "dict": {
+    "key1": "value1",
+    "key2": "value2"
+  }
 }
 ```
 
 - `DELETE` : 辞書を削除します。
 ### Settings API `/api/v2/guilds/{guild_id}/settings`
 - `GET` : サーバーの読み上げ設定を取得します。
+
+```json
+{
+  "settings": {
+    "guild_id": 731467468341510184,
+    "lang": "ja-JP",
+    "character_limit": 3000,
+    "speech_speed": 1.75,
+    "read_name": false,
+    "custom_voice": null,
+    "translate": false,
+    "read_name_on_join": true,
+    "read_name_on_leave": true,
+    "read_guild": false,
+    "read_not_joined_users": true,
+    "audio_api": "gtts"
+  }
+}
+```
 - `DELETE` : サーバーの読み上げ設定を削除します。(初期化)
 - `POST` : サーバーの読み上げ設定を編集します。
 ```json
@@ -251,7 +272,7 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
 }
 ```
 
-### Subscriptions API `/api/v2/subscriptions`
+### Subscriptions API `/api/v2/guilds/{guild_id}/subscriptions`
 
 - `GET`: サーバーのサブスクリプションを取得します。
 
@@ -273,8 +294,10 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
 - `GET` : メトリクスを取得します。
 ```json
 {
-  "guilds": 100,
-  "connected": 10
+  "metrics": {
+    "guilds": 10000,
+    "connected": 100
+  }
 }
 ```
 - `POST`: 特定シャードのメトリクスを更新します。

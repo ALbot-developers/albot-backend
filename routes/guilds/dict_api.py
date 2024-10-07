@@ -21,7 +21,9 @@ async def get_guild_dict(guild_id: int):
 async def get_guild_dict_api(guild_id: int, _auth=Security(verify_all_tokens)):
     return {
         "message": "Fetched guild data.",
-        "data": await get_guild_dict(guild_id)
+        "data": {
+            "dict": await get_guild_dict(guild_id)
+        }
     }
 
 

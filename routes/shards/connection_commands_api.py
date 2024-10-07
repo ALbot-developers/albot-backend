@@ -41,5 +41,7 @@ async def get_connection_commands(
         data[row["guild_id"]] = row["command"]
     return {
         "message": "Fetched connection commands.",
-        "data": data
+        "data": {
+            "commands": data
+        }
     }

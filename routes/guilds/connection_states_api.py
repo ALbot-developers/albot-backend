@@ -123,5 +123,7 @@ async def create_connection_states_api(
     connection_states = await create_connection_states(guild_id, options)
     return {
         "message": "Updated guild data.",
-        "data": connection_states
+        "data": {
+            "connection_states": connection_states
+        }
     }
