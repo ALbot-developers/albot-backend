@@ -1,4 +1,3 @@
-import json
 from typing import Optional
 
 
@@ -58,8 +57,7 @@ class UserPIIResponse:
         self.verified = verified
 
     @classmethod
-    def from_json(cls, json_str: str):
-        data = json.loads(json_str)
+    def from_dict(cls, data: dict):
         avatar_decoration = data.get('avatar_decoration_data')
         premium_type_data = data.get('premium_type')
         return cls(
@@ -83,5 +81,23 @@ class UserPIIResponse:
             verified=data.get('verified')
         )
 
-    def to_json(self) -> str:
-        return json.dumps(self.__dict__, default=lambda o: o.__dict__, indent=4)
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "avatar": self.avatar,
+            "discriminator": self.discriminator,
+            "public_flags": self.public_flags,
+            "flags": self.flags,
+            "bot": self.bot,
+            "system": self.system,
+            "banner": self.banner,
+            "accent_color": self.accent_color,
+            "global_name": self.global_name,
+            "avatar_decoration_data": self.avatar_decoration_data,
+            "mfa_enabled": self.mfa_enabled,
+            "locale": self.locale,
+            "premium_type": self.premium_type,
+            "email": self.email,
+            "verified": self.verified
+        }
