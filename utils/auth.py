@@ -31,7 +31,7 @@ def verify_bearer_token(
 
 # JWTトークンの検証
 def verify_session(request: Request) -> AuthenticationResponse:
-    user = request.session.get("user_id")
+    user = request.session.get("user_info")
     if user:
         return AuthenticationResponse(auth_type="session", message="Authenticated with session", payload=user)
     raise HTTPException(status_code=403, detail="Invalid or missing session")

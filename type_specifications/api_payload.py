@@ -8,5 +8,4 @@ class ActivateSubscriptionAPIPayload:
 
 @dataclass
 class RenewSubscriptionAPIPayload:
-    guild_id: int
     new_plan: str

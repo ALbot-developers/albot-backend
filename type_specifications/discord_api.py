@@ -1,4 +1,5 @@
-from typing import Optional
+from dataclasses import dataclass
+from typing import Optional, List
 
 
 class UserAvatarDecorationResponse:
@@ -7,7 +8,7 @@ class UserAvatarDecorationResponse:
         self.sku_id = sku_id
 
     @classmethod
-    def from_json(cls, data: dict):
+    def from_dict(cls, data: dict):
         return cls(
             asset=data['asset'],
             sku_id=data.get('sku_id')
@@ -72,7 +73,7 @@ class UserPIIResponse:
             banner=data.get('banner'),
             accent_color=data.get('accent_color'),
             global_name=data.get('global_name'),
-            avatar_decoration_data=UserAvatarDecorationResponse.from_json(
+            avatar_decoration_data=UserAvatarDecorationResponse.from_dict(
                 avatar_decoration) if avatar_decoration else None,
             mfa_enabled=data.get('mfa_enabled'),
             locale=data.get('locale'),
@@ -101,3 +102,46 @@ class UserPIIResponse:
             "email": self.email,
             "verified": self.verified
         }
+
+
+@dataclass
+class PartialGuild:
+    """
+    {
+      "id": "80351110224678912",
+      "name": "1337 Krew",
+      "icon": "8342729096ea3675442027381ff50dfe",
+      "banner": "bb42bdc37653b7cf58c4c8cc622e76cb",
+      "owner": true,
+      "permissions": "36953089",
+      "features": ["COMMUNITY", "NEWS", "ANIMATED_ICON", "INVITE_SPLASH", "BANNER", "ROLE_ICONS"],
+      "approximate_member_count": 3268,
+      "approximate_presence_count": 784
+    }
+    """
+    id: str
+    name: str
+    icon: Optional[str]
+    banner: Optional[str]
+    owner: bool
+    permissions: str
+    features: List[str]
+    approximate_member_count: int
+    approximate_presence_count: int
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(
+            id=data.get('id'),
+            name=data.get('name'),
+            icon=data.get('icon'),
+            banner=data.get('banner'),
+            owner=data.get('owner'),
+            permissions=data.get('permissions'),
+            features=data.get('features'),
+            approximate_member_count=data.get('approximate_member_count'),
+            approximate_presence_count=data.get('approximate_presence_count')
+        )
+
+    def to_dict(self):
+        return {k: v for k, v in self.__dict__.items() if v is not None}

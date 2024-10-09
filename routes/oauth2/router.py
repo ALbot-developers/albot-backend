@@ -1,8 +1,13 @@
+import datetime
+import json
 from uuid import uuid4
 
+import asyncpg
 from fastapi import APIRouter, Request
 
-from utils.discord_oauth2 import get_oauth2_url, exchange_code, get_user_info
+from utils.db_connection import get_connection_pool
+from utils.discord_api import get_user_guilds, get_user_info
+from utils.discord_oauth2 import get_oauth2_url, exchange_code
 
 router = APIRouter()
 
@@ -34,6 +39,14 @@ async def oauth2_callback(code: str, state: str, request: Request):
     request.session["refresh_token"] = refresh_token
     user_info = await get_user_info(access_token)
     request.session["user_info"] = user_info.to_dict()
+    user_guilds = [guild.to_dict() for guild in await get_user_guilds(access_token)]
+    async with get_connection_pool().acquire() as conn:
+        conn: asyncpg.connection.Connection
+        await conn.execute(
+            'INSERT INTO user_guilds (user_id, guilds, updated_at) VALUES ($1, $2, $3) '
+            'ON CONFLICT (user_id) DO UPDATE SET guilds = $2, updated_at = $3',
+            int(user_info.id), json.dumps(user_guilds), datetime.datetime.now()
+        )
     return {
         "message": "Logged in."
     }

@@ -14,7 +14,7 @@ async def get_guild_dict(guild_id: int):
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
         value = await conn.fetchval('SELECT dict FROM dict_data WHERE guild_id = $1', guild_id)
-    return json.loads(value)
+    return json.loads(value) if value is not None else {}
 
 
 @router.get("/{guild_id}/dict")

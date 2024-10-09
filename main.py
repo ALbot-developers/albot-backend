@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+import stripe
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -24,6 +25,8 @@ async def lifespan(_app: FastAPI):
 
 API_VERSION = "v2"
 ENDPOINT_PREFIX = f"/api/{API_VERSION}"
+
+stripe.api_key = envs.STRIPE_SECRET_KEY
 
 app = FastAPI(lifespan=lifespan)
 # noinspection PyTypeChecker

@@ -23,7 +23,7 @@ async def get_guild_connection_command(
     return {
         "message": "Fetched connection command.",
         "data": {
-            "command": row["command"]
+            "command": row["command"] if row is not None else "t.con"
         }
     }
 
