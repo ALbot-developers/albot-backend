@@ -51,7 +51,7 @@ FastAPIを使用します。
 - [x] character usage api
 - [x] trusted roles api
 - [x] connection states api
-- [ ] metrics api
+- [x] metrics api
 - [x] message link expand preference api
 - [x] connection command api
 - [x] subscription api (activate, renew, cancel)
@@ -89,6 +89,19 @@ Bearer <token>
   "commands": {
     "123456789012345678": "t.con",
     "234567890123456789": "召喚"
+  }
+}
+```
+
+### Metrics API (POST) `/api/v2/shards/{shard_id}/metrics`
+
+- `POST` : シャードのメトリクスを更新します。
+
+```json
+{
+  "metrics": {
+    "guilds": 10000,
+    "connected": 100
   }
 }
 ```
@@ -297,16 +310,6 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
   "metrics": {
     "guilds": 10000,
     "connected": 100
-  }
-}
-```
-- `POST`: 特定シャードのメトリクスを更新します。
-```json
-{
-  "shard_id": 0,
-  "metrics": {
-    "guilds": 10,
-    "connected": 1
   }
 }
 ```

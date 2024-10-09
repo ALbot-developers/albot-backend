@@ -6,6 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 import envs
 from routes.guilds import router as guilds
+from routes.metrics import router as metrics
 from routes.oauth2 import router as oauth2
 from routes.shards import router as shards
 from routes.users import router as users
@@ -35,6 +36,7 @@ app.include_router(oauth2.router, prefix=f"{ENDPOINT_PREFIX}/oauth2", tags=["oau
 app.include_router(shards.router, prefix=f"{ENDPOINT_PREFIX}/shards", tags=["shards"])
 app.include_router(guilds.router, prefix=f"{ENDPOINT_PREFIX}/guilds", tags=["guilds"])
 app.include_router(users.router, prefix=f"{ENDPOINT_PREFIX}/users", tags=["users"])
+app.include_router(metrics.router, prefix=f"{ENDPOINT_PREFIX}/metrics", tags=["metrics"])
 
 
 @app.get("/")
