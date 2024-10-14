@@ -155,6 +155,52 @@ Bearer <token>
 }
 ```
 
+### List user's guilds `/api/v2/users/me/guilds`
+
+- `GET`: ユーザーが所属するサーバーの一覧を取得します。
+
+```json
+{
+  "guilds": [
+    {
+      "id": "123456789012345678",
+      "name": "サーバー名"
+    },
+    {
+      "id": "234567890123456789",
+      "name": "サーバー名"
+    }
+  ]
+}
+```
+
+### Get user guild info `/api/v2/users/me/guilds/{guild_id}/info`
+
+- `GET`: ユーザーが所属するサーバーの情報を取得します。
+
+```json
+{
+  "info": {
+    "id": "123456789012345678",
+    "name": "サーバー名",
+    "icon": "https://cdn.discordapp.com/icons/123456789012345678/abcdef1234567890.png",
+    "owner": "123456789012345678",
+    "members": 100,
+    "channels": 10
+  }
+}
+```
+
+### Checkout `/api/v2/users/me/checkout`
+
+- `POST`: ユーザーのチェックアウトセッションを作成します。
+
+```json
+{
+  "plan": "monthly1"
+}
+```
+
 ## Guilds API `/api/v2/guilds/{guild_id}/`
 ### Dict API `/api/v2/guilds/{guild_id}/dict`
 - `GET` : 辞書の一覧を取得します。

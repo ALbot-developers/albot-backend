@@ -6,20 +6,13 @@ from typing import Literal, List
 import asyncpg
 import stripe
 
-import envs
+from envs import PRICE_IDS
 from type_specifications.database import SubscriptionData
 from utils.db_connection import get_connection_pool
 
 QUOTAS = {
     1: {'wavenet': 20000, 'standard': 40000},
     2: {'wavenet': 80000, 'standard': 160000}
-}
-
-PRICE_IDS = {
-    'monthly1': envs.MONTHLY1_PRICE_ID,
-    'monthly2': envs.MONTHLY2_PRICE_ID,
-    'yearly1': envs.YEARLY1_PRICE_ID,
-    'yearly2': envs.YEARLY2_PRICE_ID
 }
 
 

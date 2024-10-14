@@ -1,8 +1,10 @@
 import json
 
 import asyncpg
+import stripe
 from fastapi import APIRouter, Security, Request, Response
 
+import envs
 from type_specifications.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload
 from type_specifications.discord_api import UserPIIResponse, PartialGuild
 from utils.auth import verify_session
@@ -98,5 +100,42 @@ async def get_guild_info(request: Request, guild_id: int, _auth=Security(verify_
         "message": "Fetched guild data.",
         "data": {
             "info": info.to_dict()
+        }
+    }
+
+
+@router.get("/checkout-session")
+async def checkout_session(plan: str, request: Request, response: Response, _auth=Security(verify_session)):
+    user_info = UserPIIResponse.from_dict(request.session["user_info"])
+    if plan not in envs.PRICE_IDS:
+        response.status_code = 400
+        return {
+            "message": "Invalid plan."
+        }
+    # create a url for `/success` and `/cancel`
+    # todo: マイページのリリースに合わせて変更
+    success_url = "https://albot.info/successfully-subscribed"
+    cancel_url = f"https://albot.info/pricing"
+    price_id = envs.PRICE_IDS[plan]
+    stripe_session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        allow_promotion_codes=True,
+        line_items=[{
+            'price': price_id,
+            'quantity': 1,
+        }],
+        success_url=success_url,
+        cancel_url=cancel_url,
+        mode='subscription',
+        metadata={
+            "discord_id": int(user_info.id),
+            "plan": plan
+        }
+    )
+    return {
+        "message": "Checkout session created.",
+        "data": {
+            "session_id": stripe_session.id,
+            "public_key": envs.STRIPE_PUBLIC_KEY
         }
     }
