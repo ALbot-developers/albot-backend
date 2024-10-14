@@ -191,13 +191,14 @@ Bearer <token>
 }
 ```
 
-### Checkout `/api/v2/users/me/checkout`
+### Checkout `/api/v2/users/me/checkout-session`
 
-- `POST`: ユーザーのチェックアウトセッションを作成します。
-
+- `GET`: ユーザーのチェックアウトセッションを取得します。  
+  **Query params:** plan
 ```json
 {
-  "plan": "monthly1"
+  "session_id": "session_abcd1234",
+  "public_key": "pk_test_1234567890abcdef"
 }
 ```
 
