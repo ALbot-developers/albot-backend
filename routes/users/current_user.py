@@ -7,6 +7,7 @@ from type_specifications.api_payload import ActivateSubscriptionAPIPayload, Rene
 from type_specifications.discord_api import UserPIIResponse, PartialGuild
 from utils.auth import verify_session
 from utils.db_connection import get_connection_pool
+from utils.others import get_user_guilds
 from utils.subscription import activate_subscription, cancel_subscription, renew_subscription, list_user_subscriptions
 
 router = APIRouter()
@@ -72,15 +73,7 @@ async def renew_subscriptions_api(
 @router.get("/guilds")
 async def list_user_guilds(request: Request, _auth=Security(verify_session)):
     user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
-    async with get_connection_pool().acquire() as conn:
-        conn: asyncpg.connection.Connection
-        guilds: list = json.loads(
-            await conn.fetchval(
-                'SELECT guilds FROM user_guilds WHERE user_id = $1',
-                int(user_info.id)
-            )
-        )
-    guilds = [PartialGuild.from_dict(guild) for guild in guilds]
+    guilds = await get_user_guilds(int(user_info.id))
     return {
         "message": "Fetched guilds.",
         "data": {

@@ -6,7 +6,7 @@ import asyncpg
 from fastapi import APIRouter, Request
 
 from utils.db_connection import get_connection_pool
-from utils.discord_api import get_user_guilds, get_user_info
+from utils.discord_api import fetch_user_guilds, get_user_info
 from utils.discord_oauth2 import get_oauth2_url, exchange_code
 
 router = APIRouter()
@@ -39,7 +39,7 @@ async def oauth2_callback(code: str, state: str, request: Request):
     request.session["refresh_token"] = refresh_token
     user_info = await get_user_info(access_token)
     request.session["user_info"] = user_info.to_dict()
-    user_guilds = [guild.to_dict() for guild in await get_user_guilds(access_token)]
+    user_guilds = [guild.to_dict() for guild in await fetch_user_guilds(access_token)]
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         await conn.execute(
