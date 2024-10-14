@@ -53,6 +53,12 @@ app.include_router(users.router, prefix=f"{ENDPOINT_PREFIX}/users", tags=["users
 app.include_router(metrics.router, prefix=f"{ENDPOINT_PREFIX}/metrics", tags=["metrics"])
 
 
+@app.get("/api/{_full_path:path}")
+async def api_not_found(response: Response, _full_path: str):
+    response.status_code = 404
+    return {"message": "Endpoint not found."}
+
+
 @app.get("/{_full_path:path}")
 async def serve_app(response: Response, _full_path: str):
     return generate_react_response(response)
