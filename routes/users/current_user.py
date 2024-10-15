@@ -5,7 +5,8 @@ import stripe
 from fastapi import APIRouter, Security, Request, Response
 
 import envs
-from type_specifications.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload
+from type_specifications.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload, \
+    CheckoutSessionAPIPayload
 from type_specifications.discord_api import UserPIIResponse, PartialGuild
 from utils.auth import verify_session
 from utils.db_connection import get_connection_pool
@@ -104,10 +105,11 @@ async def get_guild_info(request: Request, guild_id: int, _auth=Security(verify_
     }
 
 
-@router.get("/checkout-session")
-async def checkout_session(plan: str, request: Request, response: Response, _auth=Security(verify_session)):
+@router.post("/checkout-session")
+async def checkout_session(payload: CheckoutSessionAPIPayload, request: Request, response: Response,
+                           _auth=Security(verify_session)):
     user_info = UserPIIResponse.from_dict(request.session["user_info"])
-    if plan not in envs.PRICE_IDS:
+    if payload.plan not in envs.PRICE_IDS:
         response.status_code = 400
         return {
             "message": "Invalid plan."
@@ -116,7 +118,7 @@ async def checkout_session(plan: str, request: Request, response: Response, _aut
     # todo: マイページのリリースに合わせて変更
     success_url = "https://albot.info/successfully-subscribed"
     cancel_url = f"https://albot.info/pricing"
-    price_id = envs.PRICE_IDS[plan]
+    price_id = envs.PRICE_IDS[payload.plan]
     stripe_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         allow_promotion_codes=True,
@@ -129,7 +131,7 @@ async def checkout_session(plan: str, request: Request, response: Response, _aut
         mode='subscription',
         metadata={
             "discord_id": int(user_info.id),
-            "plan": plan
+            "plan": payload.plan
         }
     )
     return {

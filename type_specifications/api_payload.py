@@ -9,3 +9,8 @@ class ActivateSubscriptionAPIPayload:
 @dataclass
 class RenewSubscriptionAPIPayload:
     new_plan: str
+
+
+@dataclass
+class CheckoutSessionAPIPayload:
+    plan: str
