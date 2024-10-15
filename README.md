@@ -2,9 +2,15 @@
 albot-webからAPI部分を切り分けて、Restfulな設計を基本に再実装します。  
 FastAPIを使用します。
 
+## フロントエンドについて
+
+[albot-frontend](https://github.com/ALbot-developers/albot-frontend) を、Git submoduleとして追加しています。  
+クローンは、`git clone --recurse-submodules` で行ってください。
+既存のサブモジュールを`git submodule update --init --recursive` で更新できます。
+
 # Table of Contents
-- [仕様策定Todo](#仕様策定Todo)
-- [実装Todo](#実装Todo)
+
+- [Authentication](#Authentication)
   - [認証方法](#認証方法)
   - [ユーザーの認証フロー](#ユーザーの認証フロー)
 - [Endpoints (`/api/v2`)](#Endpoints-apiv2)
@@ -17,6 +23,9 @@ FastAPIを使用します。
     - [Activate subscription](#Activate-subscription-apiv2usersusersubscriptionssubscription_idactivate)
     - [Cancel subscription](#Cancel-subscription-apiv2usersusersubscriptionssubscription_idcancel)
     - [Renew subscription](#Renew-subscription-apiv2usersusersubscriptionssubscription_idrenew)
+    - [List user's guilds](#List-users-guilds-apiv2usersmeguilds)
+    - [Get user's guild info](#Get-users-guild-info-apiv2usersmeguildsguild_idinfo)
+    - [Checkout](#Checkout-apiv2usersmecheckout-session)
   - [Guilds data](#guilds-api-apiv2guildsguild_id)
     - [Dict API](#Dict-API-apiv2guildsguild_iddict)
     - [Settings API](#Settings-API-apiv2guildsguild_idsettings)
@@ -27,34 +36,6 @@ FastAPIを使用します。
     - [Connection command API](#Connection-command-API-apiv2guildsguild_idconnection_command)
   - [Metrics API](#Metrics-API-apiv2metrics)
 - [変数名の変更案](#変数名の変更案)
-
-## 仕様策定Todo:
-- [x] shard API
-- [x] user (subscription) api
-- [x] dict api
-- [x] settings api
-- [x] character usage api
-- [x] trusted roles api
-- [x] connection states api
-- [x] metrics api
-- [x] message link expand preference api
-- [x] connection command api
-- [x] subscription api (activate, renew, cancel)
-- [ ] cached settings api (might replace connection command api)
-
-
-## 実装Todo:
-- [x] shard API
-- [x] user (subscription) api
-- [x] dict api
-- [x] settings api
-- [x] character usage api
-- [x] trusted roles api
-- [x] connection states api
-- [x] metrics api
-- [x] message link expand preference api
-- [x] connection command api
-- [x] subscription api (activate, renew, cancel)
 
 # Authentication
 ## 認証方法
@@ -174,7 +155,7 @@ Bearer <token>
 }
 ```
 
-### Get user guild info `/api/v2/users/me/guilds/{guild_id}/info`
+### Get user's guild info `/api/v2/users/me/guilds/{guild_id}/info`
 
 - `GET`: ユーザーが所属するサーバーの情報を取得します。
 
