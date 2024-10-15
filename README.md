@@ -5,7 +5,7 @@ FastAPIを使用します。
 ## フロントエンドについて
 
 [albot-frontend](https://github.com/ALbot-developers/albot-frontend) を、Git submoduleとして追加しています。  
-クローンは、`git clone --recurse-submodules` で行ってください。
+クローンは、`git clone --recurse-submodules` で行ってください。  
 既存のサブモジュールを`git submodule update --init --recursive` で更新できます。
 
 # Table of Contents
@@ -46,11 +46,11 @@ Bearer <token>
 ```
 * WEBダッシュボードからの認証には、Cookieを使用したFastAPIのSessionを使用します。
 ## ユーザーの認証フロー
-1. ユーザーが`/oauth2/login` にアクセスします。
-2. サーバーがsessionにstateを保存して、Discord OAuth2の認証URLにリダイレクトします。
+1. ユーザーが`/login` にアクセスします。
+2. フロントがバックに認証URLをリクエストしてリダイレクトします。
 3. ユーザーがDiscordアカウントで認証します。
-4. Discordがcallback URL`/oauth2/callback`にリダイレクトします。
-5. サーバーがstateを検証し、アクセストークンを取得、sessionに保存します。
+4. Discordがcallback URL`/callback`にリダイレクトします。
+5. フロントがバックエンドに認証リクエストを送り、サーバーが認証後、情報をsessionに保存します。
 
 # Endpoints (`/api/v2`)
 ## Shards API `/api/v2/shards/`
