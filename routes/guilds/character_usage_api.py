@@ -20,6 +20,12 @@ async def get_guild_character_usage(guild_id: int):
             'FROM word_count WHERE guild_id = $1',
             guild_id
         )
+        if not row:
+            # 無課金サーバーのデフォルト値
+            return CharacterUsages(
+                wavenet=CharacterUsage(monthly_quota=5000, used_characters=0),
+                standard=CharacterUsage(monthly_quota=5000, used_characters=0)
+            )
         quotas = json.loads(row['limit_word_count'])
         wavenet = CharacterUsage(
             monthly_quota=quotas["wavenet"],
