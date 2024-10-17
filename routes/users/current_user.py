@@ -74,7 +74,7 @@ async def renew_subscriptions_api(
 
 
 @router.get("/guilds")
-async def list_user_guilds(request: Request, mutual=True, _auth=Security(verify_session)):
+async def list_user_guilds(request: Request, mutual: bool = True, _auth=Security(verify_session)):
     # ?mutual=True: get only mutual guilds with our bot
     user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
     guilds = await get_user_guilds(int(user_info.id), mutual=mutual)
