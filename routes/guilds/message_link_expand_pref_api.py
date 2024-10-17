@@ -38,7 +38,7 @@ async def update_guild_message_link_expand_pref(guild_id: int, data: Dict[Litera
         ON CONFLICT 
             (guild_id)
         DO UPDATE SET 
-            expand_message_link = expand_message_link
+            expand_message_link = $1
         ''', enabled, guild_id)
     return {
         "message": "Updated guild data."
