@@ -14,3 +14,8 @@ class RenewSubscriptionAPIPayload:
 @dataclass
 class CheckoutSessionAPIPayload:
     plan: str
+
+
+@dataclass
+class PutDictAPIPayload:
+    dict: dict

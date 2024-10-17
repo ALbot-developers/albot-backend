@@ -3,6 +3,7 @@ import json
 import asyncpg
 from fastapi import APIRouter, Security
 
+from type_specifications.api_payload import PutDictAPIPayload
 from utils.auth import verify_all_tokens
 from utils.db_connection import get_connection_pool
 
@@ -28,11 +29,11 @@ async def get_guild_dict_api(guild_id: int, _auth=Security(verify_all_tokens)):
 
 
 @router.put("/{guild_id}/dict")
-async def replace_guild_dict(guild_id: int, data: dict, _auth=Security(verify_all_tokens)):
+async def replace_guild_dict(guild_id: int, data: PutDictAPIPayload, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを更新
-        await conn.execute('UPDATE dict_data SET dict = $1 WHERE guild_id = $2', json.dumps(data), guild_id)
+        await conn.execute('UPDATE dict_data SET dict = $1 WHERE guild_id = $2', json.dumps(data.dict), guild_id)
     return {
         "message": "Updated guild data."
     }
