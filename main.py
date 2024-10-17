@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 import stripe
 from fastapi import FastAPI, Response
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 import envs
@@ -28,7 +29,15 @@ stripe.api_key = envs.STRIPE_SECRET_KEY
 
 app = FastAPI(lifespan=lifespan, root_path=f"/{API_VERSION}")
 # noinspection PyTypeChecker
-app.add_middleware(SessionMiddleware, secret_key=envs.SESSION_SECRET)
+app.add_middleware(SessionMiddleware, secret_key=envs.SESSION_SECRET, domain="localhost", same_site="none")
+# noinspection PyTypeChecker
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "https://mypage.albot.info"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(oauth2.router, prefix=f"/oauth2", tags=["oauth2"])
 app.include_router(shards.router, prefix=f"/shards", tags=["shards"])
 app.include_router(guilds.router, prefix=f"/guilds", tags=["guilds"])
