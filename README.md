@@ -2,12 +2,6 @@
 albot-webからAPI部分を切り分けて、Restfulな設計を基本に再実装します。  
 FastAPIを使用します。
 
-## フロントエンドについて
-
-[albot-frontend](https://github.com/ALbot-developers/albot-frontend) を、Git submoduleとして追加しています。  
-クローンは、`git clone --recurse-submodules` で行ってください。  
-既存のサブモジュールを`git submodule update --init --recursive` で更新できます。
-
 # Table of Contents
 
 - [Authentication](#Authentication)

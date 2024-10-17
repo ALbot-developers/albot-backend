@@ -1,4 +1,0 @@
-[submodule "public"]
-	path = public
-	url = git@github.com:ALbot-developers/albot-frontend.git
-	branch = dist
