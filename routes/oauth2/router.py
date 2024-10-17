@@ -3,7 +3,7 @@ import json
 from uuid import uuid4
 
 import asyncpg
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 
 from utils.db_connection import get_connection_pool
 from utils.discord_api import fetch_user_guilds, get_user_info
@@ -29,8 +29,9 @@ async def oauth2_redirect(request: Request, redirect: str):
 
 
 @router.post("/callback")
-async def oauth2_callback(code: str, state: str, request: Request):
+async def oauth2_callback(code: str, state: str, response: Response, request: Request):
     if state != request.session.get("state"):
+        response.status_code = 400
         return {"error": "Invalid state"}
     redirect = request.session["redirect"]
     del request.session["state"], request.session["redirect"]
