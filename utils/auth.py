@@ -1,7 +1,7 @@
 from fastapi import Security, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from envs import BEARER_TOKEN
+from constants import BEARER_TOKEN
 from type_specifications.auth import AuthenticationResponse
 
 # JWTシークレットキー

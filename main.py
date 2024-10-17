@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-import envs
+import constants
 from routes.guilds import router as guilds
 from routes.metrics import router as metrics
 from routes.oauth2 import router as oauth2
@@ -25,11 +25,11 @@ async def lifespan(_app: FastAPI):
         await pool.close()
 
 API_VERSION = "v2"
-stripe.api_key = envs.STRIPE_SECRET_KEY
+stripe.api_key = constants.STRIPE_SECRET_KEY
 
 app = FastAPI(lifespan=lifespan, root_path=f"/{API_VERSION}")
 # noinspection PyTypeChecker
-app.add_middleware(SessionMiddleware, secret_key=envs.SESSION_SECRET, domain="localhost", same_site="none")
+app.add_middleware(SessionMiddleware, secret_key=constants.SESSION_SECRET, domain="localhost", same_site="none")
 # noinspection PyTypeChecker
 app.add_middleware(
     CORSMiddleware,

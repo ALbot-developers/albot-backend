@@ -3,7 +3,7 @@ import time
 import asyncpg
 from fastapi import APIRouter, Security
 
-import envs
+import constants
 from utils.auth import verify_bearer_token
 from utils.db_connection import get_connection_pool
 
@@ -25,12 +25,12 @@ async def get_connection_commands(
         if changes_only:
             rows = await conn.fetch(
                 'SELECT guild_id, command FROM connect_command WHERE (guild_id >> 22) % $1 = $2 AND connect_command.unix_last_update > $3',
-                envs.SHARD_COUNT, shard_id, previously_updated_at
+                constants.SHARD_COUNT, shard_id, previously_updated_at
             )
         else:
             rows = await conn.fetch(
                 'SELECT guild_id, command FROM connect_command WHERE (guild_id >> 22) % $1 = $2',
-                envs.SHARD_COUNT, shard_id
+                constants.SHARD_COUNT, shard_id
             )
         await conn.execute(
             'UPDATE shard_data SET latest_command_fetch = $1 WHERE shard_id = $2',

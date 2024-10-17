@@ -2,7 +2,7 @@ from typing import Tuple
 
 import aiohttp
 
-import envs
+import constants
 
 DISCORD_BASE_URL = 'https://discord.com/api/v10'
 
@@ -10,7 +10,7 @@ DISCORD_BASE_URL = 'https://discord.com/api/v10'
 def get_oauth2_url(redirect_uri, state):
     return (
         f"https://discord.com/oauth2/authorize"
-        f"?client_id={envs.DISCORD_CLIENT_ID}"
+        f"?client_id={constants.DISCORD_CLIENT_ID}"
         f"&redirect_uri={redirect_uri}"
         f"&response_type=code"
         f"&scope=identify%20guilds"
@@ -31,7 +31,8 @@ async def exchange_code(code, redirect_url) -> Tuple[str, str]:
     }
     async with aiohttp.ClientSession() as session:
         async with session.post(f'{DISCORD_BASE_URL}/oauth2/token', data=data, headers=headers,
-                                auth=aiohttp.BasicAuth(envs.DISCORD_CLIENT_ID, envs.DISCORD_CLIENT_SECRET)) as r:
+                                auth=aiohttp.BasicAuth(constants.DISCORD_CLIENT_ID,
+                                                       constants.DISCORD_CLIENT_SECRET)) as r:
             r.raise_for_status()
             res_json = await r.json()
             return res_json['access_token'], res_json['refresh_token']
@@ -39,8 +40,8 @@ async def exchange_code(code, redirect_url) -> Tuple[str, str]:
 
 async def refresh_code(refresh_token):
     data = {
-        'client_id': envs.DISCORD_CLIENT_ID,
-        'client_secret': envs.DISCORD_CLIENT_SECRET,
+        'client_id': constants.DISCORD_CLIENT_ID,
+        'client_secret': constants.DISCORD_CLIENT_SECRET,
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token,
         'scope': 'identify guilds'

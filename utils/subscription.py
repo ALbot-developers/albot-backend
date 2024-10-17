@@ -6,7 +6,7 @@ from typing import Literal, List
 import asyncpg
 import stripe
 
-from envs import PRICE_IDS
+from constants import PRICE_IDS
 from type_specifications.database import SubscriptionData
 from utils.db_connection import get_connection_pool
 
