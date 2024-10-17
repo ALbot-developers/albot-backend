@@ -19,11 +19,11 @@ async def get_guild_connection_command(
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
-        row = await conn.fetchrow('SELECT command FROM connect_command WHERE guild_id = $1', guild_id)
+        command = await conn.fetchval('SELECT command FROM connect_command WHERE guild_id = $1', guild_id)
     return {
         "message": "Fetched connection command.",
         "data": {
-            "command": row["command"] if row is not None else "t.con"
+            "command": command if command else "t.con"
         }
     }
 
@@ -45,7 +45,10 @@ async def update_guild_connection_command(
                 return {
                     "message": "Command already exists."
                 }
-        await conn.execute('UPDATE connect_command SET command = $1 WHERE guild_id = $2', command, guild_id)
+        # upsert
+        await conn.execute(
+            'INSERT INTO connect_command (guild_id, command) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET command = $2',
+            guild_id, command)
     return {
         "message": "Updated connection command."
     }

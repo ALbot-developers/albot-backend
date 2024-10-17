@@ -30,7 +30,16 @@ async def update_guild_message_link_expand_pref(guild_id: int, data: Dict[Litera
         conn: asyncpg.connection.Connection
         # guild_idのデータを更新
         enabled = data["enabled"]
-        await conn.execute('UPDATE settings_data SET expand_message_link = $1 WHERE guild_id = $2', enabled, guild_id)
+        await conn.execute('''
+        INSERT INTO
+            settings_data (expand_message_link, guild_id)
+        VALUES 
+            ($1, $2)
+        ON CONFLICT 
+            (guild_id)
+        DO UPDATE SET 
+            expand_message_link = expand_message_link
+        ''', enabled, guild_id)
     return {
         "message": "Updated guild data."
     }

@@ -57,16 +57,24 @@ async def update_guild_character_usage(
         if payload.wavenet:
             await conn.execute(
                 '''
-                UPDATE word_count SET wavenet_count_now = $1 
-                WHERE guild_id = $2 AND wavenet_count_now < $1
+                INSERT INTO 
+                    word_count (wavenet_count_now, guild_id) 
+                VALUES
+                    ($1, $2) 
+                ON CONFLICT (guild_id) 
+                    DO UPDATE SET wavenet_count_now = $1
                 ''',
                 payload.wavenet.used_characters, guild_id
             )
         if payload.standard:
             await conn.execute(
                 '''
-                UPDATE word_count SET standard_count_now = $1 
-                WHERE guild_id = $2 AND standard_count_now < $1
+                INSERT INTO 
+                    word_count (standard_count_now, guild_id) 
+                VALUES
+                    ($1, $2) 
+                ON CONFLICT (guild_id) 
+                    DO UPDATE SET standard_count_now = $1
                 ''',
                 payload.standard.used_characters, guild_id
             )

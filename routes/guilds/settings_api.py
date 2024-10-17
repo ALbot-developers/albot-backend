@@ -75,6 +75,7 @@ async def update_guild_settings(guild_id: int, data: dict, _auth=Security(verify
         # get all attributes with values
         attributes = {k: v for k, v in settings_data.__dict__.items() if v is not None}
         # create a query string with placeholders for the attributes
+        # todo: change to upsert
         query = (
             f"UPDATE settings_data"
             f" SET {', '.join([f'{k} = ${i + 1}' for i, (k, v) in enumerate(attributes.items())])}"
