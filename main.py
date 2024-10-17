@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 
 import stripe
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -45,7 +45,6 @@ app.include_router(users.router, prefix=f"/users", tags=["users"])
 app.include_router(metrics.router, prefix=f"/metrics", tags=["metrics"])
 
 
-@app.get("/{_full_path:path}")
-async def api_not_found(response: Response, _full_path: str):
-    response.status_code = 404
-    return {"message": "Endpoint not found."}
+@app.get("/")
+async def root():
+    return {"message": "Running."}
