@@ -29,7 +29,8 @@ stripe.api_key = constants.STRIPE_SECRET_KEY
 
 app = FastAPI(lifespan=lifespan, root_path=f"/{API_VERSION}")
 # noinspection PyTypeChecker
-app.add_middleware(SessionMiddleware, secret_key=constants.SESSION_SECRET, domain="localhost", same_site="none")
+# todo: 開発環境と切り替えられるようにする
+app.add_middleware(SessionMiddleware, secret_key=constants.SESSION_SECRET, domain="albot.info")
 # noinspection PyTypeChecker
 app.add_middleware(
     CORSMiddleware,
