@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 import asyncpg
 from fastapi import APIRouter, Security
@@ -11,8 +12,8 @@ router = APIRouter()
 
 @dataclass
 class ShardMetricsPostPayload:
-    connected: int
-    guilds: int
+    connected: Optional[int]
+    guilds: Optional[int]
 
 
 @router.post("/{shard_id}/metrics")
