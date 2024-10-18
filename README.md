@@ -12,6 +12,7 @@ FastAPIを使用します。
     - [Assign API](#Assign-API-apiv2shardsassign)
     - [Release API](#Release-API-apiv2shardsshard_idrelease)
     - [Connection commands API](#Connection-commands-API-apiv2shardsshard_idconnection_commands)
+    - [Metrics API](#Metrics-API-POST-apiv2shardsshard_idmetrics)
   - [Users](#Users-API-apiv2users)
     - [List subscriptions](#list-subscriptions-apiv2usersusersubscriptions)
     - [Activate subscription](#Activate-subscription-apiv2usersusersubscriptionssubscription_idactivate)
@@ -30,7 +31,7 @@ FastAPIを使用します。
     - [Connection states API](#Connection-states-API-apiv2guildsguild_idconnection_states)
     - [Message link expand preference API](#Message-link-expand-preference-API-apiv2guildsguild_idmessage_link_expand_preference)
     - [Connection command API](#Connection-command-API-apiv2guildsguild_idconnection_command)
-  - [Metrics API](#Metrics-API-apiv2metrics)
+  - [Metrics API](#Metrics-API-GET-apiv2metrics)
 - [変数名の変更案](#変数名の変更案)
 
 # Authentication
@@ -76,10 +77,8 @@ Bearer <token>
 
 ```json
 {
-  "metrics": {
-    "guilds": 10000,
-    "connected": 100
-  }
+  "guilds": 10000,
+  "connected": 100
 }
 ```
 
@@ -336,7 +335,7 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
 }
 ```
 
-## Metrics API `/api/v2/metrics`
+## Metrics API (GET) `/api/v2/metrics`
 - `GET` : メトリクスを取得します。
 ```json
 {
