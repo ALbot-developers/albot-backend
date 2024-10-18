@@ -20,7 +20,9 @@ FastAPIを使用します。
     - [List user's guilds](#List-users-guilds-apiv2usersmeguilds)
     - [Get user's guild info](#Get-users-guild-info-apiv2usersmeguildsguild_idinfo)
     - [Checkout](#Checkout-apiv2usersmecheckout-session)
-  - [Guilds data](#guilds-api-apiv2guildsguild_id)
+  - [Guilds](#guilds-api-apiv2guildsguild_id)
+    - [Create resource](#Create-a-resource-apiv2guildsguild_id)
+    - [Delete resource](#Delete-a-resource-apiv2guildsguild_id)
     - [Dict API](#Dict-API-apiv2guildsguild_iddict)
     - [Settings API](#Settings-API-apiv2guildsguild_idsettings)
     - [Character usage API](#Character-usage-API-apiv2guildsguild_idcharacter_usage)
@@ -178,6 +180,15 @@ Bearer <token>
 ```
 
 ## Guilds API `/api/v2/guilds/{guild_id}/`
+
+### Create a resource `/api/v2/guilds/{guild_id}`
+
+- `POST` : サーバーのリソースを作成します。
+
+### Delete a resource `/api/v2/guilds/{guild_id}`
+
+- `DELETE` : サーバーのリソースを削除します。
+
 ### Dict API `/api/v2/guilds/{guild_id}/dict`
 - `GET` : 辞書の一覧を取得します。
 - `PUT` : 辞書をリクエストデータで置き換えます。
