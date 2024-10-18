@@ -7,10 +7,6 @@ from constants import BEARER_TOKEN
 from type_specifications.auth import AuthenticationResponse
 from utils.others import get_user_guild
 
-# JWTシークレットキー
-SECRET_KEY = "your_jwt_secret"
-ALGORITHM = "HS256"
-
 # Bearerトークンのためのセキュリティスキーム
 bearer_scheme = HTTPBearer(auto_error=False)
 
