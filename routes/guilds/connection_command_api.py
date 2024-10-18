@@ -8,7 +8,7 @@ from utils.db_connection import get_connection_pool
 
 router = APIRouter()
 
-EXISTING_COMMANDS = ("t.help", "t.id", "t.status", "t.expand", "t.act", "t.dict", "t.view", "t.save", "t.dc", "t.con")
+EXISTING_COMMANDS = ("t.help", "t.id", "t.status", "t.expand", "t.act", "t.dict", "t.view", "t.save", "t.dc")
 
 
 @router.get("/{guild_id}/connection_command")
