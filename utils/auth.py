@@ -1,8 +1,11 @@
+from typing import Optional
+
 from fastapi import Security, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from constants import BEARER_TOKEN
 from type_specifications.auth import AuthenticationResponse
+from utils.others import get_user_guild
 
 # JWTシークレットキー
 SECRET_KEY = "your_jwt_secret"
@@ -30,19 +33,23 @@ def verify_bearer_token(
 
 
 # JWTトークンの検証
-def verify_session(request: Request) -> AuthenticationResponse:
+async def verify_session(request: Request, guild_id: Optional['int'] = None) -> AuthenticationResponse:
     user = request.session.get("user_info")
     if user:
+        if guild_id:
+            if not (await get_user_guild(int(user["id"]), guild_id)):
+                raise HTTPException(status_code=403, detail="User is not in the guild")
         return AuthenticationResponse(auth_type="session", message="Authenticated with session", payload=user)
     raise HTTPException(status_code=403, detail="Invalid or missing session")
 
 
 # BearerトークンまたはJWTトークンの検証
-def verify_all_tokens(
+async def verify_all_tokens(
         request: Request,
-        authorization: HTTPAuthorizationCredentials = Security(bearer_scheme)
+        authorization: HTTPAuthorizationCredentials = Security(bearer_scheme),
+        guild_id: Optional['int'] = None
 ) -> AuthenticationResponse:
-    result = validate_bearer_token(authorization) or verify_session(request)
+    result = validate_bearer_token(authorization) or await verify_session(request, guild_id)
     if result:
         return result
     raise HTTPException(status_code=403, detail="Invalid or missing Bearer/JWT token")
