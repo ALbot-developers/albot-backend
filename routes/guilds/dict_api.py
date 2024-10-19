@@ -32,8 +32,13 @@ async def get_guild_dict_api(guild_id: int, _auth=Security(verify_all_tokens)):
 async def replace_guild_dict(guild_id: int, data: PutDictAPIPayload, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
+        # remove empty values
+        data.dict = {k: v for k, v in data.dict.items() if k and v}
         # guild_idのデータを更新
-        await conn.execute('UPDATE dict_data SET dict = $1 WHERE guild_id = $2', json.dumps(data.dict), guild_id)
+        await conn.execute('''
+        INSERT INTO dict_data (dict, guild_id) VALUES ($1, $2)
+        ON CONFLICT (guild_id) DO UPDATE SET dict = $1
+        ''', json.dumps(data.dict), guild_id)
     return {
         "message": "Updated guild data."
     }
