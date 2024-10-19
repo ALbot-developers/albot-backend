@@ -16,6 +16,17 @@ from utils.subscription import activate_subscription, cancel_subscription, renew
 router = APIRouter()
 
 
+@router.get("/info")
+async def get_user_info_api(request: Request, _auth=Security(verify_session)):
+    user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
+    return {
+        "message": "Fetched user info.",
+        "data": {
+            "info": user_info.to_dict()
+        }
+    }
+
+
 @router.get("/subscriptions")
 async def list_subscriptions_api(request: Request, _auth=Security(verify_session)):
     user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
