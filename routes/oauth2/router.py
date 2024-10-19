@@ -51,3 +51,11 @@ async def oauth2_callback(code: str, state: str, response: Response, request: Re
     return {
         "message": "Logged in."
     }
+
+
+@router.post("/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return {
+        "message": "Logged out."
+    }
