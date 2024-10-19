@@ -25,7 +25,7 @@ def verify_bearer_token(
     result = validate_bearer_token(authorization)
     if result:
         return result
-    raise HTTPException(status_code=403, detail="Invalid or missing Bearer token")
+    raise HTTPException(status_code=401, detail="Invalid or missing Bearer token")
 
 
 # JWTトークンの検証
@@ -36,7 +36,7 @@ async def verify_session(request: Request, guild_id: Optional['int'] = None) -> 
             if not (await get_user_guild(int(user["id"]), guild_id)):
                 raise HTTPException(status_code=403, detail="User is not in the guild")
         return AuthenticationResponse(auth_type="session", message="Authenticated with session", payload=user)
-    raise HTTPException(status_code=403, detail="Invalid or missing session")
+    raise HTTPException(status_code=401, detail="Invalid or missing session")
 
 
 # BearerトークンまたはJWTトークンの検証
@@ -48,4 +48,4 @@ async def verify_all_tokens(
     result = validate_bearer_token(authorization) or await verify_session(request, guild_id)
     if result:
         return result
-    raise HTTPException(status_code=403, detail="Invalid or missing Bearer/JWT token")
+    raise HTTPException(status_code=401, detail="Invalid or missing Bearer/Session token")
