@@ -1,6 +1,7 @@
 import asyncpg
 from fastapi import APIRouter, Security
 
+import constants
 from utils.auth import verify_bearer_token
 from utils.db_connection import get_connection_pool
 
@@ -26,8 +27,8 @@ async def assign_shard(_auth=Security(verify_bearer_token)):
         "data": {
             "shard_count": int(total_shards),
             "shard_id": shard_id,
-            "discord_token": "bot_token",
-            "sentry_dsn": "sentry_dsn",
+            "discord_token": constants.BOT_DISCORD_TOKEN,
+            "sentry_dsn": constants.BOT_SENTRY_DSN,
             "tts_key": tts_key,
             "heartbeat_token": heartbeat_token
         }
