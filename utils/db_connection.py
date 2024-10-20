@@ -1,5 +1,7 @@
 import asyncpg
 
+import constants
+
 _connection_pool = None
 
 
@@ -9,7 +11,7 @@ async def create_connection_pool():
         _connection_pool = await asyncpg.create_pool(
             user="postgres",
             database="postgres",
-            host="100.121.195.21",
+            host=constants.DB_HOST,
             min_size=2,
             max_size=10
         )

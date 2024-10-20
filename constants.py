@@ -4,7 +4,9 @@ import dotenv
 
 dotenv.load_dotenv()
 
+# todo: 動的に取得
 SHARD_COUNT = 20
+DB_HOST = os.environ.get("DB_HOST", "100.121.195.21")
 SESSION_SECRET = os.environ["SESSION_SECRET"]
 SESSION_DOMAIN = os.environ.get("SESSION_DOMAIN", "albot.info")
 BEARER_TOKEN = os.environ["BEARER_TOKEN"]
