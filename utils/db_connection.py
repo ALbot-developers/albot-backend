@@ -10,7 +10,7 @@ async def create_connection_pool():
     if _connection_pool is None:
         _connection_pool = await asyncpg.create_pool(
             user="postgres",
-            database="postgres",
+            database=constants.DB_DATABASE,
             host=constants.DB_HOST,
             min_size=2,
             max_size=10
