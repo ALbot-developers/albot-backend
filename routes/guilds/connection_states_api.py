@@ -20,6 +20,7 @@ with open("gtts_languages.json") as f:
 @dataclass
 class ConnectionStatesOptions:
     vc_id: int
+    tc_id: int
     read_guild: Optional[bool] = None
     read_name: Optional[bool] = None
     speech_speed: Optional[float] = None
@@ -93,7 +94,7 @@ async def create_connection_states(guild_id: int, options: ConnectionStatesOptio
     return ConnectionState(
         guild_id=guild_id,
         vc_id=options.vc_id,
-        target_id=guild_id if read_guild else options.vc_id,
+        target_id=guild_id if read_guild else options.tc_id,
         service="gtts",
         language_code=language_code,
         translate=translate,
