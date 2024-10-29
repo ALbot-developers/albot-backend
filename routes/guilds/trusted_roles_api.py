@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from typing import List
 
@@ -12,7 +13,7 @@ router = APIRouter()
 
 @dataclass
 class TrustedRolesData:
-    is_enabled: bool = None
+    enabled: bool = None
     role_ids: List[int] = None
 
 
@@ -29,8 +30,8 @@ async def get_guild_trusted_roles(guild_id: int, _auth=Security(verify_all_token
         # guild_idのデータを取得
         row = await conn.fetchrow('SELECT is_enabled, role_ids FROM trusted_roles WHERE guild_id = $1', guild_id)
         data = TrustedRolesData(
-            is_enabled=row['is_enabled'],
-            role_ids=row['role_ids']
+            enabled=row['is_enabled'],
+            role_ids=json.loads(row['role_ids'])
         )
     return TrustedRolesDataResponse(
         message="Fetched trusted roles settings.",
@@ -52,7 +53,7 @@ async def update_guild_trusted_roles(guild_id: int, data: TrustedRolesData, _aut
                 role_ids = CASE WHEN $2 IS NOT NULL THEN $2 ELSE role_ids END
             WHERE guild_id = $3
             ''',
-            data.is_enabled, data.role_ids, guild_id
+            data.enabled, data.role_ids, guild_id
         )
     return {
         "message": "Updated trusted roles settings."
