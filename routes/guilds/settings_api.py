@@ -75,11 +75,11 @@ async def update_guild_settings(guild_id: int, data: dict, _auth=Security(verify
         # get all attributes with values
         attributes = {k: v for k, v in settings_data.__dict__.items() if v is not None}
         # create a query string with placeholders for the attributes
-        # todo: change to upsert
         query = (
-            f"UPDATE settings_data"
-            f" SET {', '.join([f'{k} = ${i + 1}' for i, (k, v) in enumerate(attributes.items())])}"
-            f" WHERE guild_id = {guild_id}"
+            f"INSERT INTO settings_data (guild_id, {', '.join(attributes.keys())}) "
+            f"VALUES ({guild_id}, {', '.join([f'${i + 1}' for i in range(len(attributes))])}) "
+            f"ON CONFLICT (guild_id) DO UPDATE SET "
+            f"{', '.join([f'{k} = EXCLUDED.{k}' for k in attributes.keys()])}"
         )
         # execute the query with the values
         await conn.execute(query, *attributes.values())
