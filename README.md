@@ -2,6 +2,8 @@
 albot-webからAPI部分を切り分けて、Restfulな設計を基本に再実装します。  
 FastAPIを使用します。
 
+### [▶プロジェクト進捗](migration_progress.md)
+
 # Table of Contents
 
 - [Authentication](#Authentication)
