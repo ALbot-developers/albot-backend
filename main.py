@@ -11,6 +11,7 @@ from routes.metrics import router as metrics
 from routes.oauth2 import router as oauth2
 from routes.shards import router as shards
 from routes.users import router as users
+from routes.webhooks import router as webhooks
 from utils.db_connection import create_connection_pool
 
 
@@ -38,11 +39,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(oauth2.router, prefix=f"/oauth2", tags=["oauth2"])
-app.include_router(shards.router, prefix=f"/shards", tags=["shards"])
-app.include_router(guilds.router, prefix=f"/guilds", tags=["guilds"])
-app.include_router(users.router, prefix=f"/users", tags=["users"])
-app.include_router(metrics.router, prefix=f"/metrics", tags=["metrics"])
+app.include_router(oauth2.router, prefix="/oauth2", tags=["oauth2"])
+app.include_router(shards.router, prefix="/shards", tags=["shards"])
+app.include_router(guilds.router, prefix="/guilds", tags=["guilds"])
+app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(metrics.router, prefix="/metrics", tags=["metrics"])
+app.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
 
 
 @app.get("/")
