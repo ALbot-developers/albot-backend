@@ -1,5 +1,6 @@
 import asyncpg
 from fastapi import APIRouter, Security, Response
+from pydantic import BaseModel
 
 from utils.auth import verify_all_tokens
 from utils.db_connection import get_connection_pool
@@ -7,6 +8,10 @@ from utils.db_connection import get_connection_pool
 router = APIRouter()
 
 EXISTING_COMMANDS = ("t.help", "t.id", "t.status", "t.expand", "t.act", "t.dict", "t.view", "t.save", "t.dc")
+
+
+class PutConnectionCommandPayload(BaseModel):
+    command: str
 
 
 @router.get("/{guild_id}/connection_command")
@@ -30,14 +35,14 @@ async def get_guild_connection_command(
 async def update_guild_connection_command(
         response: Response,
         guild_id: int,
-        command: str,
+        payload: PutConnectionCommandPayload,
         _auth=Security(verify_all_tokens)
 ):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを更新
         for _ in EXISTING_COMMANDS:
-            if _.startswith(command):
+            if _.startswith(payload.command):
                 response.status_code = 400
                 return {
                     "message": "Command already exists."
@@ -45,7 +50,7 @@ async def update_guild_connection_command(
         # upsert
         await conn.execute(
             'INSERT INTO connect_command (guild_id, command) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET command = $2',
-            guild_id, command)
+            guild_id, payload.command)
     return {
         "message": "Updated connection command."
     }
