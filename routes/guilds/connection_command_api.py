@@ -1,5 +1,3 @@
-from typing import Dict, Literal
-
 import asyncpg
 from fastapi import APIRouter, Security, Response
 
@@ -32,15 +30,14 @@ async def get_guild_connection_command(
 async def update_guild_connection_command(
         response: Response,
         guild_id: int,
-        data: Dict[Literal["command"], str],
+        command: str,
         _auth=Security(verify_all_tokens)
 ):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # guild_idのデータを更新
-        command = data["command"]
-        for command_ in EXISTING_COMMANDS:
-            if command_.startswith(command):
+        for _ in EXISTING_COMMANDS:
+            if _.startswith(command):
                 response.status_code = 400
                 return {
                     "message": "Command already exists."
