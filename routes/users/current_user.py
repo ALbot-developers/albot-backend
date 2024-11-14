@@ -149,7 +149,6 @@ async def checkout_session(payload: CheckoutSessionAPIPayload, request: Request,
     return {
         "message": "Checkout session created.",
         "data": {
-            "session_id": stripe_session.id,
-            "public_key": constants.STRIPE_PUBLIC_KEY
+            "url": stripe_session.url
         }
     }
