@@ -1,5 +1,5 @@
 import asyncpg
-from fastapi import APIRouter, Security
+from fastapi import APIRouter, Security, HTTPException
 
 import constants
 from utils.auth import verify_bearer_token
@@ -16,6 +16,8 @@ async def assign_shard(_auth=Security(verify_bearer_token)):
         # is_assignedがfalseのshard_idのデータを取得
         row = await conn.fetchrow('SELECT * FROM shard_data WHERE is_assigned = false LIMIT 1')
         total_shards = await conn.fetchval('SELECT COUNT(*) FROM shard_data')
+        if row is None:
+            raise HTTPException(status_code=400, detail="No available shards.")
         # shard_idを取得
         shard_id = row['shard_id']
         tts_key = row["tts_key"]
