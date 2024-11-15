@@ -12,8 +12,8 @@ router = APIRouter()
 
 @dataclass
 class ShardMetricsPostPayload:
-    connected: Optional[int]
-    guilds: Optional[int]
+    connected: Optional[int] = None
+    guilds: Optional[int] = None
 
 
 @router.post("/{shard_id}/metrics")
@@ -24,10 +24,17 @@ async def post_metrics(
 ):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
-        await conn.execute(
-            'UPDATE shard_data SET connected_num = $1, guilds_num = $2 WHERE shard_id = $3',
-            payload.connected, payload.guilds, shard_id
-        )
+        if payload.connected:
+            await conn.execute(
+                'UPDATE shard_data SET connected_num = $1 WHERE shard_id = $2',
+                payload.connected, shard_id
+            )
+        if payload.guilds:
+            await conn.execute(
+                'UPDATE shard_data SET guilds_num = $1 WHERE shard_id = $2',
+                payload.guilds, shard_id
+            )
+
     return {
         "message": "Updated metrics."
     }
