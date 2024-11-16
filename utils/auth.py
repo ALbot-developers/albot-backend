@@ -4,7 +4,7 @@ from fastapi import Security, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from constants import BEARER_TOKEN
-from type_specifications.auth import AuthenticationResponse
+from models.auth import AuthenticationResponse
 from utils.others import get_user_guild
 
 # Bearerトークンのためのセキュリティスキーム

@@ -7,7 +7,7 @@ import asyncpg
 import stripe
 
 from constants import PRICE_IDS
-from type_specifications.database import SubscriptionData
+from models.database import SubscriptionData
 from utils.db_connection import get_connection_pool
 
 QUOTAS = {

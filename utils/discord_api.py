@@ -2,7 +2,7 @@ from typing import List
 
 import aiohttp
 
-from type_specifications.discord_api import PartialGuild, UserPIIResponse
+from models.discord_api import PartialGuild, UserPIIResponse
 
 DISCORD_BASE_URL = 'https://discord.com/api/v10'
 

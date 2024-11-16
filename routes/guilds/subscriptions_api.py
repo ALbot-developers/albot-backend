@@ -1,7 +1,7 @@
 import asyncpg
 from fastapi import APIRouter, Security
 
-from type_specifications.database import SubscriptionData
+from models.database import SubscriptionData
 from utils.auth import verify_bearer_token
 from utils.db_connection import get_connection_pool
 

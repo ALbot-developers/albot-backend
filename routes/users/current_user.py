@@ -5,9 +5,9 @@ import stripe
 from fastapi import APIRouter, Security, Request, Response
 
 import constants
-from type_specifications.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload, \
+from models.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload, \
     CheckoutSessionAPIPayload
-from type_specifications.discord_api import UserPIIResponse, PartialGuild
+from models.discord_api import UserPIIResponse, PartialGuild
 from utils.auth import verify_session
 from utils.db_connection import get_connection_pool
 from utils.others import get_user_guilds

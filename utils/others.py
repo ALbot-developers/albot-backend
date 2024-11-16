@@ -2,7 +2,7 @@ import json
 
 import asyncpg
 
-from type_specifications.discord_api import PartialGuild
+from models.discord_api import PartialGuild
 from utils.db_connection import get_connection_pool
 
 

@@ -3,7 +3,7 @@ import json
 import asyncpg
 from fastapi import APIRouter, Security
 
-from type_specifications.api_response import CharacterUsageAPIResponse, CharacterUsage, CharacterUsages
+from models.api_response import CharacterUsageAPIResponse, CharacterUsage, CharacterUsages
 from utils.auth import verify_all_tokens, verify_bearer_token
 from utils.db_connection import get_connection_pool
 

@@ -1,7 +1,7 @@
 import asyncpg
 from fastapi import APIRouter, Security
 
-from type_specifications.database import SettingsData
+from models.database import SettingsData
 from utils.auth import verify_all_tokens
 from utils.db_connection import get_connection_pool
 
