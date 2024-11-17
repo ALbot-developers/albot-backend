@@ -77,7 +77,6 @@ async def stripe_webhook(request: Request, response: Response):
                 )
                 return {"message": "subscription removed."}
             elif event.type == 'customer.subscription.updated':
-                sub_id = event.data['object']['id']
                 event_price_id = event.data['object']['items']['data'][0]["price"]['id']
                 guild_id = sub_entry['guild_id'] if sub_entry else None
                 # サブスクの種類変更に対応。
