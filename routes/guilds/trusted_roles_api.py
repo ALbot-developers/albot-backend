@@ -4,6 +4,7 @@ from typing import List
 
 import asyncpg
 from fastapi import APIRouter, Security
+from pydantic import BaseModel
 
 from utils.auth import verify_all_tokens
 from utils.db_connection import get_connection_pool
@@ -17,8 +18,7 @@ class TrustedRolesData:
     role_ids: List[int] = None
 
 
-@dataclass
-class TrustedRolesDataResponse:
+class TrustedRolesDataResponse(BaseModel):
     message: str
     data: TrustedRolesData
 
@@ -29,10 +29,16 @@ async def get_guild_trusted_roles(guild_id: int, _auth=Security(verify_all_token
         conn: asyncpg.connection.Connection
         # guild_idのデータを取得
         row = await conn.fetchrow('SELECT is_enabled, role_ids FROM trusted_roles WHERE guild_id = $1', guild_id)
-        data = TrustedRolesData(
-            enabled=row['is_enabled'],
-            role_ids=json.loads(row['role_ids'])
-        )
+        if row:
+            data = TrustedRolesData(
+                enabled=row['is_enabled'],
+                role_ids=json.loads(row['role_ids'])
+            )
+        else:
+            data = TrustedRolesData(
+                enabled=False,
+                role_ids=[]
+            )
     return TrustedRolesDataResponse(
         message="Fetched trusted roles settings.",
         data=data
