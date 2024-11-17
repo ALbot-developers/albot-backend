@@ -2,14 +2,13 @@ import asyncpg
 from fastapi import APIRouter, Security
 
 from routes.guilds import dict_api, settings_api, character_usage_api, trusted_roles_api, connection_command_api, \
-    message_link_expand_pref_api, connection_states_api, subscriptions_api, premium_settings_api
+    message_link_expand_pref_api, connection_states_api, subscriptions_api
 from utils.auth import verify_bearer_token
 from utils.db_connection import get_connection_pool
 
 router = APIRouter()
 router.include_router(dict_api.router)
 router.include_router(settings_api.router)
-router.include_router(premium_settings_api.router)
 router.include_router(character_usage_api.router)
 router.include_router(trusted_roles_api.router)
 router.include_router(connection_command_api.router)
