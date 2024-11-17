@@ -1,4 +1,5 @@
 import calendar
+import json
 import math
 from datetime import datetime
 from typing import Literal, List
@@ -87,7 +88,7 @@ async def activate_subscription(sub_id: str, user_id: int, guild_id: int) -> tup
         INSERT INTO word_count (guild_id, limit_word_count, subscription, created_at) VALUES ($1, $2, $3, NOW())
         ON CONFLICT (guild_id) DO UPDATE SET limit_word_count = $2, subscription = $3, created_at = NOW()
         ''',
-            guild_id, quota, plan)
+            guild_id, json.dumps(quota), plan)
         # set metadata
         stripe.Subscription.modify(
             sub_id,
