@@ -58,7 +58,8 @@ async def stripe_webhook(request: Request, response: Response):
                 guild_id: int | None = sub_entry['guild_id']
                 if guild_id is not None:
                     # registered_guild_table.delete(guild_id=guild_id)
-                    characters_limit = dict(wavenet=10000, standard=5000)
+                    # todo: 減らす
+                    characters_limit = dict(wavenet=5000, standard=10000)
                     # 使える文字数をリセット
                     await conn.execute(
                         "UPDATE word_count SET limit_word_count = $1 WHERE guild_id = $2",
@@ -104,7 +105,7 @@ async def stripe_webhook(request: Request, response: Response):
                         standard_count_now=0, 
                         limit_word_count=excluded.limit_word_count, 
                         is_overwritten=excluded.is_overwritten
-                        """, guild_id, new_plan, character_limit)
+                        """, guild_id, new_plan, json.dumps(character_limit))
                 return {"message": "subscription updated."}
         elif event.type == 'checkout.session.completed':
             sub_id = event.data['object']['subscription']
