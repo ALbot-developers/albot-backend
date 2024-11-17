@@ -129,8 +129,8 @@ async def checkout_session(payload: CheckoutSessionAPIPayload, request: Request,
             "message": "Invalid plan."
         }
     # create a url for `/success` and `/cancel`
-    # todo: マイページのリリースに合わせて変更
-    success_url = "https://albot.info/successfully-subscribed"
+    # todo: マイページにサブスク完了ページ（サーバーを選択できる）を追加
+    success_url = "https://mypage.albot.info/subscriptions"
     cancel_url = f"https://albot.info/pricing"
     price_id = constants.PRICE_IDS[payload.plan]
     stripe_session = stripe.checkout.Session.create(
