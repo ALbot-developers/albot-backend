@@ -34,7 +34,7 @@ async def verify_session(request: Request, guild_id: Optional['int'] = None) -> 
     if user:
         if guild_id:
             if not (await get_user_guild(int(user["id"]), guild_id)):
-                raise HTTPException(status_code=403, detail="User is not in the guild")
+                raise HTTPException(status_code=404, detail="Guild does not exist or user does not have access to it")
         return AuthenticationResponse(auth_type="session", message="Authenticated with session", payload=user)
     raise HTTPException(status_code=401, detail="Invalid or missing session")
 
