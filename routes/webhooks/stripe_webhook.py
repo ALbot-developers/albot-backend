@@ -80,7 +80,7 @@ async def stripe_webhook(request: Request, response: Response):
                 event_price_id = event.data['object']['items']['data'][0]["price"]['id']
                 guild_id = sub_entry['guild_id'] if sub_entry else None
                 # サブスクの種類変更に対応。
-                _ = [k for k, v in PRICE_IDS.items() if v == event_price_id][0]
+                _ = [k for k, v in PRICE_IDS.items() if v == event_price_id]
                 new_plan = _[0] if _ else sub_entry["plan"]
                 await conn.execute("""
                     INSERT INTO subscriptions (sub_id, plan, last_updated) 
