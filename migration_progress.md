@@ -13,8 +13,8 @@ WEBのものはフロントで実装します。チェックが入っている�
 - [ ] **[WEB]** GET http://localhost:5000/
 - [ ] **[WEB]** GET http://localhost:5000/.well-known/apple-developer-merchantid-domain-association
 - [x] POST http://localhost:5000/api/activate-sub
-- [ ] **[廃止]** GET http://localhost:5000/api/cached-settings
-- [ ] **[廃止]** POST http://localhost:5000/api/cached-settings/{{guild_id}}
+- [x] **[廃止]** GET http://localhost:5000/api/cached-settings
+- [x] **[廃止]** POST http://localhost:5000/api/cached-settings/{{guild_id}}
 - [x] POST http://localhost:5000/api/change_connect_command
 - [x] POST http://localhost:5000/api/create-connection-state
 - [x] GET http://localhost:5000/api/dict/read
@@ -24,7 +24,7 @@ WEBのものはフロントで実装します。チェックが入っている�
 - [x] POST http://localhost:5000/api/fetch_changed_connect_commands
 - [x] POST http://localhost:5000/api/fetch_connect_command
 - [x] GET http://localhost:5000/api/get-word-limit
-- [ ] **[廃止]** GET http://localhost:5000/api/is-guild-registered
+- [x] **[廃止]** GET http://localhost:5000/api/is-guild-registered
 - [x] GET http://localhost:5000/api/is-message-link-expand-enabled
 - [x] GET http://localhost:5000/api/metrics/get
 - [x] POST http://localhost:5000/api/metrics/post
@@ -38,14 +38,14 @@ WEBのものはフロントで実装します。チェックが入っている�
 - [x] GET http://localhost:5000/api/word_count/read
 - [x] POST http://localhost:5000/api/word_count/write
 - [x] GET http://localhost:5000/cancel_subscription
-- [ ] **[WEB]** GET http://localhost:5000/checkout
+- [x] **[WEB]** GET http://localhost:5000/checkout
 - [ ] **[WEB]** GET http://localhost:5000/documents
 - [ ] **[WEB]** POST http://localhost:5000/donate
 - [ ] **[WEB]** GET http://localhost:5000/faq
 - [ ] **[WEB]** GET http://localhost:5000/how-to-use
 - [x] **[WEB]** GET http://localhost:5000/login
 - [x] **[WEB]** GET http://localhost:5000/logout
-- [ ] **[廃止]** GET http://localhost:5000/metrics
+- [x] **[廃止]** GET http://localhost:5000/metrics
 - [x] **[WEB]** GET http://localhost:5000/my-page
 - [x] **[WEB]** GET http://localhost:5000/my-page/select-guild
 - [x] **[WEB]** GET http://localhost:5000/my-page/subscriptions
