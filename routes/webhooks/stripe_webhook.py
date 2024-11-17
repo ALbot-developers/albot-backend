@@ -19,13 +19,13 @@ PRICE_IDS = {
 
 
 async def is_event_duplicated(event: stripe.Event, conn: asyncpg.connection.Connection):
-    if await conn.fetchrow("SELECT * FROM stripe_webhook_log WHERE event_id = $1", [event.stripe_id]):
+    if await conn.fetchrow("SELECT * FROM stripe_webhook_log WHERE event_id = $1", event.stripe_id):
         return True
     else:
         await conn.execute("""
         INSERT INTO stripe_webhook_log (event_id, event_type, obj_id) 
         VALUES ($1, $2, $3)
-        """, [event.stripe_id, event.type, event.data['object']['id']])
+        """, event.stripe_id, event.type, event.data['object']['id'])
         return False
 
 
@@ -47,13 +47,13 @@ async def stripe_webhook(request: Request, response: Response):
     event = await construct_event(payload, received_sig)
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
-        if not await is_event_duplicated(event, conn):
+        if await is_event_duplicated(event, conn):
             # 再送を防ぐために2xxに
             raise HTTPException(202, "Duplicated event.")
 
-        sub_id = event.data['object']['id']
         if event.type.startswith('customer.subscription'):
-            sub_entry = await conn.fetchrow("SELECT * FROM subscriptions WHERE sub_id = $1", [sub_id])
+            sub_id = event.data['object']['id']
+            sub_entry = await conn.fetchrow("SELECT * FROM subscriptions WHERE sub_id = $1", sub_id)
             if event.type == 'customer.subscription.deleted':
                 guild_id: int | None = sub_entry['guild_id']
                 if guild_id is not None:
@@ -62,20 +62,21 @@ async def stripe_webhook(request: Request, response: Response):
                     # 使える文字数をリセット
                     await conn.execute(
                         "UPDATE word_count SET limit_word_count = $1 WHERE guild_id = $2",
-                        [json.dumps(characters_limit), guild_id]
+                        json.dumps(characters_limit), guild_id
                     )
                     # カスタム音声を無効に
                     await conn.execute(
                         "UPDATE settings_data SET custom_voice = null WHERE guild_id = $1",
-                        [guild_id]
+                        guild_id
                     )
                 # DBからサブスクを削除
                 await conn.execute(
                     "DELETE FROM subscriptions WHERE sub_id = $1",
-                    [sub_id]
+                    sub_id
                 )
                 return {"message": "subscription removed."}
             elif event.type == 'customer.subscription.updated':
+                sub_id = event.data['object']['id']
                 event_price_id = event.data['object']['items']['data'][0]["price"]['id']
                 guild_id = sub_entry['guild_id'] if sub_entry else None
                 # サブスクの種類変更に対応。
@@ -85,7 +86,7 @@ async def stripe_webhook(request: Request, response: Response):
                     INSERT INTO subscriptions (sub_id, plan, last_updated) 
                     VALUES ($1, $2, $3)
                     ON CONFLICT (sub_id) DO UPDATE SET plan = excluded.plan, last_updated = excluded.last_updated
-                """, [sub_id, new_plan, datetime.now()])
+                """, sub_id, new_plan, datetime.now())
                 if guild_id is not None:
                     if "1" in new_plan:
                         character_limit = {'wavenet': 20000, 'standard': 40000}
@@ -103,18 +104,19 @@ async def stripe_webhook(request: Request, response: Response):
                         standard_count_now=0, 
                         limit_word_count=excluded.limit_word_count, 
                         is_overwritten=excluded.is_overwritten
-                        """, [guild_id, new_plan, character_limit])
+                        """, guild_id, new_plan, character_limit)
                 return {"message": "subscription updated."}
         elif event.type == 'checkout.session.completed':
+            sub_id = event.data['object']['subscription']
             metadata = event.data['object']["metadata"]
             if "discord_id" not in metadata:
                 return {"message": "donation completed."}
-            user_id = metadata["discord_id"]
+            user_id: str = metadata["discord_id"]
             plan = metadata['plan']
             await conn.execute("""
                 INSERT INTO subscriptions (sub_id, plan, user_id)
                 VALUES ($1, $2, $3)
-            """, [sub_id, plan, user_id])
+            """, sub_id, plan, int(user_id))
             stripe.Subscription.modify(
                 sub_id,
                 metadata={"user_id": user_id}
