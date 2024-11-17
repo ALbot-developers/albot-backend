@@ -21,7 +21,7 @@ async def list_subscriptions_api(
     }
 
 
-@router.get("/{user_id}/subscriptions/{sub_id}/activate")
+@router.post("/{user_id}/subscriptions/{sub_id}/activate")
 async def activate_subscriptions_api(
         user_id: int,
         sub_id: str,
@@ -37,7 +37,7 @@ async def activate_subscriptions_api(
     }
 
 
-@router.get("/{user_id}/subscriptions/{sub_id}/cancel")
+@router.post("/{user_id}/subscriptions/{sub_id}/cancel")
 async def cancel_subscriptions_api(
         user_id: int,
         sub_id: str,
@@ -52,7 +52,7 @@ async def cancel_subscriptions_api(
     }
 
 
-@router.get("/{user_id}/subscriptions/{sub_id}/renew")
+@router.post("/{user_id}/subscriptions/{sub_id}/renew")
 async def renew_subscriptions_api(
         user_id: int,
         sub_id: str,
