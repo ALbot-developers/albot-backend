@@ -47,7 +47,8 @@ async def activate_subscriptions_api(
         payload: ActivateSubscriptionAPIPayload,
         _auth=Security(verify_session)
 ):
-    status, message = await activate_subscription(sub_id, request.session["user_id"], payload.guild_id)
+    user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
+    status, message = await activate_subscription(sub_id, int(user_info.id), payload.guild_id)
     response.status_code = status
     return {
         "message": message
@@ -61,7 +62,8 @@ async def cancel_subscriptions_api(
         response: Response,
         _auth=Security(verify_session)
 ):
-    status, message = await cancel_subscription(sub_id, request.session["user_id"])
+    user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
+    status, message = await cancel_subscription(sub_id, int(user_info.id))
     response.status_code = status
     return {
         "message": message
