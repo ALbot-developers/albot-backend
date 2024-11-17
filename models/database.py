@@ -61,3 +61,22 @@ class SubscriptionData:
             plan=data.get('plan'),
             last_updated=data.get('last_updated')
         )
+
+
+@dataclass
+class PremiumSettings:
+    guild_id: Optional[int] = None
+    sub_id: Optional[str] = None
+    read_name_on_leave: Optional[bool] = None
+    read_name_on_join: Optional[bool] = None
+    custom_voice: Optional[str] = None
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(
+            guild_id=data.get('guild_id'),
+            sub_id=data.get('sub_id'),
+            read_name_on_leave=data.get('read_name_on_leave'),
+            read_name_on_join=data.get('read_name_on_join'),
+            custom_voice=data.get('custom_voice')
+        )
