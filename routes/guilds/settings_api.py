@@ -67,13 +67,11 @@ async def get_guild_settings_api(guild_id: int, _auth=Security(verify_all_tokens
 
 
 @router.post("/{guild_id}/settings")
-async def update_guild_settings(guild_id: int, data: dict, _auth=Security(verify_all_tokens)):
+async def update_guild_settings(guild_id: int, settings: SettingsData, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
-        # convert the data to a SettingsData object (to validate the data)
-        settings_data = SettingsData.from_dict(data)
         # get all attributes with values
-        attributes = {k: v for k, v in settings_data.__dict__.items() if v is not None}
+        attributes = {k: (None if v == "" else v) for k, v in settings.__dict__.items() if v is not None}
         if not attributes:
             raise HTTPException(status_code=400, detail="No settings data provided.")
         # create a query string with placeholders for the attributes
@@ -87,15 +85,4 @@ async def update_guild_settings(guild_id: int, data: dict, _auth=Security(verify
         await conn.execute(query, *attributes.values())
     return {
         "message": "Updated guild data."
-    }
-
-
-@router.delete("/{guild_id}/settings")
-async def delete_guild_settings(guild_id: int, _auth=Security(verify_all_tokens)):
-    async with get_connection_pool().acquire() as conn:
-        conn: asyncpg.connection.Connection
-        # guild_idのデータを削除
-        await conn.execute('DELETE FROM settings_data WHERE guild_id = $1', guild_id)
-    return {
-        "message": "Deleted guild data."
     }

@@ -4,33 +4,20 @@ from dataclasses import dataclass
 from typing import Optional, Literal
 
 
+@dataclass
 class SettingsData:
-    def __init__(
-            self, guild_id: Optional[int] = None,
-            lang: Optional[str] = None,
-            character_limit: Optional[int] = None,
-            speech_speed: Optional[float] = None,
-            read_name: Optional[bool] = None,
-            custom_voice: Optional[str] = None,
-            translate: Optional[bool] = None,
-            read_name_on_join: Optional[bool] = None,
-            read_name_on_leave: Optional[bool] = None,
-            read_guild: Optional[bool] = None,
-            read_not_joined_users: Optional[bool] = None,
-            audio_api: Optional[Literal["gtts", "openai"]] = None
-    ):
-        self.guild_id = guild_id
-        self.lang = lang
-        self.character_limit = character_limit
-        self.speech_speed = speech_speed
-        self.read_name = read_name
-        self.custom_voice = custom_voice
-        self.translate = translate
-        self.read_name_on_join = read_name_on_join
-        self.read_name_on_leave = read_name_on_leave
-        self.read_guild = read_guild
-        self.read_not_joined_users = read_not_joined_users
-        self.audio_api = audio_api
+    guild_id: Optional[int] = None
+    lang: Optional[str] = None
+    character_limit: Optional[int] = None
+    speech_speed: Optional[float] = None
+    read_name: Optional[bool] = None
+    custom_voice: Optional[str] = None
+    translate: Optional[bool] = None
+    read_name_on_join: Optional[bool] = None
+    read_name_on_leave: Optional[bool] = None
+    read_guild: Optional[bool] = None
+    read_not_joined_users: Optional[bool] = None
+    audio_api: Optional[Literal["gtts", "openai"]] = None
 
     # テーブルから取得したデータをSettingsDataクラスに変換
     @classmethod
