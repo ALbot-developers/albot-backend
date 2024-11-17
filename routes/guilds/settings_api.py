@@ -1,5 +1,5 @@
 import asyncpg
-from fastapi import APIRouter, Security
+from fastapi import APIRouter, Security, HTTPException
 
 from models.database import SettingsData
 from utils.auth import verify_all_tokens
@@ -74,6 +74,8 @@ async def update_guild_settings(guild_id: int, data: dict, _auth=Security(verify
         settings_data = SettingsData.from_dict(data)
         # get all attributes with values
         attributes = {k: v for k, v in settings_data.__dict__.items() if v is not None}
+        if not attributes:
+            raise HTTPException(status_code=400, detail="No settings data provided.")
         # create a query string with placeholders for the attributes
         query = (
             f"INSERT INTO settings_data (guild_id, {', '.join(attributes.keys())}) "
