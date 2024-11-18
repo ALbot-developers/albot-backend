@@ -109,10 +109,8 @@ async def delete_guild_settings(guild_id: int, _auth=Security(verify_all_tokens)
         conn: asyncpg.connection.Connection
         await conn.execute(
             '''
-            WITH deleted AS (
-                DELETE FROM settings_data WHERE guild_id = $1
-            )
-            INSERT INTO settings_data (guild_id) VALUES ($1)
+            DELETE FROM settings_data WHERE guild_id = $1;
+            INSERT INTO settings_data (guild_id) VALUES ($1);
             ''',
             guild_id
         )
