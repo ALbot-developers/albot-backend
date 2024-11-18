@@ -107,13 +107,8 @@ async def update_guild_settings(guild_id: int, settings: SettingsData,
 async def delete_guild_settings(guild_id: int, _auth=Security(verify_all_tokens)):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
-        await conn.execute(
-            '''
-            DELETE FROM settings_data WHERE guild_id = $1;
-            INSERT INTO settings_data (guild_id) VALUES ($1);
-            ''',
-            guild_id
-        )
+        await conn.execute('DELETE FROM settings_data WHERE guild_id = $1;', guild_id)
+        await conn.execute("INSERT INTO settings_data (guild_id) VALUES ($1) ON CONFLICT DO NOTHING", guild_id)
     return {
         "message": "Deleted guild data."
     }
