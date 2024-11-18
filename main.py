@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+import sentry_sdk
 import stripe
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,7 +28,16 @@ async def lifespan(_app: FastAPI):
 
 API_VERSION = "v2"
 stripe.api_key = constants.STRIPE_SECRET_KEY
-
+sentry_sdk.init(
+    dsn=constants.SENTRY_DSN,
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+)
 app = FastAPI(lifespan=lifespan, root_path=f"/{API_VERSION}")
 # noinspection PyTypeChecker
 app.add_middleware(SessionMiddleware, secret_key=constants.SESSION_SECRET, domain=constants.SESSION_DOMAIN)
