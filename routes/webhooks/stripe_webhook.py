@@ -115,7 +115,7 @@ async def stripe_webhook(request: Request, response: Response):
             plan = metadata['plan']
             await conn.execute("""
                 INSERT INTO subscriptions (sub_id, plan, user_id)
-                VALUES ($1, $2, $3)
+                VALUES ($1, $2, $3) ON CONFLICT (sub_id) DO NOTHING
             """, sub_id, plan, int(user_id))
             stripe.Subscription.modify(
                 sub_id,
