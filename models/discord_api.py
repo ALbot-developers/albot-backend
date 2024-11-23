@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from typing import Optional, List
 
+from pydantic import BaseModel
 
+
+@dataclass
 class UserAvatarDecorationResponse:
-    def __init__(self, asset: str, sku_id: Optional[str] = None):
-        self.asset = asset
-        self.sku_id = sku_id
+    asset: str
+    sku_id: Optional[str] = None
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -15,7 +17,7 @@ class UserAvatarDecorationResponse:
         )
 
 
-class PremiumTypes:
+class PremiumTypes(BaseModel):
     NONE = 0
     TIER_1 = 1
     TIER_2 = 2
@@ -32,6 +34,7 @@ class PremiumTypes:
         return premium_types.get(value, 'Unknown Type')
 
 
+# todo: dataclassに
 class UserPIIResponse:
     def __init__(self, user_id: str, username: str, avatar: Optional[str], discriminator: str,
                  public_flags: int, flags: int, bot: Optional[bool], system: Optional[bool],
