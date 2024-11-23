@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, List
 
-from pydantic import BaseModel
-
 
 @dataclass
 class UserAvatarDecorationResponse:
@@ -17,7 +15,7 @@ class UserAvatarDecorationResponse:
         )
 
 
-class PremiumTypes(BaseModel):
+class PremiumTypes:
     NONE = 0
     TIER_1 = 1
     TIER_2 = 2
