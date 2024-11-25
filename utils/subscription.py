@@ -33,7 +33,7 @@ def create_remaining_payment(subscription, old_plan: str):
     stripe.PaymentIntent.create(
         amount=remaining_amount if remaining_amount >= 50 else 50,
         currency='jpy',
-        customer=subscription["customer_id"],
+        customer=subscription["customer"],
         payment_method_types=['card'],
         description="年額プランの更新により、未使用の一ヶ月分を決済しました。",
         payment_method=subscription["default_payment_method"],
