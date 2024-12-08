@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional, List
 
+from pydantic import BaseModel
 
-@dataclass
-class UserAvatarDecorationResponse:
+
+class UserAvatarDecorationResponse(BaseModel):
     asset: str
     sku_id: Optional[str] = None
 
@@ -33,37 +34,32 @@ class PremiumTypes:
 
 
 # todo: dataclassに
+@dataclass
 class UserPIIResponse:
-    def __init__(self, user_id: str, username: str, avatar: Optional[str], discriminator: str,
-                 public_flags: int, flags: int, bot: Optional[bool], system: Optional[bool],
-                 banner: Optional[str], accent_color: Optional[int], global_name: Optional[str],
-                 avatar_decoration_data: Optional[UserAvatarDecorationResponse],
-                 mfa_enabled: bool, locale: str, premium_type: Optional[PremiumTypes],
-                 email: Optional[str], verified: Optional[bool]):
-        self.id = user_id
-        self.username = username
-        self.avatar = avatar
-        self.discriminator = discriminator
-        self.public_flags = public_flags
-        self.flags = flags
-        self.bot = bot
-        self.system = system
-        self.banner = banner
-        self.accent_color = accent_color
-        self.global_name = global_name
-        self.avatar_decoration_data = avatar_decoration_data
-        self.mfa_enabled = mfa_enabled
-        self.locale = locale
-        self.premium_type = premium_type
-        self.email = email
-        self.verified = verified
+    id: str
+    username: str
+    avatar: Optional[str]
+    discriminator: str
+    public_flags: int
+    flags: int
+    bot: Optional[bool]
+    system: Optional[bool]
+    banner: Optional[str]
+    accent_color: Optional[int]
+    global_name: Optional[str]
+    avatar_decoration_data: Optional[UserAvatarDecorationResponse]
+    mfa_enabled: bool
+    locale: str
+    premium_type: Optional[PremiumTypes]
+    email: Optional[str]
+    verified: Optional[bool]
 
     @classmethod
     def from_dict(cls, data: dict):
         avatar_decoration = data.get('avatar_decoration_data')
         premium_type_data = data.get('premium_type')
         return cls(
-            user_id=data.get('id'),
+            id=data.get('id'),
             username=data.get('username'),
             avatar=data.get('avatar'),
             discriminator=data.get('discriminator'),
@@ -96,7 +92,7 @@ class UserPIIResponse:
             "banner": self.banner,
             "accent_color": self.accent_color,
             "global_name": self.global_name,
-            "avatar_decoration_data": self.avatar_decoration_data,
+            "avatar_decoration_data": self.avatar_decoration_data.model_dump(),
             "mfa_enabled": self.mfa_enabled,
             "locale": self.locale,
             "premium_type": self.premium_type,
