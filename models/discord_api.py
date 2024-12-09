@@ -33,7 +33,6 @@ class PremiumTypes:
         return premium_types.get(value, 'Unknown Type')
 
 
-# todo: dataclassに
 @dataclass
 class UserPIIResponse:
     id: str
@@ -92,7 +91,7 @@ class UserPIIResponse:
             "banner": self.banner,
             "accent_color": self.accent_color,
             "global_name": self.global_name,
-            "avatar_decoration_data": self.avatar_decoration_data.model_dump(),
+            "avatar_decoration_data": self.avatar_decoration_data.model_dump() if self.avatar_decoration_data else None,
             "mfa_enabled": self.mfa_enabled,
             "locale": self.locale,
             "premium_type": self.premium_type,
