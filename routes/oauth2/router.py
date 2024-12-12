@@ -3,6 +3,7 @@ import json
 from uuid import uuid4
 
 import asyncpg
+from aiohttp import ClientResponseError
 from fastapi import APIRouter, Request, Response
 
 from utils.db_connection import get_connection_pool
@@ -35,7 +36,11 @@ async def oauth2_callback(code: str, state: str, response: Response, request: Re
         return {"error": "Invalid state"}
     redirect = request.session["redirect"]
     del request.session["state"], request.session["redirect"]
-    access_token, refresh_token = await exchange_code(code, redirect)
+    try:
+        access_token, refresh_token = await exchange_code(code, redirect)
+    except ClientResponseError:
+        response.status_code = 400
+        return {"error": "Invalid code"}
     request.session["access_token"] = access_token
     request.session["refresh_token"] = refresh_token
     user_info = await get_user_info(access_token)
