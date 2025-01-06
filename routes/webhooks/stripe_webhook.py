@@ -93,7 +93,7 @@ async def stripe_webhook(request: Request, response: Response):
                     elif "2" in new_plan:
                         character_limit = {'wavenet': 100000, 'standard': 200000}
                     else:
-                        raise ValueError
+                        raise ValueError("Invalid plan.")
                     if sub_entry['sub_start'] != datetime.today():
                         await conn.execute("""
                         INSERT INTO word_count (guild_id, subscription, wavenet_count_now, standard_count_now, limit_word_count, is_overwritten)
