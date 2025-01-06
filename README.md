@@ -1,8 +1,9 @@
 # albot-backend
-albot-webからAPI部分を切り分けて、Restfulな設計を基本に再実装します。  
+
+albot-webからAPI部分を切り分けて、Restfulに再実装します。  
 FastAPIを使用します。
 
-### [▶プロジェクト進捗](migration_progress.md)
+### [▶進捗](migration_progress.md)
 
 # Table of Contents
 
@@ -34,7 +35,6 @@ FastAPIを使用します。
     - [Message link expand preference API](#Message-link-expand-preference-API-apiv2guildsguild_idmessage_link_expand_preference)
     - [Connection command API](#Connection-command-API-apiv2guildsguild_idconnection_command)
   - [Metrics API](#Metrics-API-GET-apiv2metrics)
-- [変数名の変更案](#変数名の変更案)
 
 # Authentication
 ## 認証方法
@@ -43,13 +43,25 @@ FastAPIを使用します。
 Authorization
 Bearer <token>
 ```
-* WEBダッシュボードからの認証には、Cookieを使用したFastAPIのSessionを使用します。
 ## ユーザーの認証フロー
-1. ユーザーが`/login` にアクセスします。
-2. フロントがバックに認証URLをリクエストしてリダイレクトします。
-3. ユーザーがDiscordアカウントで認証します。
-4. Discordがcallback URL`/callback`にリダイレクトします。
-5. フロントがバックエンドに認証リクエストを送り、サーバーが認証後、情報をsessionに保存します。
+
+```mermaid
+sequenceDiagram
+    actor User as ユーザー
+    participant Front as フロントエンド
+    participant Back as バックエンド
+    participant Discord as Discord
+
+    User->>Front: /login にアクセス
+    Front->>Back: 認証URLリクエスト
+    Back-->>Front: 認証URL返却
+    Front->>Discord: リダイレクト
+    User->>Discord: Discordアカウントで認証
+    Discord->>Front: /callback にリダイレクト
+    Front->>Back: 認証リクエスト
+    Note right of Back: 認証情報を<br/>sessionに保存
+    Back-->>Front: 認証完了レスポンス
+```
 
 # Endpoints (`/api/v2`)
 ## Shards API `/api/v2/shards/`
@@ -87,8 +99,8 @@ Bearer <token>
 ## Users API `/api/v2/users/`
 
 * **/me/**  
-  ログイン中のユーザーにアクセス。jwtトークンでのみ認証します。
-* **/{user_id}/**
+  ログイン中のユーザーにアクセス。セッションで認証されます。
+* **/{user_id}/**  
   任意のユーザーの情報にアクセス。bearerトークンでの認証が必要です。
 
 ### List subscriptions `/api/v2/users/{user}/subscriptions`
@@ -175,8 +187,7 @@ Bearer <token>
   **Query params:** plan
 ```json
 {
-  "session_id": "session_abcd1234",
-  "public_key": "pk_test_1234567890abcdef"
+  "url": "https://example.com/"
 }
 ```
 
@@ -347,7 +358,3 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
   }
 }
 ```
-
-
-# 変数名の変更案
-- `read_name` -> `read_sender_name`
