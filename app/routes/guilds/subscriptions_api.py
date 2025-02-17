@@ -4,7 +4,8 @@ from fastapi import APIRouter, Security
 from app.core.auth import verify_all_tokens
 from app.db.connection import get_connection_pool
 from app.models.subscription import Subscription
-from app.schemas.api_response import SubscriptionAPIResponse, SubscriptionsData
+from app.schemas.api_data import SubscriptionsData
+from app.schemas.api_response import SubscriptionAPIResponse
 
 router = APIRouter()
 

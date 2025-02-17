@@ -6,7 +6,8 @@ from app.core.dependencies import get_subscription
 from app.db.connection import get_connection_pool
 from app.models.settings import PremiumSettings
 from app.models.subscription import Subscription
-from app.schemas.api_response import GuildSettingsAPIResponse, GuildSettingsData, PlainAPIResponse
+from app.schemas.api_data import GuildSettingsData
+from app.schemas.api_response import GuildSettingsAPIResponse, PlainAPIResponse
 from app.schemas.guild_settings import GuildSettingsUpdate
 from app.services import guild_settings
 from app.services.guild_settings import get_default

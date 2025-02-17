@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Security
 
 from app.core.auth import verify_all_tokens
-from app.schemas.api_response import DictAPIResponse, DictData, PlainAPIResponse
+from app.schemas.api_data import DictData
+from app.schemas.api_response import DictAPIResponse, PlainAPIResponse
 from app.schemas.guild_dict import DictPut
 from app.services import guild_dict
 

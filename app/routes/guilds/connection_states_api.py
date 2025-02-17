@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Security
 
 from app.core.auth import verify_bearer_token
-from app.schemas.api_response import ConnectionStateAPIResponse, ConnectionStateData
+from app.schemas.api_data import ConnectionStateData
+from app.schemas.api_response import ConnectionStateAPIResponse
 from app.schemas.connection_state import ConnectionStateCreate
 from app.services import connection_state
 
