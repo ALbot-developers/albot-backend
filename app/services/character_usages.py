@@ -4,7 +4,7 @@ from typing import Union, Literal
 import asyncpg
 
 from app.db.connection import get_connection_pool
-from app.models.api_response import CharacterUsages, CharacterUsage
+from app.models.character_usage import CharacterUsage, CharacterUsages
 
 
 async def get(guild_id: int) -> CharacterUsages:

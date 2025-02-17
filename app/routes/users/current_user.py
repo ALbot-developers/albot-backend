@@ -8,8 +8,8 @@ from app import constants
 from app.core.auth import verify_session
 from app.db.connection import get_connection_pool
 from app.external.discord.models import UserPIIResponse, PartialGuild
-from app.models.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload, \
-    CheckoutSessionAPIPayload
+from app.schemas.checkout_session import CheckoutSessionCreate
+from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
 from app.services.subscription import activate_subscription, cancel_subscription, renew_subscription, \
     list_user_subscriptions
 from app.services.user import get_user_guilds
@@ -45,7 +45,7 @@ async def activate_subscriptions_api(
         sub_id: str,
         request: Request,
         response: Response,
-        payload: ActivateSubscriptionAPIPayload,
+        payload: SubscriptionActivate,
         _auth=Security(verify_session)
 ):
     user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
@@ -74,7 +74,7 @@ async def cancel_subscriptions_api(
 @router.post("/subscriptions/{sub_id}/renew")
 async def renew_subscriptions_api(
         sub_id: str,
-        payload: RenewSubscriptionAPIPayload,
+        payload: SubscriptionRenew,
         request: Request,
         response: Response,
         _auth=Security(verify_session)
@@ -121,7 +121,7 @@ async def get_guild_info(request: Request, guild_id: int, _auth=Security(verify_
 
 
 @router.post("/checkout-session")
-async def checkout_session(payload: CheckoutSessionAPIPayload, request: Request, response: Response,
+async def checkout_session(payload: CheckoutSessionCreate, request: Request, response: Response,
                            _auth=Security(verify_session)):
     user_info = UserPIIResponse.from_dict(request.session["user_info"])
     if payload.plan not in constants.PRICE_IDS:

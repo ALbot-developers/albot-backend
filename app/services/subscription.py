@@ -9,7 +9,7 @@ import stripe
 
 from app.constants import PRICE_IDS
 from app.db.connection import get_connection_pool
-from app.schemas.subscriptions import SubscriptionData
+from app.models.subscription import Subscription
 
 QUOTAS = {
     1: {'wavenet': 20000, 'standard': 40000},
@@ -42,13 +42,13 @@ def create_remaining_payment(subscription, old_plan: str):
     )
 
 
-async def list_user_subscriptions(user_id: int) -> List[SubscriptionData]:
+async def list_user_subscriptions(user_id: int) -> List[Subscription]:
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         res = await conn.fetch("SELECT * FROM subscriptions WHERE user_id = $1", user_id)
         subscriptions = []
         for row in res:
-            subscription = SubscriptionData.from_dict(dict(row))
+            subscription = Subscription.from_dict(dict(row))
             subscriptions.append(subscription)
     return subscriptions
 

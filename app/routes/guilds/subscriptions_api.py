@@ -3,7 +3,7 @@ from fastapi import APIRouter, Security
 
 from app.core.auth import verify_all_tokens
 from app.db.connection import get_connection_pool
-from app.schemas.subscriptions import SubscriptionData
+from app.models.subscription import Subscription
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ async def list_guild_subscriptions_api(
         res = await conn.fetch("SELECT * FROM subscriptions WHERE guild_id = $1", guild_id)
         subscriptions = []
         for row in res:
-            subscription = SubscriptionData.from_dict(dict(row))
+            subscription = Subscription.from_dict(dict(row))
             subscriptions.append(subscription)
     return {
         "message": "Fetched subscriptions.",

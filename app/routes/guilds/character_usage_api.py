@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Security
 
 from app.core.auth import verify_all_tokens, verify_bearer_token
-from app.models.api_response import CharacterUsageAPIResponse, CharacterUsages
+from app.schemas.api_response import CharacterUsageAPIResponse
+from app.schemas.character_usage import CharacterUsagesUpdate
 from app.services import character_usages
 
 router = APIRouter()
@@ -17,7 +18,7 @@ async def get_guild_character_usage_api(guild_id: int, _auth=Security(verify_all
 
 @router.post("/{guild_id}/character_usage")
 async def update_guild_character_usage(
-        guild_id: int, payload: CharacterUsages,
+        guild_id: int, payload: CharacterUsagesUpdate,
         _auth=Security(verify_bearer_token)
 ):
     # update used characters

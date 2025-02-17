@@ -1,57 +1,10 @@
 import json
-import time
-from dataclasses import dataclass
-from typing import Literal, Optional
 
-from fastapi import APIRouter, Security
-
-from app.core.auth import verify_bearer_token
-from app.endpoints.guilds.character_usage_api import get_guild_character_usage
-from app.endpoints.guilds.dict_api import get_guild_dict
-from app.endpoints.guilds.settings_api import get_guild_settings
-from app.models.api_response import CharacterUsages
-
-router = APIRouter()
+from app.schemas.connection_state import ConnectionStateCreate, ConnectionState
+from app.services import guild_settings, guild_dict, character_usages
 
 with open("gtts_languages.json") as f:
     gtts_languages = json.load(f)
-
-
-@dataclass
-class ConnectionStatesOptions:
-    vc_id: int
-    tc_id: int
-    read_guild: Optional[bool] = None
-    read_name: Optional[bool] = None
-    speech_speed: Optional[float] = None
-    lang: Optional[str] = None
-    character_limit: Optional[int] = None
-    translate: Optional[bool] = None
-
-
-@dataclass
-class ConnectionState:
-    guild_id: int
-    vc_id: int
-    target_id: int  # 読み上げるチャンネルIDかサーバーID
-    service: Literal["gtts", "openai"]
-    language_code: Literal["auto"] | str
-    translate: bool
-    wavenet_voice: str
-    standard_voice: str
-    custom_voice: str | None
-    read_name: bool
-    dict: dict
-    dict_keys: list
-    speech_speed: float
-    character_limit: int
-    character_usage: CharacterUsages
-    read_guild: bool
-    read_name_on_join: bool
-    read_name_on_leave: bool
-    read_not_joined_users: bool
-    unix_time_connected: float = time.time()
-    sync_count: int = 0
 
 
 def set_voice(lang: str, custom_voice: str):
@@ -81,9 +34,9 @@ def set_voice(lang: str, custom_voice: str):
     return wavenet_voice, standard_voice
 
 
-async def create_connection_states(guild_id: int, options: ConnectionStatesOptions):
-    settings_data = await get_guild_settings(guild_id)
-    dict_data = await get_guild_dict(guild_id)
+async def create(guild_id: int, options: ConnectionStateCreate):
+    settings_data = await guild_settings.get(guild_id)
+    dict_data = await guild_dict.get(guild_id)
     dict_keys = sorted(dict_data, key=lambda x: len(x[0]))
     language_code = options.lang if options.lang else settings_data.lang or "ja-JP"
     translate = False if language_code == "auto" else (
@@ -106,25 +59,9 @@ async def create_connection_states(guild_id: int, options: ConnectionStatesOptio
         dict_keys=dict_keys,
         speech_speed=options.speech_speed if options.speech_speed else settings_data.speech_speed or 1.0,
         character_limit=options.character_limit if options.character_limit else settings_data.character_limit or 100,
-        character_usage=await get_guild_character_usage(guild_id),
+        character_usage=await character_usages.get(guild_id),
         read_guild=read_guild,
         read_name_on_join=settings_data.read_name_on_join,
         read_name_on_leave=settings_data.read_name_on_leave,
         read_not_joined_users=settings_data.read_not_joined_users
     )
-
-
-@router.post("/{guild_id}/connection_states")
-async def create_connection_states_api(
-        guild_id: int,
-        options: ConnectionStatesOptions,
-        _auth=Security(verify_bearer_token)
-):
-    # connection_statesデータを作成
-    connection_states = await create_connection_states(guild_id, options)
-    return {
-        "message": "Updated guild data.",
-        "data": {
-            "connection_states": connection_states
-        }
-    }

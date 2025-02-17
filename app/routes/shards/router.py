@@ -5,7 +5,7 @@ from fastapi import APIRouter, Security
 
 from app.core.auth import verify_session
 from app.db.connection import get_connection_pool
-from app.endpoints.shards import metrics_api, release_api, assign_api, connection_commands_api
+from app.routes.shards import metrics_api, release_api, assign_api, connection_commands_api
 
 router = APIRouter()
 router.include_router(assign_api.router)

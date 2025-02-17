@@ -6,14 +6,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-import constants
-from db.connection import create_connection_pool
-from endpoints.guilds import router as guilds
-from endpoints.metrics import router as metrics
-from endpoints.oauth2 import router as oauth2
-from endpoints.shards import router as shards
-from endpoints.users import router as users
-from endpoints.webhooks import router as webhooks
+from app import constants
+from app.db.connection import create_connection_pool
+from app.routes.guilds import router as guilds
+from app.routes.metrics import router as metrics
+from app.routes.oauth2 import router as oauth2
+from app.routes.shards import router as shards
+from app.routes.users import router as users
+from app.routes.webhooks import router as webhooks
 
 
 @asynccontextmanager

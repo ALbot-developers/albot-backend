@@ -13,11 +13,5 @@ class CharacterUsage:
 
 @dataclass
 class CharacterUsages:
-    wavenet: CharacterUsage = None
-    standard: CharacterUsage = None
-
-
-@dataclass
-class CharacterUsageAPIResponse:
-    message: str
-    data: CharacterUsages
+    wavenet: CharacterUsage
+    standard: CharacterUsage

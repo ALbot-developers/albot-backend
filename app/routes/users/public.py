@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Security, Response
 
 from app.core.auth import verify_bearer_token
-from app.models.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload
+from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
 from app.services.subscription import activate_subscription, cancel_subscription, renew_subscription, \
     list_user_subscriptions
 
@@ -27,7 +27,7 @@ async def activate_subscriptions_api(
         user_id: int,
         sub_id: str,
         response: Response,
-        payload: ActivateSubscriptionAPIPayload,
+        payload: SubscriptionActivate,
         _auth=Security(verify_bearer_token)
 ):
     # BOT用APIではユーザの権限確認を行わない
@@ -58,7 +58,7 @@ async def renew_subscriptions_api(
         user_id: int,
         sub_id: str,
         response: Response,
-        payload: RenewSubscriptionAPIPayload,
+        payload: SubscriptionRenew,
         _auth=Security(verify_bearer_token)
 ):
     # BOT用APIではユーザの権限確認を行わない
