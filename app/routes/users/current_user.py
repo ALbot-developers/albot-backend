@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Security, Request, Response, HTTPException
+from fastapi import APIRouter, Security, Request, Response
 
 from app import constants
 from app.core.auth import verify_session
+from app.core.error import CustomHTTPException
 from app.external.discord.models import UserPIIResponse
 from app.schemas.api_data import UserInfoData, SubscriptionsData, GuildsListData, GuildInfoData, URLData
 from app.schemas.api_response import UserInfoAPIResponse, ListSubscriptionsAPIResponse, PlainAPIResponse, \
@@ -106,7 +107,7 @@ async def checkout_session(payload: CheckoutSessionCreate, request: Request, res
                            _auth=Security(verify_session)):
     user_info = UserPIIResponse.from_dict(request.session["user_info"])
     if payload.plan not in constants.PRICE_IDS:
-        raise HTTPException(status_code=400, detail="Invalid plan.")
+        raise CustomHTTPException(status_code=400, detail="Invalid plan.")
     stripe_session = create_checkout_session(int(user_info.id), payload.plan)
     return URLAPIResponse(
         message="Created checkout session.",

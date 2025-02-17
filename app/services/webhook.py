@@ -3,9 +3,9 @@ from datetime import datetime
 
 import asyncpg.connection
 import stripe
-from fastapi import HTTPException
 
 from app import constants
+from app.core.error import CustomHTTPException
 from app.db.connection import get_connection_pool
 from app.services import subscriptions
 
@@ -35,7 +35,7 @@ async def delete_subscription(subscription_id: str):
         conn: asyncpg.connection.Connection
         subscription = await subscriptions.get(subscription_id)
         if subscription is None:
-            raise HTTPException(404, "Subscription not found")
+            raise CustomHTTPException(404, "Subscription not found")
         guild_id: int | None = subscription.guild_id
         if guild_id is not None:
             # registered_guild_table.delete(guild_id=guild_id)

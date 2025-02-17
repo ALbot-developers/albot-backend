@@ -15,11 +15,11 @@ class UserAvatarDecorationResponse(BaseModel):
         )
 
 
-class PremiumTypes:
-    NONE = 0
-    TIER_1 = 1
-    TIER_2 = 2
-    TIER_0 = 3
+class PremiumTypes(BaseModel):
+    NONE: int = 0
+    TIER_1: int = 1
+    TIER_2: int = 2
+    TIER_0: int = 3
 
     @classmethod
     def from_value(cls, value: int):
@@ -92,8 +92,8 @@ class PartialGuild(BaseModel):
     owner: bool
     permissions: str
     features: List[str]
-    approximate_member_count: int
-    approximate_presence_count: int
+    approximate_member_count: Optional[int] = None
+    approximate_presence_count: Optional[int] = None
 
     @classmethod
     def from_dict(cls, data: dict):

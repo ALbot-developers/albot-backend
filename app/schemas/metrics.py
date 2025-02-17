@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class Metrics(BaseModel):
-    connected: bool
+    connected: int
     guilds: int
 
 

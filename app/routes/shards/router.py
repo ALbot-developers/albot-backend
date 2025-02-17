@@ -24,6 +24,6 @@ async def index(
     return ShardsListAPIResponse(
         message="Fetched shard IDs.",
         data=ShardsListData(
-            shard_ids=await shards.list_ids(status)
+            ids=await shards.list_ids(status)
         )
     )

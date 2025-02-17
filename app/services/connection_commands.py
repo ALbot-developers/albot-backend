@@ -1,9 +1,9 @@
 import time
 
 import asyncpg
-from fastapi import HTTPException
 
 from app import constants
+from app.core.error import CustomHTTPException
 from app.db.connection import get_connection_pool
 
 EXISTING_COMMANDS = ("t.help", "t.id", "t.status", "t.expand", "t.act", "t.dict", "t.view", "t.save", "t.dc")
@@ -49,7 +49,7 @@ async def update(guild_id: int, command: str):
         # guild_idのデータを更新
         for _ in EXISTING_COMMANDS:
             if _.startswith(command):
-                raise HTTPException(
+                raise CustomHTTPException(
                     status_code=400,
                     detail="Command already exists."
                 )

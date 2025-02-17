@@ -1,9 +1,9 @@
 from typing import Literal
 
 import asyncpg
-from fastapi import HTTPException
 
 from app import constants
+from app.core.error import CustomHTTPException
 from app.db.connection import get_connection_pool
 from app.models.shards import ProvisioningConfig
 
@@ -16,7 +16,7 @@ async def provision():
         row = await conn.fetchrow('SELECT * FROM shard_data WHERE is_assigned = false LIMIT 1')
         total_shards = await conn.fetchval('SELECT COUNT(*) FROM shard_data')
         if row is None:
-            raise HTTPException(status_code=400, detail="No available shards.")
+            raise CustomHTTPException(status_code=400, detail="No available shards.")
         # shard_idを取得
         shard_id = row['shard_id']
         tts_key = row["tts_key"]

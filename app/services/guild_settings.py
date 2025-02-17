@@ -1,6 +1,6 @@
 import asyncpg
-from fastapi import HTTPException
 
+from app.core.error import CustomHTTPException
 from app.db.connection import get_connection_pool
 from app.models.settings import GuildSettings, PremiumSettings
 from app.models.subscription import Subscription
@@ -60,11 +60,11 @@ async def update(guild_id: int, settings: GuildSettingsUpdate, subscription: Sub
         # get all attributes with values
         attributes = {k: (None if v == "" else v) for k, v in settings.__dict__.items() if v is not None}
         if not attributes:
-            raise HTTPException(status_code=400, detail="No settings data provided.")
+            raise CustomHTTPException(status_code=400, detail="No settings data provided.")
         # if subscription is None and PremiumSettings in attributes, return an error
         if subscription is None:
             if any(k in attributes for k in PremiumSettings.__annotations__.keys()):
-                raise HTTPException(status_code=403, detail="Requires premium subscription.")
+                raise CustomHTTPException(status_code=403, detail="Requires premium subscription.")
         if 'character_limit' in attributes:
             # replace to word_limit
             # todo: DBのカラム名をcharacter_limitに変更する
