@@ -10,9 +10,8 @@ from app.db.connection import get_connection_pool
 from app.external.discord.models import UserPIIResponse, PartialGuild
 from app.schemas.checkout_session import CheckoutSessionCreate
 from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
-from app.services.subscription import activate_subscription, cancel_subscription, renew_subscription, \
-    list_user_subscriptions
-from app.services.user import get_user_guilds
+from app.services import subscriptions
+from app.services.user import get_guilds
 
 router = APIRouter()
 
@@ -31,11 +30,10 @@ async def get_user_info_api(request: Request, _auth=Security(verify_session)):
 @router.get("/subscriptions")
 async def list_subscriptions_api(request: Request, _auth=Security(verify_session)):
     user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
-    subscriptions = await list_user_subscriptions(int(user_info.id))
     return {
         "message": "Fetched subscriptions.",
         "data": {
-            "subscriptions": subscriptions
+            "subscriptions": await subscriptions.list_by_user(int(user_info.id))
         }
     }
 
@@ -49,7 +47,7 @@ async def activate_subscriptions_api(
         _auth=Security(verify_session)
 ):
     user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
-    status, message = await activate_subscription(sub_id, int(user_info.id), payload.guild_id)
+    status, message = await subscriptions.activate(sub_id, int(user_info.id), payload.guild_id)
     response.status_code = status
     return {
         "message": message
@@ -64,7 +62,7 @@ async def cancel_subscriptions_api(
         _auth=Security(verify_session)
 ):
     user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
-    status, message = await cancel_subscription(sub_id, int(user_info.id))
+    status, message = await subscriptions.cancel(sub_id, int(user_info.id))
     response.status_code = status
     return {
         "message": message
@@ -80,7 +78,7 @@ async def renew_subscriptions_api(
         _auth=Security(verify_session)
 ):
     user_info = UserPIIResponse.from_dict(request.session["user_info"])
-    status, message = await renew_subscription(sub_id, int(user_info.id), payload.new_plan)
+    status, message = await subscriptions.renew(sub_id, int(user_info.id), payload.new_plan)
     response.status_code = status
     return {
         "message": message
@@ -91,7 +89,7 @@ async def renew_subscriptions_api(
 async def list_user_guilds(request: Request, mutual: bool = True, _auth=Security(verify_session)):
     # ?mutual=True: get only mutual guilds with our bot
     user_info: UserPIIResponse = UserPIIResponse.from_dict(request.session["user_info"])
-    guilds = await get_user_guilds(int(user_info.id), mutual=mutual)
+    guilds = await get_guilds(int(user_info.id), mutual=mutual)
     return {
         "message": "Fetched guilds.",
         "data": {

@@ -1,35 +1,31 @@
-import datetime
-import json
 from uuid import uuid4
 
-import asyncpg
 from aiohttp import ClientResponseError
 from fastapi import APIRouter, Request, Response
 
-from app.db.connection import get_connection_pool
-from app.external.discord.oauth2 import get_oauth2_url, exchange_code
-from app.external.discord.rest_api import fetch_user_guilds, get_user_info
+from app.external import discord
+from app.schemas.api_response import PlainAPIResponse, Oauth2APIResponse
+from app.schemas.oauth2 import AuthURL
+from app.services import user
 
 router = APIRouter()
 
 
-@router.get("/login")
+@router.get("/login", response_model=Oauth2APIResponse)
 async def oauth2_redirect(request: Request, redirect: str):
     state = str(uuid4())[0:8]
     request.session["state"] = state
     request.session["redirect"] = redirect
-    url = get_oauth2_url(
+    url = discord.oauth2.get_url(
         redirect, state
     )
-    return {
-        "message": "Redirecting to OAuth2 login.",
-        "data": {
-            "url": url
-        }
-    }
+    return Oauth2APIResponse(
+        message="Redirecting to OAuth2 login.",
+        data=AuthURL(url=url)
+    )
 
 
-@router.post("/callback")
+@router.post("/callback", response_model=PlainAPIResponse)
 async def oauth2_callback(code: str, state: str, response: Response, request: Request):
     if state != request.session.get("state"):
         response.status_code = 400
@@ -37,30 +33,24 @@ async def oauth2_callback(code: str, state: str, response: Response, request: Re
     redirect = request.session["redirect"]
     del request.session["state"], request.session["redirect"]
     try:
-        access_token, refresh_token = await exchange_code(code, redirect)
+        access_token, refresh_token = await discord.oauth2.exchange_code(code, redirect)
     except ClientResponseError:
         response.status_code = 400
         return {"error": "Invalid code"}
     request.session["access_token"] = access_token
     request.session["refresh_token"] = refresh_token
-    user_info = await get_user_info(access_token)
+    user_info = await discord.rest_api.get_user_info(access_token)
     request.session["user_info"] = user_info.to_dict()
-    user_guilds = [guild.to_dict() for guild in await fetch_user_guilds(access_token)]
-    async with get_connection_pool().acquire() as conn:
-        conn: asyncpg.connection.Connection
-        await conn.execute(
-            'INSERT INTO user_guilds (user_id, guilds, updated_at) VALUES ($1, $2, $3) '
-            'ON CONFLICT (user_id) DO UPDATE SET guilds = $2, updated_at = $3',
-            int(user_info.id), json.dumps(user_guilds), datetime.datetime.now()
-        )
-    return {
-        "message": "Logged in."
-    }
+    user_guilds = await discord.rest_api.fetch_user_guilds(access_token)
+    await user.store_guilds(int(user_info.id), user_guilds)
+    return PlainAPIResponse(
+        message="Logged in."
+    )
 
 
-@router.post("/logout")
+@router.post("/logout", response_model=PlainAPIResponse)
 async def logout(request: Request):
     request.session.clear()
-    return {
-        "message": "Logged out."
-    }
+    return PlainAPIResponse(
+        message="Logged out."
+    )

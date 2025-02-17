@@ -1,3 +1,4 @@
+import datetime
 import json
 
 import asyncpg
@@ -6,7 +7,7 @@ from app.db.connection import get_connection_pool
 from app.external.discord.models import PartialGuild
 
 
-async def get_user_guilds(user_id: int, mutual=True) -> list[PartialGuild]:
+async def get_guilds(user_id: int, mutual=True) -> list[PartialGuild]:
     if mutual:
         async with get_connection_pool().acquire() as conn:
             conn: asyncpg.connection.Connection
@@ -35,7 +36,18 @@ async def get_user_guilds(user_id: int, mutual=True) -> list[PartialGuild]:
         return [PartialGuild.from_dict(guild) for guild in json.loads(guilds)]
 
 
-async def get_user_guild(user_id: int, guild_id: int) -> PartialGuild:
+async def store_guilds(user_id: int, guilds: list[PartialGuild]):
+    dict_guilds = [guild.to_dict() for guild in guilds]
+    async with get_connection_pool().acquire() as conn:
+        conn: asyncpg.connection.Connection
+        await conn.execute(
+            'INSERT INTO user_guilds (user_id, guilds, updated_at) VALUES ($1, $2, $3) '
+            'ON CONFLICT (user_id) DO UPDATE SET guilds = $2, updated_at = $3',
+            user_id, json.dumps(dict_guilds), datetime.datetime.now()
+        )
+
+
+async def get_guild(user_id: int, guild_id: int) -> PartialGuild:
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         guild: str | None = await conn.fetchval(

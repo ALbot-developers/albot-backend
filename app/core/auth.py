@@ -5,7 +5,7 @@ from fastapi import Security, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.constants import BEARER_TOKEN
-from app.services.user import get_user_guild
+from app.services.user import get_guild
 
 
 # Bearerトークンの検証
@@ -41,7 +41,7 @@ async def verify_session(request: Request, guild_id: Optional['int'] = None) -> 
     user = request.session.get("user_info")
     if user:
         if guild_id:
-            if not (await get_user_guild(int(user["id"]), guild_id)):
+            if not (await get_guild(int(user["id"]), guild_id)):
                 raise HTTPException(status_code=404, detail="Guild does not exist or user does not have access to it")
         return AuthenticationResponse(auth_type="session", message="Authenticated with session", payload=user)
     raise HTTPException(status_code=401, detail="Invalid or missing session")

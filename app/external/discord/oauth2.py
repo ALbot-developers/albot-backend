@@ -7,7 +7,7 @@ from app import constants
 DISCORD_BASE_URL = 'https://discord.com/api/v10'
 
 
-def get_oauth2_url(redirect_uri, state):
+def get_url(redirect_uri, state):
     return (
         f"https://discord.com/oauth2/authorize"
         f"?client_id={constants.DISCORD_CLIENT_ID}"

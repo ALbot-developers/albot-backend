@@ -17,14 +17,14 @@ QUOTAS = {
 }
 
 
-async def subscription_exists(user_id: int, sub_id: str):
+async def _does_subscription_exist(user_id: int, sub_id: str):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         row = await conn.fetchrow("SELECT * FROM subscriptions WHERE user_id=$1 and sub_id=$2", user_id, sub_id)
         return row is not None
 
 
-def create_remaining_payment(subscription, old_plan: str):
+def _create_remaining_payment(subscription, old_plan: str):
     # 未使用の一ヶ月分を算出
     full_amount = 200 if "1" in old_plan else 400
     days_in_this_month = calendar.monthrange(datetime.now().year, datetime.now().month)[1]
@@ -42,7 +42,7 @@ def create_remaining_payment(subscription, old_plan: str):
     )
 
 
-async def list_user_subscriptions(user_id: int) -> List[Subscription]:
+async def list_by_user(user_id: int) -> List[Subscription]:
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         res = await conn.fetch("SELECT * FROM subscriptions WHERE user_id = $1", user_id)
@@ -53,8 +53,19 @@ async def list_user_subscriptions(user_id: int) -> List[Subscription]:
     return subscriptions
 
 
-async def cancel_subscription(sub_id: str, user_id: int) -> tuple[int, str]:
-    if not await subscription_exists(user_id, sub_id):
+async def list_by_guild(guild_id: int) -> List[Subscription]:
+    async with get_connection_pool().acquire() as conn:
+        conn: asyncpg.connection.Connection
+        res = await conn.fetch("SELECT * FROM subscriptions WHERE guild_id = $1", guild_id)
+        subscriptions = []
+        for row in res:
+            subscription = Subscription.from_dict(dict(row))
+            subscriptions.append(subscription)
+    return subscriptions
+
+
+async def cancel(sub_id: str, user_id: int) -> tuple[int, str]:
+    if not await _does_subscription_exist(user_id, sub_id):
         return 400, "Subscription not found."
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
@@ -66,8 +77,8 @@ async def cancel_subscription(sub_id: str, user_id: int) -> tuple[int, str]:
     return 200, "Successfully canceled."
 
 
-async def activate_subscription(sub_id: str, user_id: int, guild_id: int) -> tuple[int, str]:
-    if not await subscription_exists(user_id, sub_id):
+async def activate(sub_id: str, user_id: int, guild_id: int) -> tuple[int, str]:
+    if not await _does_subscription_exist(user_id, sub_id):
         return 400, "Subscription not found."
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
@@ -97,8 +108,8 @@ async def activate_subscription(sub_id: str, user_id: int, guild_id: int) -> tup
     return 200, "Successfully activated."
 
 
-async def renew_subscription(sub_id: str, user_id: int, new_plan: str) -> tuple[int, str]:
-    if not await subscription_exists(user_id, sub_id):
+async def renew(sub_id: str, user_id: int, new_plan: str) -> tuple[int, str]:
+    if not await _does_subscription_exist(user_id, sub_id):
         return 400, "Subscription not found."
     new_price_id = PRICE_IDS[new_plan]
     old_sub = stripe.Subscription.retrieve(sub_id)
@@ -109,7 +120,7 @@ async def renew_subscription(sub_id: str, user_id: int, new_plan: str) -> tuple[
     # 変更前のプランが年額の場合
     if "yearly" in old_plan:
         proration_behavior = "create_prorations"
-        create_remaining_payment(old_sub, old_plan)
+        _create_remaining_payment(old_sub, old_plan)
     # サブスクのダウングレード・アップグレード
     if old_sub["items"]["data"][0]["price"]["id"] != new_price_id:
         stripe.Subscription.modify(

@@ -1,24 +1,19 @@
-import asyncpg
 from fastapi import APIRouter, Security
 
 from app.core.auth import verify_all_tokens
-from app.db.connection import get_connection_pool
+from app.schemas.api_data import MetricsData
+from app.schemas.api_response import MetricsAPIResponse
+from app.services import metrics
 
 router = APIRouter()
 
 
-@router.get("")
+@router.get("", response_model=MetricsAPIResponse)
 async def get_metrics(_auth=Security(verify_all_tokens)):
-    async with get_connection_pool().acquire() as conn:
-        conn: asyncpg.connection.Connection
-        res = await conn.fetchrow(
-            "SELECT SUM(connected_num) as connected, SUM(guilds_num) as guilds FROM shard_data")
-    return {
-        "message": "Fetched metrics.",
-        "data": {
-            "metrics": {
-                "connected": res["connected"],
-                "guilds": res["guilds"]
-            }
-        }
-    }
+    data = await metrics.get()
+    return MetricsAPIResponse(
+        message="Fetched metrics.",
+        data=MetricsData(
+            metrics=data
+        )
+    )

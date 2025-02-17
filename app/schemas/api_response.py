@@ -2,9 +2,10 @@ from pydantic import BaseModel
 
 from app.models.character_usage import CharacterUsages
 from app.models.trusted_roles import TrustedRoles
-from app.schemas.api_data import ConnectionStateData, DictData, SubscriptionsData
+from app.schemas.api_data import ConnectionStateData, DictData, SubscriptionsData, MetricsData
 from app.schemas.connection_command import ConnectionCommand
 from app.schemas.message_link_expand_pref import MessageLinkExpansionPreference
+from app.schemas.oauth2 import AuthURL
 
 
 class PlainAPIResponse(BaseModel):
@@ -51,3 +52,13 @@ class SubscriptionAPIResponse(BaseModel):
 class TrustedRolesResponse(BaseModel):
     message: str
     data: TrustedRoles
+
+
+class MetricsAPIResponse(BaseModel):
+    message: str
+    data: MetricsData
+
+
+class Oauth2APIResponse(BaseModel):
+    message: str
+    data: AuthURL
