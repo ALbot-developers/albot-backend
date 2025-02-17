@@ -1,11 +1,12 @@
-from typing import Literal, Optional
+from typing import Literal
 
-import asyncpg
 from fastapi import APIRouter, Security
 
 from app.core.auth import verify_session
-from app.db.connection import get_connection_pool
 from app.routes.shards import metrics_api, release_api, assign_api, connection_commands_api
+from app.schemas.api_data import ShardsListData
+from app.schemas.api_response import ShardsListAPIResponse
+from app.services import shards
 
 router = APIRouter()
 router.include_router(assign_api.router)
@@ -15,33 +16,14 @@ router.include_router(metrics_api.router)
 
 
 # todo: 将来的には死活監視の情報を使用
-@router.get("")
+@router.get("", response_model=ShardsListAPIResponse)
 async def index(
         _auth=Security(verify_session),
-        status: Optional[Literal["online", "offline", "all"]] = "all"
+        status: Literal["online", "offline", "all"] = "all"
 ):
-    if status == "all":
-        async with get_connection_pool().acquire() as conn:
-            conn: asyncpg.connection.Connection
-            res = await conn.fetch(
-                "SELECT shard_id FROM shard_data"
-            )
-    elif status == "online":
-        async with get_connection_pool().acquire() as conn:
-            conn: asyncpg.connection.Connection
-            res = await conn.fetch(
-                "SELECT shard_id FROM shard_data WHERE is_assigned is true"
-            )
-    else:
-        async with get_connection_pool().acquire() as conn:
-            conn: asyncpg.connection.Connection
-            res = await conn.fetch(
-                "SELECT shard_id FROM shard_data WHERE is_assigned is false"
-            )
-    shard_ids = [int(i[0]) for i in res]
-    return {
-        "message": "Fetched shard IDs.",
-        "data": {
-            "ids": shard_ids
-        }
-    }
+    return ShardsListAPIResponse(
+        message="Fetched shard IDs.",
+        data=ShardsListData(
+            shard_ids=await shards.list_ids(status)
+        )
+    )
