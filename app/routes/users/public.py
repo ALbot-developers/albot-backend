@@ -2,8 +2,7 @@ from fastapi import APIRouter, Security, Response
 
 from app.core.auth import verify_bearer_token
 from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
-from app.services.subscriptions import activate, cancel, renew, \
-    list_by_user
+from app.services import subscriptions
 
 router = APIRouter()
 
@@ -13,11 +12,10 @@ async def list_subscriptions_api(
         user_id: int,
         _auth=Security(verify_bearer_token)
 ):
-    subscriptions = await list_by_user(user_id)
     return {
         "message": "Fetched subscriptions.",
         "data": {
-            "subscriptions": subscriptions
+            "subscriptions": await subscriptions.list_by_user(user_id)
         }
     }
 
@@ -31,7 +29,7 @@ async def activate_subscriptions_api(
         _auth=Security(verify_bearer_token)
 ):
     # BOT用APIではユーザの権限確認を行わない
-    status, message = await activate(sub_id, user_id, payload.guild_id)
+    status, message = await subscriptions.activate(sub_id, user_id, payload.guild_id)
     response.status_code = status
     return {
         "message": message
@@ -46,7 +44,7 @@ async def cancel_subscriptions_api(
         _auth=Security(verify_bearer_token)
 ):
     # BOT用APIではユーザの権限確認を行わない
-    status, message = await cancel(sub_id, user_id)
+    status, message = await subscriptions.cancel(sub_id, user_id)
     response.status_code = status
     return {
         "message": message
@@ -62,7 +60,7 @@ async def renew_subscriptions_api(
         _auth=Security(verify_bearer_token)
 ):
     # BOT用APIではユーザの権限確認を行わない
-    status, message = await renew(sub_id, user_id, payload.new_plan)
+    status, message = await subscriptions.renew(sub_id, user_id, payload.new_plan)
     response.status_code = status
     return {
         "message": message

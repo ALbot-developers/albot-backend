@@ -77,6 +77,7 @@ async def cancel(sub_id: str, user_id: int) -> tuple[int, str]:
     return 200, "Successfully canceled."
 
 
+# todo: HTTPExceptionを吐くなど、リファクタリング
 async def activate(sub_id: str, user_id: int, guild_id: int) -> tuple[int, str]:
     if not await _does_subscription_exist(user_id, sub_id):
         return 400, "Subscription not found."
