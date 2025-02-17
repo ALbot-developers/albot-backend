@@ -4,4 +4,4 @@ from pydantic import BaseModel, Field
 
 
 class DictPut(BaseModel):
-    dict: Dict[str, Any] = Field(...)
+    dict_data: Dict[str, Any] = Field(..., alias="dict")

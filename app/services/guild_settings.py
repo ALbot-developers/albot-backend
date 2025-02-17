@@ -1,7 +1,7 @@
 import asyncpg
 
 from app.db.connection import get_connection_pool
-from app.models.settings import SettingsData
+from app.models.settings import GuildSettings
 
 
 async def get(guild_id: int):
@@ -12,10 +12,10 @@ async def get(guild_id: int):
         # convert the row to a dictionary
         if row is None:
             return await get_default()
-        return SettingsData.from_dict(dict(row))
+        return GuildSettings.from_dict(dict(row))
 
 
-async def get_default() -> SettingsData:
+async def get_default() -> GuildSettings:
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # settings_dataのデフォルト値を取得
@@ -48,4 +48,4 @@ async def get_default() -> SettingsData:
                 column_default = column_default.replace("'", "")
         column_default = fix_value_type(column_default, row["data_type"])
         default_settings[row["column_name"]] = column_default
-    return SettingsData.from_dict(default_settings)
+    return GuildSettings.from_dict(default_settings)
