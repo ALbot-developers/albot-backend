@@ -64,6 +64,12 @@ async def list_by_guild(guild_id: int) -> List[Subscription]:
     return subscriptions
 
 
+async def get(sub_id: str):
+    async with get_connection_pool().acquire() as conn:
+        conn: asyncpg.connection.Connection
+        row = await conn.fetchrow("SELECT * FROM subscriptions WHERE sub_id = $1", sub_id)
+    return Subscription.from_dict(dict(row)) if row else None
+
 async def cancel(sub_id: str, user_id: int) -> tuple[int, str]:
     if not await _does_subscription_exist(user_id, sub_id):
         return 400, "Subscription not found."

@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-
-
-class AuthURL(BaseModel):
-    url: str
+# from pydantic import BaseModel
+#
+#
+# class AuthURL(BaseModel):
+#     url: str

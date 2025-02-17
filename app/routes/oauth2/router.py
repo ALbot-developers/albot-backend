@@ -4,14 +4,14 @@ from aiohttp import ClientResponseError
 from fastapi import APIRouter, Request, Response
 
 from app.external import discord
-from app.schemas.api_response import PlainAPIResponse, Oauth2APIResponse
-from app.schemas.oauth2 import AuthURL
+from app.schemas.api_data import URLData
+from app.schemas.api_response import PlainAPIResponse, URLAPIResponse
 from app.services import user
 
 router = APIRouter()
 
 
-@router.get("/login", response_model=Oauth2APIResponse)
+@router.get("/login", response_model=URLAPIResponse)
 async def oauth2_redirect(request: Request, redirect: str):
     state = str(uuid4())[0:8]
     request.session["state"] = state
@@ -19,9 +19,9 @@ async def oauth2_redirect(request: Request, redirect: str):
     url = discord.oauth2.get_url(
         redirect, state
     )
-    return Oauth2APIResponse(
+    return URLAPIResponse(
         message="Redirecting to OAuth2 login.",
-        data=AuthURL(url=url)
+        data=URLData(url=url)
     )
 
 

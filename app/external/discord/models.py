@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Optional, List
 
 from pydantic import BaseModel
@@ -33,8 +32,7 @@ class PremiumTypes:
         return premium_types.get(value, 'Unknown Type')
 
 
-@dataclass
-class UserPIIResponse:
+class UserPIIResponse(BaseModel):
     id: str
     username: str
     avatar: Optional[str]
@@ -52,6 +50,7 @@ class UserPIIResponse:
     premium_type: Optional[PremiumTypes]
     email: Optional[str]
     verified: Optional[bool]
+
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -79,42 +78,13 @@ class UserPIIResponse:
         )
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "username": self.username,
-            "avatar": self.avatar,
-            "discriminator": self.discriminator,
-            "public_flags": self.public_flags,
-            "flags": self.flags,
-            "bot": self.bot,
-            "system": self.system,
-            "banner": self.banner,
-            "accent_color": self.accent_color,
-            "global_name": self.global_name,
-            "avatar_decoration_data": self.avatar_decoration_data.model_dump() if self.avatar_decoration_data else None,
-            "mfa_enabled": self.mfa_enabled,
-            "locale": self.locale,
-            "premium_type": self.premium_type,
-            "email": self.email,
-            "verified": self.verified
-        }
+        return self.model_dump(
+            exclude_unset=True,
+            by_alias=True
+        )
 
 
-@dataclass
-class PartialGuild:
-    """
-    {
-      "id": "80351110224678912",
-      "name": "1337 Krew",
-      "icon": "8342729096ea3675442027381ff50dfe",
-      "banner": "bb42bdc37653b7cf58c4c8cc622e76cb",
-      "owner": true,
-      "permissions": "36953089",
-      "features": ["COMMUNITY", "NEWS", "ANIMATED_ICON", "INVITE_SPLASH", "BANNER", "ROLE_ICONS"],
-      "approximate_member_count": 3268,
-      "approximate_presence_count": 784
-    }
-    """
+class PartialGuild(BaseModel):
     id: str
     name: str
     icon: Optional[str]
@@ -140,4 +110,4 @@ class PartialGuild:
         )
 
     def to_dict(self):
-        return {k: v for k, v in self.__dict__.items() if v is not None}
+        return self.model_dump(exclude_none=True)

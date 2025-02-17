@@ -4,10 +4,9 @@ from app.models.character_usage import CharacterUsages
 from app.models.shards import ProvisioningConfig
 from app.models.trusted_roles import TrustedRoles
 from app.schemas.api_data import ConnectionStateData, DictData, SubscriptionsData, MetricsData, GuildSettingsData, \
-    ShardConnectionCommandsData, ShardsListData
+    ShardConnectionCommandsData, ShardsListData, UserInfoData, GuildsListData, GuildInfoData, URLData
 from app.schemas.connection_command import ConnectionCommand
 from app.schemas.message_link_expand_pref import MessageLinkExpansionPreference
-from app.schemas.oauth2 import AuthURL
 
 
 class PlainAPIResponse(BaseModel):
@@ -45,7 +44,7 @@ class GuildSettingsAPIResponse(BaseModel):
     data: GuildSettingsData
 
 
-class SubscriptionAPIResponse(BaseModel):
+class ListSubscriptionsAPIResponse(BaseModel):
     message: str
     data: SubscriptionsData
 
@@ -61,9 +60,9 @@ class MetricsAPIResponse(BaseModel):
     data: MetricsData
 
 
-class Oauth2APIResponse(BaseModel):
+class URLAPIResponse(BaseModel):
     message: str
-    data: AuthURL
+    data: URLData
 
 
 class ShardProvisionAPIResponse(BaseModel):
@@ -79,3 +78,18 @@ class ShardConnectionCommandsAPIResponse(BaseModel):
 class ShardsListAPIResponse(BaseModel):
     message: str
     data: ShardsListData
+
+
+class UserInfoAPIResponse(BaseModel):
+    message: str
+    data: UserInfoData
+
+
+class GuildsListAPIResponse(BaseModel):
+    message: str
+    data: GuildsListData
+
+
+class GuildInfoAPIResponse(BaseModel):
+    message: str
+    data: GuildInfoData
