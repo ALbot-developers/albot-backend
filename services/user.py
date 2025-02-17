@@ -2,8 +2,8 @@ import json
 
 import asyncpg
 
-from models.discord_api import PartialGuild
-from utils.db_connection import get_connection_pool
+from db.connection import get_connection_pool
+from external.discord.models import PartialGuild
 
 
 async def get_user_guilds(user_id: int, mutual=True) -> list[PartialGuild]:

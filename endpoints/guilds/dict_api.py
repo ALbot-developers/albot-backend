@@ -3,9 +3,9 @@ import json
 import asyncpg
 from fastapi import APIRouter, Security
 
+from core.auth import verify_all_tokens
+from db.connection import get_connection_pool
 from models.api_payload import PutDictAPIPayload
-from utils.auth import verify_all_tokens
-from utils.db_connection import get_connection_pool
 
 router = APIRouter()
 

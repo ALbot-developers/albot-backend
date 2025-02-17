@@ -6,9 +6,9 @@ import asyncpg
 from aiohttp import ClientResponseError
 from fastapi import APIRouter, Request, Response
 
-from utils.db_connection import get_connection_pool
-from utils.discord_api import fetch_user_guilds, get_user_info
-from utils.discord_oauth2 import get_oauth2_url, exchange_code
+from db.connection import get_connection_pool
+from external.discord.oauth2 import get_oauth2_url, exchange_code
+from external.discord.rest_api import fetch_user_guilds, get_user_info
 
 router = APIRouter()
 

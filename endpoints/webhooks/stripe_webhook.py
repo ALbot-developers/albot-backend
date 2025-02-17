@@ -6,7 +6,7 @@ import stripe
 from fastapi import APIRouter, Request, Response, HTTPException
 
 from constants import STRIPE_WEBHOOK_SECRET, MONTHLY1_PRICE_ID, YEARLY1_PRICE_ID, MONTHLY2_PRICE_ID, YEARLY2_PRICE_ID
-from utils.db_connection import get_connection_pool
+from db.connection import get_connection_pool
 
 router = APIRouter()
 

@@ -5,13 +5,14 @@ import stripe
 from fastapi import APIRouter, Security, Request, Response
 
 import constants
+from core.auth import verify_session
+from db.connection import get_connection_pool
+from external.discord.models import UserPIIResponse, PartialGuild
 from models.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload, \
     CheckoutSessionAPIPayload
-from models.discord_api import UserPIIResponse, PartialGuild
-from utils.auth import verify_session
-from utils.db_connection import get_connection_pool
-from utils.others import get_user_guilds
-from utils.subscription import activate_subscription, cancel_subscription, renew_subscription, list_user_subscriptions
+from services.subscription import activate_subscription, cancel_subscription, renew_subscription, \
+    list_user_subscriptions
+from services.user import get_user_guilds
 
 router = APIRouter()
 

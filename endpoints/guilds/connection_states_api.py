@@ -5,11 +5,11 @@ from typing import Literal, Optional
 
 from fastapi import APIRouter, Security
 
+from core.auth import verify_bearer_token
 from endpoints.guilds.character_usage_api import get_guild_character_usage
 from endpoints.guilds.dict_api import get_guild_dict
 from endpoints.guilds.settings_api import get_guild_settings
 from models.api_response import CharacterUsages
-from utils.auth import verify_bearer_token
 
 router = APIRouter()
 

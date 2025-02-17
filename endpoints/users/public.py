@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Security, Response
 
+from core.auth import verify_bearer_token
 from models.api_payload import ActivateSubscriptionAPIPayload, RenewSubscriptionAPIPayload
-from utils.auth import verify_bearer_token
-from utils.subscription import activate_subscription, cancel_subscription, renew_subscription, list_user_subscriptions
+from services.subscription import activate_subscription, cancel_subscription, renew_subscription, \
+    list_user_subscriptions
 
 router = APIRouter()
 

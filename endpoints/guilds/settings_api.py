@@ -1,11 +1,11 @@
 import asyncpg
 from fastapi import APIRouter, Security, HTTPException, Depends
 
-from models.database import SettingsData, PremiumSettings
+from core.auth import verify_all_tokens
+from core.dependencies import get_subscription
+from db.connection import get_connection_pool
 from models.subscription import Subscription
-from utils.auth import verify_all_tokens
-from utils.db_connection import get_connection_pool
-from utils.dependencies import get_subscription
+from schemas.settings import SettingsData, PremiumSettings
 
 router = APIRouter()
 

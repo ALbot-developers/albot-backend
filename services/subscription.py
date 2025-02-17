@@ -8,8 +8,8 @@ import asyncpg
 import stripe
 
 from constants import PRICE_IDS
-from models.database import SubscriptionData
-from utils.db_connection import get_connection_pool
+from db.connection import get_connection_pool
+from schemas.subscriptions import SubscriptionData
 
 QUOTAS = {
     1: {'wavenet': 20000, 'standard': 40000},

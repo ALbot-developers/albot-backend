@@ -1,11 +1,20 @@
-from typing import Optional
+from dataclasses import dataclass
+from typing import Optional, Literal
 
 from fastapi import Security, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from constants import BEARER_TOKEN
-from models.auth import AuthenticationResponse
-from utils.others import get_user_guild
+from services.user import get_user_guild
+
+
+# Bearerトークンの検証
+@dataclass
+class AuthenticationResponse:
+    auth_type: Literal["bearer", "session"]
+    message: str
+    payload: dict | None = None
+
 
 # Bearerトークンのためのセキュリティスキーム
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -18,7 +27,6 @@ def validate_bearer_token(authorization: HTTPAuthorizationCredentials):
     return None
 
 
-# Bearerトークンの検証
 def verify_bearer_token(
         authorization: HTTPAuthorizationCredentials = Security(bearer_scheme)
 ) -> AuthenticationResponse:

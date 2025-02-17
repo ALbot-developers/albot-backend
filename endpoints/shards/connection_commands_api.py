@@ -4,8 +4,8 @@ import asyncpg
 from fastapi import APIRouter, Security
 
 import constants
-from utils.auth import verify_bearer_token
-from utils.db_connection import get_connection_pool
+from core.auth import verify_bearer_token
+from db.connection import get_connection_pool
 
 router = APIRouter()
 

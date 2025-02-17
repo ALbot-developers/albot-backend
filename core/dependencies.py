@@ -2,8 +2,8 @@
 import asyncpg
 from fastapi import Request
 
+from db.connection import get_connection_pool
 from models.subscription import Subscription
-from utils.db_connection import get_connection_pool
 
 
 async def get_subscription(request: Request, guild_id: int):

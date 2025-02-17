@@ -1,9 +1,9 @@
 import asyncpg
 from fastapi import APIRouter, Security
 
-from models.database import SubscriptionData
-from utils.auth import verify_all_tokens
-from utils.db_connection import get_connection_pool
+from core.auth import verify_all_tokens
+from db.connection import get_connection_pool
+from schemas.subscriptions import SubscriptionData
 
 router = APIRouter()
 
