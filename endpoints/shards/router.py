@@ -3,7 +3,7 @@ from typing import Literal, Optional
 import asyncpg
 from fastapi import APIRouter, Security
 
-from routes.shards import release_api, assign_api, connection_commands_api, metrics_api
+from endpoints.shards import release_api, assign_api, connection_commands_api, metrics_api
 from utils.auth import verify_session
 from utils.db_connection import get_connection_pool
 

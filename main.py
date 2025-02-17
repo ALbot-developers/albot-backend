@@ -7,12 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 import constants
-from routes.guilds import router as guilds
-from routes.metrics import router as metrics
-from routes.oauth2 import router as oauth2
-from routes.shards import router as shards
-from routes.users import router as users
-from routes.webhooks import router as webhooks
+from endpoints.guilds import router as guilds
+from endpoints.metrics import router as metrics
+from endpoints.oauth2 import router as oauth2
+from endpoints.shards import router as shards
+from endpoints.users import router as users
+from endpoints.webhooks import router as webhooks
 from utils.db_connection import create_connection_pool
 
 

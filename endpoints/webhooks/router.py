@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from routes.webhooks import stripe_webhook
+from endpoints.webhooks import stripe_webhook
 
 router = APIRouter()
 
