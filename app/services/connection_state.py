@@ -3,7 +3,7 @@ import json
 from app.schemas.connection_state import ConnectionStateCreate, ConnectionState
 from app.services import guild_settings, guild_dict, character_usages
 
-with open("static/gtts_languages.json") as f:
+with open("app/static/gtts_languages.json") as f:
     gtts_languages = json.load(f)
 
 
