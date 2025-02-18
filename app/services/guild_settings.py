@@ -2,7 +2,7 @@ import asyncpg
 
 from app.core.error import CustomHTTPException
 from app.db.connection import get_connection_pool
-from app.models.settings import GuildSettings, PremiumSettings
+from app.models.settings import GuildSettings, PremiumSettings, DefaultSettings
 from app.models.subscription import Subscription
 from app.schemas.guild_settings import GuildSettingsUpdate
 
@@ -15,10 +15,10 @@ async def get(guild_id: int):
         # convert the row to a dictionary
         if row is None:
             return await get_default()
-        return GuildSettings.from_dict(dict(row))
+        return GuildSettings.model_validate(dict(row))
 
 
-async def get_default() -> GuildSettings:
+async def get_default() -> DefaultSettings:
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # settings_dataのデフォルト値を取得
@@ -51,7 +51,7 @@ async def get_default() -> GuildSettings:
                 column_default = column_default.replace("'", "")
         column_default = fix_value_type(column_default, row["data_type"])
         default_settings[row["column_name"]] = column_default
-    return GuildSettings.from_dict(default_settings)
+    return DefaultSettings.model_validate(default_settings)
 
 
 async def update(guild_id: int, settings: GuildSettingsUpdate, subscription: Subscription | None):

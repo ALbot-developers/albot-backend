@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Literal
+from typing import Literal
 
 from fastapi import Security, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -38,8 +38,9 @@ def verify_bearer_token(
 
 
 # JWTトークンの検証
-async def verify_session(request: Request, guild_id: Optional['int'] = None) -> AuthenticationResponse:
+async def verify_session(request: Request) -> AuthenticationResponse:
     user = request.session.get("user_info")
+    guild_id = request.path_params.get("guild_id")
     if user:
         if guild_id:
             if not (await get_guild(int(user["id"]), guild_id)):
@@ -52,10 +53,9 @@ async def verify_session(request: Request, guild_id: Optional['int'] = None) -> 
 # BearerトークンまたはJWTトークンの検証
 async def verify_all_tokens(
         request: Request,
-        authorization: HTTPAuthorizationCredentials = Security(bearer_scheme),
-        guild_id: Optional['int'] = None
+        authorization: HTTPAuthorizationCredentials = Security(bearer_scheme)
 ) -> AuthenticationResponse:
-    result = validate_bearer_token(authorization) or await verify_session(request, guild_id)
+    result = validate_bearer_token(authorization) or await verify_session(request)
     if result:
         return result
     raise CustomHTTPException(status_code=401, detail="Invalid or missing Bearer/Session token")
