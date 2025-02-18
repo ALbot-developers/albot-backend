@@ -7,7 +7,7 @@ from pydantic import BaseModel
 class GuildSettings(BaseModel):
     guild_id: int
     lang: str
-    word_limit: int
+    character_limit: int
     speech_speed: float
     read_name: bool
     translate: bool
@@ -17,6 +17,11 @@ class GuildSettings(BaseModel):
     read_not_joined_users: bool
     audio_api: Literal["gtts", "openai"]
     custom_voice: Optional[str] = None
+
+    @classmethod
+    def from_db(cls, row: dict):
+        row['character_limit'] = row['word_limit']
+        return cls.model_validate(row)
 
 
 class DefaultSettings(GuildSettings):

@@ -15,7 +15,7 @@ async def get(guild_id: int):
         # convert the row to a dictionary
         if row is None:
             return await get_default()
-        return GuildSettings.model_validate(dict(row))
+        return GuildSettings.from_db(dict(row))
 
 
 async def get_default() -> DefaultSettings:
