@@ -15,23 +15,6 @@ class UserAvatarDecorationResponse(BaseModel):
         )
 
 
-class PremiumTypes(BaseModel):
-    NONE: int = 0
-    TIER_1: int = 1
-    TIER_2: int = 2
-    TIER_0: int = 3
-
-    @classmethod
-    def from_value(cls, value: int):
-        premium_types = {
-            0: 'None',
-            1: 'Nitro Classic',
-            2: 'Nitro Standard',
-            3: 'Nitro Basic'
-        }
-        return premium_types.get(value, 'Unknown Type')
-
-
 class UserPIIResponse(BaseModel):
     id: str
     username: str
@@ -47,7 +30,7 @@ class UserPIIResponse(BaseModel):
     avatar_decoration_data: Optional[UserAvatarDecorationResponse]
     mfa_enabled: bool
     locale: str
-    premium_type: Optional[PremiumTypes]
+    premium_type: Optional[str]
     email: Optional[str]
     verified: Optional[bool]
 
@@ -55,7 +38,6 @@ class UserPIIResponse(BaseModel):
     @classmethod
     def from_dict(cls, data: dict):
         avatar_decoration = data.get('avatar_decoration_data')
-        premium_type_data = data.get('premium_type')
         return cls(
             id=data.get('id'),
             username=data.get('username'),
@@ -72,7 +54,7 @@ class UserPIIResponse(BaseModel):
                 avatar_decoration) if avatar_decoration else None,
             mfa_enabled=data.get('mfa_enabled'),
             locale=data.get('locale'),
-            premium_type=PremiumTypes.from_value(premium_type_data) if premium_type_data else None,
+            premium_type=data.get('premium_type'),
             email=data.get('email'),
             verified=data.get('verified')
         )
