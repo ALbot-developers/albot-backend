@@ -1,8 +1,9 @@
 from uuid import uuid4
 
 from aiohttp import ClientResponseError
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request
 
+from app.core.error import CustomHTTPException
 from app.external import discord
 from app.schemas.api_data import URLData
 from app.schemas.api_response import PlainAPIResponse, URLAPIResponse
@@ -26,17 +27,15 @@ async def oauth2_redirect(request: Request, redirect: str):
 
 
 @router.post("/callback", response_model=PlainAPIResponse)
-async def oauth2_callback(code: str, state: str, response: Response, request: Request):
+async def oauth2_callback(code: str, state: str, request: Request):
     if state != request.session.get("state"):
-        response.status_code = 400
-        return {"error": "Invalid state"}
+        raise CustomHTTPException(401, "Invalid state")
     redirect = request.session["redirect"]
     del request.session["state"], request.session["redirect"]
     try:
         access_token, refresh_token = await discord.oauth2.exchange_code(code, redirect)
     except ClientResponseError:
-        response.status_code = 400
-        return {"error": "Invalid code"}
+        raise CustomHTTPException(401, "Invalid code")
     request.session["access_token"] = access_token
     request.session["refresh_token"] = refresh_token
     user_info = await discord.rest_api.get_user_info(access_token)
