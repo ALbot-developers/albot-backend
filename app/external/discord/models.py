@@ -30,7 +30,7 @@ class UserPIIResponse(BaseModel):
     avatar_decoration_data: Optional[UserAvatarDecorationResponse]
     mfa_enabled: bool
     locale: str
-    premium_type: Optional[int]
+    premium_type: Optional[str] = None
     email: Optional[str]
     verified: Optional[bool]
 
