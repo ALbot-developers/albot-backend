@@ -3,20 +3,24 @@
 albot-webからAPI部分を切り分けて、Restfulに再実装します。  
 FastAPIを使用します。
 
-### [▶進捗](migration_progress.md)
-
 # Table of Contents
 
 - [Authentication](#Authentication)
   - [認証方法](#認証方法)
   - [ユーザーの認証フロー](#ユーザーの認証フロー)
 - [Endpoints (`/api/v2`)](#Endpoints-apiv2)
+  - [OAuth2 API](#OAuth2-API)
+    - [Login API](#Login-API-oauth2login)
+    - [Callback API](#Callback-API-oauth2callback)
+    - [Logout API](#Logout-API-oauth2logout)
   - [Shards](#Shards-API-apiv2shards)
+    - [List API](#List-API-apiv2shards)
     - [Assign API](#Assign-API-apiv2shardsassign)
     - [Release API](#Release-API-apiv2shardsshard_idrelease)
     - [Connection commands API](#Connection-commands-API-apiv2shardsshard_idconnection_commands)
     - [Metrics API](#Metrics-API-POST-apiv2shardsshard_idmetrics)
   - [Users](#Users-API-apiv2users)
+    - [Get user info](#Get-user-info-apiv2usersmeinfo)
     - [List subscriptions](#list-subscriptions-apiv2usersusersubscriptions)
     - [Activate subscription](#Activate-subscription-apiv2usersusersubscriptionssubscription_idactivate)
     - [Cancel subscription](#Cancel-subscription-apiv2usersusersubscriptionssubscription_idcancel)
@@ -34,7 +38,10 @@ FastAPIを使用します。
     - [Connection states API](#Connection-states-API-apiv2guildsguild_idconnection_states)
     - [Message link expand preference API](#Message-link-expand-preference-API-apiv2guildsguild_idmessage_link_expand_preference)
     - [Connection command API](#Connection-command-API-apiv2guildsguild_idconnection_command)
+    - [Subscriptions API](#Subscriptions-API-apiv2guildsguild_idsubscriptions)
   - [Metrics API](#Metrics-API-GET-apiv2metrics)
+  - [Webhooks API](#Webhooks-API)
+    - [Stripe Webhook](#Stripe-Webhook-apiv2webhooksstripe)
 
 # Authentication
 ## 認証方法
@@ -64,12 +71,111 @@ sequenceDiagram
 ```
 
 # Endpoints (`/api/v2`)
+
+## OAuth2 API
+
+### Login API `/oauth2/login`
+
+- `GET` : OAuth2認証のリダイレクトURLを取得します。
+
+__Request Parameters__
+
+- redirect (query): リダイレクト先のURL
+
+__Response__
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "url": "https://discord.com/api/oauth2/authorize?..."
+  }
+}
+```
+
+### Callback API `/oauth2/callback`
+
+- `POST` : OAuth2認証のコールバック処理を行います。
+
+__Request Parameters__
+
+- code (query): 認証コード
+- state (query): 認証状態
+
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
+
+### Logout API `/oauth2/logout`
+
+- `POST` : ログアウト処理を行います。
+
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
+
 ## Shards API `/api/v2/shards/`
+
+### List API `/api/v2/shards`
+
+- `GET` : シャードの一覧を取得します。
+
+__Request Parameters__
+
+- status (query): シャードのステータス（online, offline, all）、デフォルトは "all"
+
+__Response__
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "ids": [
+      0,
+      1,
+      2
+    ]
+  }
+}
+```
+
 ### Assign API `/api/v2/shards/assign`
 - `GET` : シャードの割当を行い、環境変数を配信します。
 
+__Response__
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "shard_count": 10,
+    "shard_id": 0,
+    "discord_token": "token",
+    "sentry_dsn": "dsn",
+    "tts_key": "key",
+    "heartbeat_token": "token"
+  }
+}
+```
+
 ### Release API `/api/v2/shards/{shard_id}/release`
 - `POST` : シャードの終了時に、割当を解除します。
+
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
 
 ### Connection commands API `/api/v2/shards/{shard_id}/connection_commands`
 
@@ -78,9 +184,12 @@ sequenceDiagram
   - changes_only (boolean): 前回fetch以降に更新されたコマンドのみ取得します。epoch秒で指定します。
 ```json
 {
-  "commands": {
-    "123456789012345678": "t.con",
-    "234567890123456789": "召喚"
+  "message": "Success",
+  "data": {
+    "commands": {
+      "123456789012345678": "t.con",
+      "234567890123456789": "召喚"
+    }
   }
 }
 ```
@@ -89,10 +198,19 @@ sequenceDiagram
 
 - `POST` : シャードのメトリクスを更新します。
 
+__Request Body__
 ```json
 {
   "guilds": 10000,
   "connected": 100
+}
+```
+
+__Response__
+
+```json
+{
+  "message": "Success"
 }
 ```
 
@@ -103,21 +221,59 @@ sequenceDiagram
 * **/{user_id}/**  
   任意のユーザーの情報にアクセス。bearerトークンでの認証が必要です。
 
+### Get user info `/api/v2/users/me/info`
+
+- `GET`: ログイン中のユーザー情報を取得します。
+
+__Response__
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "info": {
+      "id": "123456789012345678",
+      "username": "username",
+      "avatar": "avatar_hash",
+      "discriminator": "1234",
+      "public_flags": 0,
+      "flags": 0,
+      "bot": false,
+      "system": false,
+      "banner": null,
+      "accent_color": null,
+      "global_name": "Global Name",
+      "avatar_decoration_data": null,
+      "mfa_enabled": false,
+      "locale": "ja",
+      "premium_type": null,
+      "email": "user@example.com",
+      "verified": true
+    }
+  }
+}
+```
+
 ### List subscriptions `/api/v2/users/{user}/subscriptions`
 
 - `GET`: ユーザーのサブスクリプションを取得します。
 
+__Response__
 ```json
 {
-  "subscriptions": [
-    {
-      "sub_id": "sub_abcd1234",
-      "guild_id": 123456789012345678,
-      "plan": "monthly1",
-      "sub_start": "2021-01-01T00:00:00",
-      "last_updated": "2021-01-01T00:00:00"
-    }
-  ]
+  "message": "Success",
+  "data": {
+    "subscriptions": [
+      {
+        "sub_id": "sub_abcd1234",
+        "guild_id": 123456789012345678,
+        "plan": "monthly1",
+        "sub_start": "2021-01-01T00:00:00",
+        "last_updated": "2021-01-01T00:00:00",
+        "user_id": 123456789012345678
+      }
+    ]
+  }
 }
 ```
 
@@ -125,9 +281,18 @@ sequenceDiagram
 
 - `POST`: ユーザーのサブスクリプションを有効化します。
 
+__Request Body__
 ```json
 {
   "guild_id": 123456789012345678
+}
+```
+
+__Response__
+
+```json
+{
+  "message": "Success"
 }
 ```
 
@@ -135,13 +300,30 @@ sequenceDiagram
 
 - `POST`: ユーザーのサブスクリプションをキャンセルします。
 
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
+
 ### Renew subscription `/api/v2/users/{user}/subscriptions/{subscription_id}/renew`
 
 - `POST`: ユーザーのサブスクリプションを更新します。
 
+__Request Body__
 ```json
 {
   "new_plan": "monthly1"
+}
+```
+
+__Response__
+
+```json
+{
+  "message": "Success"
 }
 ```
 
@@ -149,18 +331,32 @@ sequenceDiagram
 
 - `GET`: ユーザーが所属するサーバーの一覧を取得します。
 
+__Request Parameters__
+
+- mutual (query): 相互のサーバーのみを取得するかどうか（デフォルト: true）
+
+__Response__
 ```json
 {
-  "guilds": [
-    {
-      "id": "123456789012345678",
-      "name": "サーバー名"
-    },
-    {
-      "id": "234567890123456789",
-      "name": "サーバー名"
-    }
-  ]
+  "message": "Success",
+  "data": {
+    "guilds": [
+      {
+        "id": "123456789012345678",
+        "name": "サーバー名",
+        "icon": "icon_hash",
+        "banner": null,
+        "owner": true,
+        "permissions": "permissions",
+        "features": [
+          "FEATURE1",
+          "FEATURE2"
+        ],
+        "approximate_member_count": 100,
+        "approximate_presence_count": 50
+      }
+    ]
+  }
 }
 ```
 
@@ -168,26 +364,48 @@ sequenceDiagram
 
 - `GET`: ユーザーが所属するサーバーの情報を取得します。
 
+__Response__
 ```json
 {
-  "info": {
-    "id": "123456789012345678",
-    "name": "サーバー名",
-    "icon": "https://cdn.discordapp.com/icons/123456789012345678/abcdef1234567890.png",
-    "owner": "123456789012345678",
-    "members": 100,
-    "channels": 10
+  "message": "Success",
+  "data": {
+    "info": {
+      "id": "123456789012345678",
+      "name": "サーバー名",
+      "icon": "icon_hash",
+      "banner": null,
+      "owner": true,
+      "permissions": "permissions",
+      "features": [
+        "FEATURE1",
+        "FEATURE2"
+      ],
+      "approximate_member_count": 100,
+      "approximate_presence_count": 50
+    }
   }
 }
 ```
 
 ### Checkout `/api/v2/users/me/checkout-session`
 
-- `GET`: ユーザーのチェックアウトセッションを取得します。  
-  **Query params:** plan
+- `POST`: ユーザーのチェックアウトセッションを作成します。
+
+__Request Body__
+
 ```json
 {
-  "url": "https://example.com/"
+  "plan": "monthly1"
+}
+```
+
+__Response__
+```json
+{
+  "message": "Success",
+  "data": {
+    "url": "https://example.com/"
+  }
 }
 ```
 
@@ -197,13 +415,46 @@ sequenceDiagram
 
 - `POST` : サーバーのリソースを作成します。
 
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
+
 ### Delete a resource `/api/v2/guilds/{guild_id}`
 
 - `DELETE` : サーバーのリソースを削除します。
 
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
+
 ### Dict API `/api/v2/guilds/{guild_id}/dict`
 - `GET` : 辞書の一覧を取得します。
+
+__Response__
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "dict": {
+      "key1": "value1",
+      "key2": "value2"
+    }
+  }
+}
+```
+
 - `PUT` : 辞書をリクエストデータで置き換えます。
+
+__Request Body__
 ```json
 {
   "dict": {
@@ -213,51 +464,99 @@ sequenceDiagram
 }
 ```
 
-- `DELETE` : 辞書を削除します。
-### Settings API `/api/v2/guilds/{guild_id}/settings`
-- `GET` : サーバーの読み上げ設定を取得します。
+__Response__
 
 ```json
 {
-  "settings": {
-    "guild_id": 731467468341510184,
-    "lang": "ja-JP",
-    "character_limit": 3000,
-    "speech_speed": 1.75,
-    "read_name": false,
-    "custom_voice": null,
-    "translate": false,
-    "read_name_on_join": true,
-    "read_name_on_leave": true,
-    "read_guild": false,
-    "read_not_joined_users": true,
-    "audio_api": "gtts"
+  "message": "Success"
+}
+```
+
+- `DELETE` : 辞書を削除します。
+
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
+
+### Settings API `/api/v2/guilds/{guild_id}/settings`
+- `GET` : サーバーの読み上げ設定を取得します。
+
+__Response__
+```json
+{
+  "message": "Success",
+  "data": {
+    "settings": {
+      "guild_id": 731467468341510184,
+      "lang": "ja-JP",
+      "character_limit": 3000,
+      "speech_speed": 1.75,
+      "read_name": false,
+      "custom_voice": null,
+      "translate": false,
+      "read_name_on_join": true,
+      "read_name_on_leave": true,
+      "read_guild": false,
+      "read_not_joined_users": true,
+      "audio_api": "gtts"
+    }
   }
 }
 ```
 - `DELETE` : サーバーの読み上げ設定を削除します。(初期化)
+
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
+
 - `POST` : サーバーの読み上げ設定を編集します。
+
+__Request Body__
 ```json
 { 
   "speech_speed": 1.0,
   "read_name": true
 }
 ```
-### Character usage API `/api/v2/guilds/{guild_id}/character_usage`
-- `GET` : サーバーの文字数使用状況を取得します。
+
+__Response__
+
 ```json
 {
-  "wavenet": {
-    "monthly_quota": 1000000,
-    "used_characters": 250000
-  },
-  "standard": {
-    "monthly_quota": 500000,
-    "used_characters": 150000
+  "message": "Success"
+}
+```
+
+### Character usage API `/api/v2/guilds/{guild_id}/character_usage`
+- `GET` : サーバーの文字数使用状況を取得します。
+
+__Response__
+```json
+{
+  "message": "Success",
+  "data": {
+    "wavenet": {
+      "monthly_quota": 1000000,
+      "used_characters": 250000
+    },
+    "standard": {
+      "monthly_quota": 500000,
+      "used_characters": 150000
+    }
   }
 }
 ```
 - `POST` : サーバーの文字数使用状況を更新します。文字数が増えた場合のみUPDATEします。
+
+__Request Body__
 ```json
 {
   "wavenet": {
@@ -268,18 +567,34 @@ sequenceDiagram
   }
 }
 ```
-### Trusted roles API `/api/v2/guilds/{guild_id}/trusted_roles`
-- `GET` : サーバーの設定を編集できるロールの一覧を取得します。
+
+__Response__
+
 ```json
 {
-  "enabled": true,
-  "role_ids": [
-    123456789012345678,
-    234567890123456789
-  ]
+  "message": "Success"
+}
+```
+
+### Trusted roles API `/api/v2/guilds/{guild_id}/trusted_roles`
+- `GET` : サーバーの設定を編集できるロールの一覧を取得します。
+
+__Response__
+```json
+{
+  "message": "Success",
+  "data": {
+    "enabled": true,
+    "role_ids": [
+      123456789012345678,
+      234567890123456789
+    ]
+  }
 }
 ```
 - `PUT` : サーバーの設定を編集できるロールの一覧を更新します。
+
+__Request Body__
 ```json
 {
   "enabled": true,
@@ -289,13 +604,26 @@ sequenceDiagram
   ]
 }
 ```
+
+__Response__
+
+```json
+{
+  "message": "Success"
+}
+```
+
 ### Connection states API `/api/v2/guilds/{guild_id}/connection_states`
 - `POST`: サーバーのConnectionStateを生成して返却します。  
 payloadとして、接続コマンドで指定されたオプションを受け取ります。  
 BotクライアントのConnectionStateクラスに準拠したオブジェクトを返却します。
+
+__Request Body__
 ```json
 {
   "options": {
+    "vc_id": 123456789012345678,
+    "tc_id": 234567890123456789,
     "read_guild": false,
     "speech_speed": 1,
     "lang": "jp",
@@ -303,30 +631,106 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
   }
 }
 ```
+
+__Response__
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "connection_states": {
+      "guild_id": 123456789012345678,
+      "vc_id": 123456789012345678,
+      "target_id": 234567890123456789,
+      "service": "gtts",
+      "language_code": "ja-JP",
+      "translate": false,
+      "wavenet_voice": "ja-JP-Standard-A",
+      "standard_voice": "ja-JP-Standard-A",
+      "custom_voice": null,
+      "read_name": true,
+      "dict": {},
+      "dict_keys": [],
+      "speech_speed": 1.0,
+      "character_limit": 3000,
+      "character_usage": {
+        "wavenet": {
+          "monthly_quota": 1000000,
+          "used_characters": 0
+        },
+        "standard": {
+          "monthly_quota": 500000,
+          "used_characters": 0
+        }
+      },
+      "read_guild": false,
+      "read_name_on_join": true,
+      "read_name_on_leave": true,
+      "read_not_joined_users": true,
+      "unix_time_connected": 1741740034.4376345,
+      "sync_count": 0
+    }
+  }
+}
+```
+
 ### Message link expand preference API `/api/v2/guilds/{guild_id}/message_link_expand_preference`
 - `GET`: サーバーのメッセージリンク展開設定を取得します。
+
+__Response__
+```json
+{
+  "message": "Success",
+  "data": {
+    "enabled": true
+  }
+}
+```
+
+- `POST`: サーバーのメッセージリンク展開設定を更新します。
+
+__Request Body__
 ```json
 {
   "enabled": true
 }
 ```
-- `PUT`: サーバーのメッセージリンク展開設定を更新します。
+
+__Response__
+
 ```json
 {
-  "enabled": true
+  "message": "Success"
 }
 ```
+
 ### Connection command API `/api/v2/guilds/{guild_id}/connection_command`
 - `GET`: サーバーの接続コマンドを取得します。
+
+__Response__
+```json
+{
+  "message": "Success",
+  "data": {
+    "command": "召喚"
+  }
+}
+```
+
+- `PUT`: サーバーの接続コマンドを更新します。
+
+__Request Body__
 ```json
 {
   "command": "召喚"
 }
 ```
-- `POST`: サーバーの接続コマンドを更新します。
+
+__Response__
+
 ```json
 {
-  "command": "召喚"
+  "message": "Success"
 }
 ```
 
@@ -334,27 +738,51 @@ BotクライアントのConnectionStateクラスに準拠したオブジェク�
 
 - `GET`: サーバーのサブスクリプションを取得します。
 
+__Response__
 ```json
 {
-  "subscriptions": [
-    {
-      "sub_id": "sub_abcd1234",
-      "guild_id": 123456789012345678,
-      "plan": "monthly1",
-      "sub_start": "2021-01-01T00:00:00",
-      "last_updated": "2021-01-01T00:00:00"
-    }
-  ]
+  "message": "Success",
+  "data": {
+    "subscriptions": [
+      {
+        "sub_id": "sub_abcd1234",
+        "guild_id": 123456789012345678,
+        "plan": "monthly1",
+        "sub_start": "2021-01-01",
+        "last_updated": "2021-01-01",
+        "user_id": 123456789012345678
+      }
+    ]
+  }
 }
 ```
 
 ## Metrics API (GET) `/api/v2/metrics`
 - `GET` : メトリクスを取得します。
+
+__Response__
 ```json
 {
-  "metrics": {
-    "guilds": 10000,
-    "connected": 100
+  "message": "Success",
+  "data": {
+    "metrics": {
+      "guilds": 10000,
+      "connected": 100
+    }
   }
+}
+```
+
+## Webhooks API
+
+### Stripe Webhook `/api/v2/webhooks/stripe`
+
+- `POST` : Stripeからのwebhookを処理します。
+
+__Response__
+
+```json
+{
+  "message": "Success"
 }
 ```
