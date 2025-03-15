@@ -8,40 +8,40 @@ FastAPIを使用します。
 - [Authentication](#Authentication)
   - [認証方法](#認証方法)
   - [ユーザーの認証フロー](#ユーザーの認証フロー)
-- [Endpoints (`/api/v2`)](#Endpoints-apiv2)
+- [Endpoints (`/v2`)](#Endpoints-v2)
   - [OAuth2 API](#OAuth2-API)
     - [Login API](#Login-API-oauth2login)
     - [Callback API](#Callback-API-oauth2callback)
     - [Logout API](#Logout-API-oauth2logout)
-  - [Shards](#Shards-API-apiv2shards)
-    - [List API](#List-API-apiv2shards)
-    - [Assign API](#Assign-API-apiv2shardsassign)
-    - [Release API](#Release-API-apiv2shardsshard_idrelease)
-    - [Connection commands API](#Connection-commands-API-apiv2shardsshard_idconnection_commands)
-    - [Metrics API](#Metrics-API-POST-apiv2shardsshard_idmetrics)
-  - [Users](#Users-API-apiv2users)
-    - [Get user info](#Get-user-info-apiv2usersmeinfo)
-    - [List subscriptions](#list-subscriptions-apiv2usersusersubscriptions)
-    - [Activate subscription](#Activate-subscription-apiv2usersusersubscriptionssubscription_idactivate)
-    - [Cancel subscription](#Cancel-subscription-apiv2usersusersubscriptionssubscription_idcancel)
-    - [Renew subscription](#Renew-subscription-apiv2usersusersubscriptionssubscription_idrenew)
-    - [List user's guilds](#List-users-guilds-apiv2usersmeguilds)
-    - [Get user's guild info](#Get-users-guild-info-apiv2usersmeguildsguild_idinfo)
-    - [Checkout](#Checkout-apiv2usersmecheckout-session)
-  - [Guilds](#guilds-api-apiv2guildsguild_id)
-    - [Create resource](#Create-a-resource-apiv2guildsguild_id)
-    - [Delete resource](#Delete-a-resource-apiv2guildsguild_id)
-    - [Dict API](#Dict-API-apiv2guildsguild_iddict)
-    - [Settings API](#Settings-API-apiv2guildsguild_idsettings)
-    - [Character usage API](#Character-usage-API-apiv2guildsguild_idcharacter_usage)
-    - [Trusted roles API](#Trusted-roles-API-apiv2guildsguild_idtrusted_roles)
-    - [Connection states API](#Connection-states-API-apiv2guildsguild_idconnection_states)
-    - [Message link expand preference API](#Message-link-expand-preference-API-apiv2guildsguild_idmessage_link_expand_preference)
-    - [Connection command API](#Connection-command-API-apiv2guildsguild_idconnection_command)
-    - [Subscriptions API](#Subscriptions-API-apiv2guildsguild_idsubscriptions)
-  - [Metrics API](#Metrics-API-GET-apiv2metrics)
+  - [Shards](#Shards-API-shards)
+    - [List API](#List-API-shards)
+    - [Assign API](#Assign-API-shardsassign)
+    - [Release API](#Release-API-shardsshard_idrelease)
+    - [Connection commands API](#Connection-commands-API-shardsshard_idconnection_commands)
+    - [Metrics API](#Metrics-API-POST-shardsshard_idmetrics)
+  - [Users](#Users-API-users)
+    - [Get user info](#Get-user-info-usersmeinfo)
+    - [List subscriptions](#list-subscriptions-usersusersubscriptions)
+    - [Activate subscription](#Activate-subscription-usersusersubscriptionssubscription_idactivate)
+    - [Cancel subscription](#Cancel-subscription-usersusersubscriptionssubscription_idcancel)
+    - [Renew subscription](#Renew-subscription-usersusersubscriptionssubscription_idrenew)
+    - [List user's guilds](#List-users-guilds-usersmeguilds)
+    - [Get user's guild info](#Get-users-guild-info-usersmeguildsguild_idinfo)
+    - [Checkout](#Checkout-usersmecheckout-session)
+  - [Guilds](#guilds-api-guildsguild_id)
+    - [Create resource](#Create-a-resource-guildsguild_id)
+    - [Delete resource](#Delete-a-resource-guildsguild_id)
+    - [Dict API](#Dict-API-guildsguild_iddict)
+    - [Settings API](#Settings-API-guildsguild_idsettings)
+    - [Character usage API](#Character-usage-API-guildsguild_idcharacter_usage)
+    - [Trusted roles API](#Trusted-roles-API-guildsguild_idtrusted_roles)
+    - [Connection states API](#Connection-states-API-guildsguild_idconnection_states)
+    - [Message link expand preference API](#Message-link-expand-preference-API-guildsguild_idmessage_link_expand_preference)
+    - [Connection command API](#Connection-command-API-guildsguild_idconnection_command)
+    - [Subscriptions API](#Subscriptions-API-guildsguild_idsubscriptions)
+  - [Metrics API](#Metrics-API-GET-metrics)
   - [Webhooks API](#Webhooks-API)
-    - [Stripe Webhook](#Stripe-Webhook-apiv2webhooksstripe)
+    - [Stripe Webhook](#Stripe-Webhook-webhooksstripe)
 
 # Authentication
 ## 認証方法
@@ -70,7 +70,7 @@ sequenceDiagram
     Back-->>Front: 認証完了レスポンス
 ```
 
-# Endpoints (`/api/v2`)
+# Endpoints (`/v2`)
 
 ## OAuth2 API
 
@@ -122,9 +122,9 @@ __Response__
 }
 ```
 
-## Shards API `/api/v2/shards/`
+## Shards API `/shards/`
 
-### List API `/api/v2/shards`
+### List API `/shards`
 
 - `GET` : シャードの一覧を取得します。
 
@@ -147,7 +147,7 @@ __Response__
 }
 ```
 
-### Assign API `/api/v2/shards/assign`
+### Assign API `/shards/assign`
 - `GET` : シャードの割当を行い、環境変数を配信します。
 
 __Response__
@@ -166,7 +166,7 @@ __Response__
 }
 ```
 
-### Release API `/api/v2/shards/{shard_id}/release`
+### Release API `/shards/{shard_id}/release`
 - `POST` : シャードの終了時に、割当を解除します。
 
 __Response__
@@ -177,7 +177,7 @@ __Response__
 }
 ```
 
-### Connection commands API `/api/v2/shards/{shard_id}/connection_commands`
+### Connection commands API `/shards/{shard_id}/connection_commands`
 
 - `GET` : シャードに接続するサーバーの接続コマンドを取得します。  
   __Options__
@@ -194,7 +194,7 @@ __Response__
 }
 ```
 
-### Metrics API (POST) `/api/v2/shards/{shard_id}/metrics`
+### Metrics API (POST) `/shards/{shard_id}/metrics`
 
 - `POST` : シャードのメトリクスを更新します。
 
@@ -214,14 +214,14 @@ __Response__
 }
 ```
 
-## Users API `/api/v2/users/`
+## Users API `/users/`
 
 * **/me/**  
   ログイン中のユーザーにアクセス。セッションで認証されます。
 * **/{user_id}/**  
   任意のユーザーの情報にアクセス。bearerトークンでの認証が必要です。
 
-### Get user info `/api/v2/users/me/info`
+### Get user info `/users/me/info`
 
 - `GET`: ログイン中のユーザー情報を取得します。
 
@@ -254,7 +254,7 @@ __Response__
 }
 ```
 
-### List subscriptions `/api/v2/users/{user}/subscriptions`
+### List subscriptions `/users/{user}/subscriptions`
 
 - `GET`: ユーザーのサブスクリプションを取得します。
 
@@ -277,7 +277,7 @@ __Response__
 }
 ```
 
-### Activate subscription `/api/v2/users/{user}/subscriptions/{subscription_id}/activate`
+### Activate subscription `/users/{user}/subscriptions/{subscription_id}/activate`
 
 - `POST`: ユーザーのサブスクリプションを有効化します。
 
@@ -296,7 +296,7 @@ __Response__
 }
 ```
 
-### Cancel subscription `/api/v2/users/{user}/subscriptions/{subscription_id}/cancel`
+### Cancel subscription `/users/{user}/subscriptions/{subscription_id}/cancel`
 
 - `POST`: ユーザーのサブスクリプションをキャンセルします。
 
@@ -308,7 +308,7 @@ __Response__
 }
 ```
 
-### Renew subscription `/api/v2/users/{user}/subscriptions/{subscription_id}/renew`
+### Renew subscription `/users/{user}/subscriptions/{subscription_id}/renew`
 
 - `POST`: ユーザーのサブスクリプションを更新します。
 
@@ -327,7 +327,7 @@ __Response__
 }
 ```
 
-### List user's guilds `/api/v2/users/me/guilds`
+### List user's guilds `/users/me/guilds`
 
 - `GET`: ユーザーが所属するサーバーの一覧を取得します。
 
@@ -360,7 +360,7 @@ __Response__
 }
 ```
 
-### Get user's guild info `/api/v2/users/me/guilds/{guild_id}/info`
+### Get user's guild info `/users/me/guilds/{guild_id}/info`
 
 - `GET`: ユーザーが所属するサーバーの情報を取得します。
 
@@ -387,7 +387,7 @@ __Response__
 }
 ```
 
-### Checkout `/api/v2/users/me/checkout-session`
+### Checkout `/users/me/checkout-session`
 
 - `POST`: ユーザーのチェックアウトセッションを作成します。
 
@@ -409,9 +409,9 @@ __Response__
 }
 ```
 
-## Guilds API `/api/v2/guilds/{guild_id}/`
+## Guilds API `/guilds/{guild_id}/`
 
-### Create a resource `/api/v2/guilds/{guild_id}`
+### Create a resource `/guilds/{guild_id}`
 
 - `POST` : サーバーのリソースを作成します。
 
@@ -423,7 +423,7 @@ __Response__
 }
 ```
 
-### Delete a resource `/api/v2/guilds/{guild_id}`
+### Delete a resource `/guilds/{guild_id}`
 
 - `DELETE` : サーバーのリソースを削除します。
 
@@ -435,7 +435,7 @@ __Response__
 }
 ```
 
-### Dict API `/api/v2/guilds/{guild_id}/dict`
+### Dict API `/guilds/{guild_id}/dict`
 - `GET` : 辞書の一覧を取得します。
 
 __Response__
@@ -482,7 +482,7 @@ __Response__
 }
 ```
 
-### Settings API `/api/v2/guilds/{guild_id}/settings`
+### Settings API `/guilds/{guild_id}/settings`
 - `GET` : サーバーの読み上げ設定を取得します。
 
 __Response__
@@ -535,7 +535,7 @@ __Response__
 }
 ```
 
-### Character usage API `/api/v2/guilds/{guild_id}/character_usage`
+### Character usage API `/guilds/{guild_id}/character_usage`
 - `GET` : サーバーの文字数使用状況を取得します。
 
 __Response__
@@ -576,7 +576,7 @@ __Response__
 }
 ```
 
-### Trusted roles API `/api/v2/guilds/{guild_id}/trusted_roles`
+### Trusted roles API `/guilds/{guild_id}/trusted_roles`
 - `GET` : サーバーの設定を編集できるロールの一覧を取得します。
 
 __Response__
@@ -613,7 +613,7 @@ __Response__
 }
 ```
 
-### Connection states API `/api/v2/guilds/{guild_id}/connection_states`
+### Connection states API `/guilds/{guild_id}/connection_states`
 - `POST`: サーバーのConnectionStateを生成して返却します。  
 payloadとして、接続コマンドで指定されたオプションを受け取ります。  
 BotクライアントのConnectionStateクラスに準拠したオブジェクトを返却します。
@@ -674,7 +674,7 @@ __Response__
 }
 ```
 
-### Message link expand preference API `/api/v2/guilds/{guild_id}/message_link_expand_preference`
+### Message link expand preference API `/guilds/{guild_id}/message_link_expand_preference`
 - `GET`: サーバーのメッセージリンク展開設定を取得します。
 
 __Response__
@@ -704,7 +704,7 @@ __Response__
 }
 ```
 
-### Connection command API `/api/v2/guilds/{guild_id}/connection_command`
+### Connection command API `/guilds/{guild_id}/connection_command`
 - `GET`: サーバーの接続コマンドを取得します。
 
 __Response__
@@ -734,7 +734,7 @@ __Response__
 }
 ```
 
-### Subscriptions API `/api/v2/guilds/{guild_id}/subscriptions`
+### Subscriptions API `/guilds/{guild_id}/subscriptions`
 
 - `GET`: サーバーのサブスクリプションを取得します。
 
@@ -757,7 +757,7 @@ __Response__
 }
 ```
 
-## Metrics API (GET) `/api/v2/metrics`
+## Metrics API (GET) `/metrics`
 - `GET` : メトリクスを取得します。
 
 __Response__
@@ -775,7 +775,7 @@ __Response__
 
 ## Webhooks API
 
-### Stripe Webhook `/api/v2/webhooks/stripe`
+### Stripe Webhook `/webhooks/stripe`
 
 - `POST` : Stripeからのwebhookを処理します。
 
