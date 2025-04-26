@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Literal, List
 
 import asyncpg
+import sentry_sdk
 import stripe
 
 from app.constants import PRICE_IDS
@@ -125,9 +126,14 @@ async def renew(sub_id: str, user_id: int, new_plan: str) -> tuple[int, str]:
         old_plan: str = await conn.fetchval('SELECT plan FROM subscriptions WHERE sub_id = $1', sub_id)
     proration_behavior: Literal["create_prorations", "none"] = "none"
     # 変更前のプランが年額の場合
+    # todo: 一時的なエラーハンドリング。ちゃんと直す
     if "yearly" in old_plan:
         proration_behavior = "create_prorations"
-        _create_remaining_payment(old_sub, old_plan)
+        try:
+            _create_remaining_payment(old_sub, old_plan)
+        except stripe.error.StripeError as e:
+            sentry_sdk.capture_exception(e)
+            pass
     # サブスクのダウングレード・アップグレード
     if old_sub["items"]["data"][0]["price"]["id"] != new_price_id:
         stripe.Subscription.modify(
