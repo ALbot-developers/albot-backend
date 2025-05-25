@@ -31,7 +31,7 @@ jobs:
 
       - name: Dump Development Database Schema
         run: |
-          pg_dump -h oracle1 -U postgres -d albot-dev --schema-only -f schemas/development_schema.sql -n public -n log
+          pg_dump -h 100.65.209.33 -U postgres -d albot-dev --schema-only -f schemas/development_schema.sql -n public -n log
 
       - name: Execute DDL in docker containers
         run: |
