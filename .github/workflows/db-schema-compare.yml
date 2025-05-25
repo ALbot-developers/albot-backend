@@ -40,11 +40,11 @@ jobs:
       - name: Dump Production Database Schema
         run: |
           mkdir -p schemas
-          PGPASSWORD=${{ secrets.PROD_DB_PASSWORD }} pg_dump -h ${{ secrets.PROD_DB_HOST }} -U ${{ secrets.PROD_DB_USER }} -d ${{ secrets.PROD_DB_NAME }} --schema-only -f schemas/production_schema.sql
+          PGPASSWORD=${{ secrets.PROD_DB_SCHEMA_VIEWER_PASSWORD }} pg_dump -h ${{ secrets.PROD_DB_HOST }} -U ${{ secrets.PROD_DB_USER }} -d ${{ secrets.PROD_DB_NAME }} --schema-only -f schemas/production_schema.sql
 
       - name: Dump Development Database Schema
         run: |
-          PGPASSWORD=${{ secrets.DEV_DB_PASSWORD }} pg_dump -h 100.65.209.33 -U postgres -d albot-dev --schema-only -f schemas/development_schema.sql
+          pg_dump -h 100.65.209.33 -U postgres -d albot-dev --schema-only -f schemas/development_schema.sql
 
       - name: Convert SQL to SchemaCrawler format
         run: |
