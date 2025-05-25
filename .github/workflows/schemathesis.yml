@@ -11,11 +11,18 @@ jobs:
   validate-dev-schema:
     uses: ./.github/workflows/db-schema-compare.yml
   schemathesis:
-    needs: [ validate-dev-schema ]
+    #    needs: [ validate-dev-schema ]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          tags: tag:ci
 
       - name: Set up Python
         uses: actions/setup-python@v4
