@@ -46,7 +46,7 @@ jobs:
         run: |
           pg_dump -h 100.65.209.33 -U postgres -d albot-dev --schema-only -f schemas/development_schema.sql
 
-      - name: Convert SQL to SchemaCrawler format
+      - name: Execute DDL in docker containers
         run: |
           # Create temporary PostgreSQL instances to load the schemas
           docker run --name pg-prod -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=prod -d postgres:14
@@ -58,31 +58,18 @@ jobs:
           # Load schemas into temporary databases
           docker exec -i pg-prod psql -U postgres -d prod < schemas/production_schema.sql
           docker exec -i pg-dev psql -U postgres -d dev < schemas/development_schema.sql
-          
-          # Use SchemaCrawler to generate schema reports
-          schemacrawler/_schemacrawler/schemacrawler.sh \
-            --server=postgresql \
-            --host=localhost \
-            --port=5432 \
-            --database=prod \
-            --user=postgres \
-            --password=postgres \
-            --info-level=standard \
-            --command=schema \
-            --output-format=json \
-            --output-file=schemas/production_schema.json
-          
-          schemacrawler/_schemacrawler/schemacrawler.sh \
-            --server=postgresql \
-            --host=localhost \
-            --port=5432 \
-            --database=dev \
-            --user=postgres \
-            --password=postgres \
-            --info-level=standard \
-            --command=schema \
-            --output-format=json \
-            --output-file=schemas/development_schema.json
+
+      - name: Convert prod db to SchemaCrawler format
+        uses: schemacrawler/SchemaCrawler-Action@v16.25.4
+        with:
+          entrypoint: /schemacrawler.sh
+          args: --server=postgresql --host=localhost --port=5432 --database=prod --user=postgres --password=postgres --info-level=standard --command=schema --output-format=json --output-file=schemas/production_schema.json
+
+      - name: Convert dev db to SchemaCrawler format
+        uses: schemacrawler/SchemaCrawler-Action@v16.25.4
+        with:
+          entrypoint: /schemacrawler.sh
+          args: --server=postgresql --host=localhost --port=5432 --database=dev --user=postgres --password=postgres --info-level=standard --command=schema --output-format=json --output-file=schemas/development_schema.json
 
       - name: Compare Schemas
         run: |
