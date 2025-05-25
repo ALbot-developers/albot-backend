@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install schemathesis pytest
+          python -m pip install -r requirements.txt
+          python -m pip install schemathesis pytest
 
       - name: Set up environment variables
         run: |
@@ -54,7 +54,7 @@ jobs:
         run: |
           # Run Schemathesis against the API with comprehensive checks
           mkdir -p ./test-results
-          python -m st run http://localhost:8000/v2/openapi.json \
+          st run http://localhost:8000/v2/openapi.json \
             --checks all \
             --report \
             --junit-xml=./test-results/schemathesis-report.xml \
