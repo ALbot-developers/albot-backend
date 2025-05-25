@@ -1,0 +1,115 @@
+name: Database Schema Comparison
+
+on:
+  workflow_dispatch:  # Allow manual triggering
+  workflow_call:
+
+jobs:
+  compare-schemas:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Install Java for SchemaCrawler
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download SchemaCrawler
+        run: |
+          mkdir -p schemacrawler
+          wget -O schemacrawler.zip https://github.com/schemacrawler/SchemaCrawler/releases/download/v16.20.2/schemacrawler-16.20.2-distribution.zip
+          unzip schemacrawler.zip -d schemacrawler
+          chmod +x schemacrawler/_schemacrawler/schemacrawler.sh
+
+      - name: Dump Production Database Schema
+        run: |
+          mkdir -p schemas
+          PGPASSWORD=${{ secrets.PROD_DB_PASSWORD }} pg_dump -h ${{ secrets.PROD_DB_HOST }} -U ${{ secrets.PROD_DB_USER }} -d ${{ secrets.PROD_DB_NAME }} --schema-only -f schemas/production_schema.sql
+
+      - name: Dump Development Database Schema
+        run: |
+          PGPASSWORD=${{ secrets.DEV_DB_PASSWORD }} pg_dump -h 100.65.209.33 -U postgres -d albot-dev --schema-only -f schemas/development_schema.sql
+
+      - name: Convert SQL to SchemaCrawler format
+        run: |
+          # Create temporary PostgreSQL instances to load the schemas
+          docker run --name pg-prod -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=prod -d postgres:14
+          docker run --name pg-dev -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=dev -d postgres:14
+          
+          # Wait for PostgreSQL to start
+          sleep 10
+          
+          # Load schemas into temporary databases
+          docker exec -i pg-prod psql -U postgres -d prod < schemas/production_schema.sql
+          docker exec -i pg-dev psql -U postgres -d dev < schemas/development_schema.sql
+          
+          # Use SchemaCrawler to generate schema reports
+          schemacrawler/_schemacrawler/schemacrawler.sh \
+            --server=postgresql \
+            --host=localhost \
+            --port=5432 \
+            --database=prod \
+            --user=postgres \
+            --password=postgres \
+            --info-level=standard \
+            --command=schema \
+            --output-format=json \
+            --output-file=schemas/production_schema.json
+          
+          schemacrawler/_schemacrawler/schemacrawler.sh \
+            --server=postgresql \
+            --host=localhost \
+            --port=5432 \
+            --database=dev \
+            --user=postgres \
+            --password=postgres \
+            --info-level=standard \
+            --command=schema \
+            --output-format=json \
+            --output-file=schemas/development_schema.json
+
+      - name: Compare Schemas
+        run: |
+          # Install jq for JSON comparison
+          sudo apt-get install -y jq
+          
+          # Compare the schema JSON files
+          jq -S . schemas/production_schema.json > schemas/production_schema_sorted.json
+          jq -S . schemas/development_schema.json > schemas/development_schema_sorted.json
+          
+          # Generate diff
+          diff -u schemas/production_schema_sorted.json schemas/development_schema_sorted.json > schema_diff.txt || true
+          
+          # Check if there are differences
+          if [ -s schema_diff.txt ]; then
+            echo "Schema differences detected. See schema_diff.txt for details."
+            cat schema_diff.txt
+            echo "::warning::Database schema differences detected between production and development environments."
+          else
+            echo "No schema differences detected."
+          fi
+
+      - name: Upload Schema Comparison Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: schema-comparison-results
+          path: |
+            schemas/
+            schema_diff.txt
+          retention-days: 7

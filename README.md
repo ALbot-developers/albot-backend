@@ -1,10 +1,34 @@
 # albot-backend
 
-albot-webからAPI部分を切り分けて、Restfulに再実装します。  
-FastAPIを使用します。
+## CI/CD
+
+### API Schema Validation
+
+このプロジェクトでは、[Schemathesis](https://github.com/schemathesis/schemathesis)
+を使用してFastAPIのOpenAPI定義を参照したスキーマに準拠した応答が返ってくるかのテストを自動化しています。このテストはGitHub
+Actionsで実行され、以下の内容を検証します：
+
+- APIレスポンスがOpenAPIスキーマに準拠しているか
+- エンドポイントが適切なステータスコードを返すか
+- レスポンスタイムが許容範囲内か
+- その他の一般的なAPIの問題
+
+テスト結果はGitHub Actionsのアーティファクトとして保存され、問題が発生した場合に詳細な情報を確認できます。
+
+### Database Schema Comparison
+
+本番環境と開発環境のデータベーススキーマを比較するワークフローを実装しています。このワークフローは以下の手順で実行されます：
+
+1. Tailscale GitHub Actionを使用してTailscaleネットワークに接続
+2. pg_dumpを使用して本番DBと開発DB（IP: 100.65.209.33, database: albot-dev）のDDLを抽出
+3. SchemaCrawlerを使用して両環境のスキーマを比較
+4. 差分があれば警告を表示し、詳細な差分情報をアーティファクトとして保存
 
 # Table of Contents
 
+- [CI/CD](#cicd)
+  - [API Schema Validation](#api-schema-validation)
+  - [Database Schema Comparison](#database-schema-comparison)
 - [Authentication](#Authentication)
   - [認証方法](#認証方法)
   - [ユーザーの認証フロー](#ユーザーの認証フロー)
