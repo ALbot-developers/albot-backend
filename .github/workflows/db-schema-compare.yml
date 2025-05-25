@@ -24,19 +24,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
-      - name: Install Java for SchemaCrawler
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Download SchemaCrawler
-        run: |
-          mkdir -p schemacrawler
-          wget -O schemacrawler.zip https://github.com/schemacrawler/SchemaCrawler/releases/download/v16.20.2/schemacrawler-16.20.2-distribution.zip
-          unzip schemacrawler.zip -d schemacrawler
-          chmod +x schemacrawler/_schemacrawler/schemacrawler.sh
-
       - name: Dump Production Database Schema
         run: |
           mkdir -p schemas
