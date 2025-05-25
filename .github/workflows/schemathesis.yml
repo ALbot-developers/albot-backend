@@ -60,8 +60,7 @@ jobs:
             --junit-xml=./test-results/schemathesis-report.xml \
             --stateful=links \
             --max-response-time=1000 \
-            --validate-schema \
-            --show-errors-tracebacks
+            --show-trace=true
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
