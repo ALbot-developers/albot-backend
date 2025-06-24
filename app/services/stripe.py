@@ -5,7 +5,7 @@ from app import constants
 
 def create_checkout_session(user_id: int, plan: str):
     success_url = "https://mypage.albot.info/subscribed"
-    cancel_url = f"https://albot.info/pricing"
+    cancel_url = f"https://albot.info/#pricing"
     price_id = constants.PRICE_IDS[plan]
     stripe_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
