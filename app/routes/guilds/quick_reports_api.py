@@ -8,12 +8,12 @@ from app.services import quick_reports
 router = APIRouter()
 
 
-# @router.get("/{guild_id}/quick-report", response_model=DictAPIResponse)
+# @router.get("/{guild_id}/quick_reports", response_model=DictAPIResponse)
 # async def get_guild_dict_api(guild_id: int, _auth=Security(verify_all_tokens)):
 #     pass
 
 
-@router.post("/{guild_id}/quick-reports", response_model=PlainAPIResponse)
+@router.post("/{guild_id}/quick_reports", response_model=PlainAPIResponse)
 async def post_quick_report(
         guild_id: int,
         data: QuickReportPost,
