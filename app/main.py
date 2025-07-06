@@ -45,7 +45,8 @@ app.add_middleware(SessionMiddleware, secret_key=constants.SESSION_SECRET, domai
 # noinspection PyTypeChecker
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://mypage.albot.info", "https://albot.info"],
+    allow_origins=["http://localhost:5173", "https://mypage.albot.info", "https://albot.info",
+                   "https://dev.albot.info"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
