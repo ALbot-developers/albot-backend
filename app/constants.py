@@ -24,6 +24,7 @@ YEARLY1_PRICE_ID = os.environ['YEARLY1_PRICE_ID']
 YEARLY2_PRICE_ID = os.environ['YEARLY2_PRICE_ID']
 SENTRY_DSN = os.environ["SENTRY_DSN"]
 SENTRY_ENV = os.environ.get("SENTRY_ENV", "Production")
+TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", "")
 PRICE_IDS = {
     'monthly1': MONTHLY1_PRICE_ID,
     'monthly2': MONTHLY2_PRICE_ID,

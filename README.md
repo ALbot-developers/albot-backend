@@ -63,6 +63,7 @@ Actionsで実行され、以下の内容を検証します：
     - [Message link expand preference API](#Message-link-expand-preference-API-guildsguild_idmessage_link_expand_preference)
     - [Connection command API](#Connection-command-API-guildsguild_idconnection_command)
     - [Subscriptions API](#Subscriptions-API-guildsguild_idsubscriptions)
+    - [Quick Reports API](#Quick-Reports-API-guildsguild_idquick-reports)
   - [Metrics API](#Metrics-API-GET-metrics)
   - [Webhooks API](#Webhooks-API)
     - [Stripe Webhook](#Stripe-Webhook-webhooksstripe)
@@ -778,6 +779,31 @@ __Response__
       }
     ]
   }
+}
+```
+
+### Quick Reports API `/guilds/{guild_id}/quick-reports`
+
+- `POST`: 不具合のレポート（Quickレポート）を作成します。
+
+__Request Headers__
+
+- turnstile_token: Cloudflare Turnstileトークン
+
+__Request Body__
+
+```json
+{
+  "category": "connect",
+  "description": "問題の詳細な説明"
+}
+```
+
+__Response__
+
+```json
+{
+  "message": "Created a report."
 }
 ```
 

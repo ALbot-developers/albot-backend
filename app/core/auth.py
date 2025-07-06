@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import Literal
 
+import aiohttp
 from fastapi import Security, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from app.constants import BEARER_TOKEN
+from app.constants import BEARER_TOKEN, TURNSTILE_SECRET_KEY
 from app.core.error import CustomHTTPException
 from app.services.user import get_guild
 
@@ -59,3 +60,31 @@ async def verify_all_tokens(
     if result:
         return result
     raise CustomHTTPException(status_code=401, detail="Invalid or missing Bearer/Session token")
+
+
+async def verify_turnstile_token(token: str) -> bool | None:
+    """
+    Verify a Cloudflare Turnstile token.
+
+    Args:
+        token: The turnstile token to verify
+
+    Returns:
+        bool: True if the token is valid, False otherwise
+    """
+    if not TURNSTILE_SECRET_KEY:
+        # If no secret key is configured, skip verification (for development)
+        return True
+
+    async with aiohttp.ClientSession() as session:
+        response = await session.post(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            data={
+                "secret": TURNSTILE_SECRET_KEY,
+                "response": token
+            }
+        )
+        result = await response.json()
+        if not result.get("success", False):
+            raise CustomHTTPException(status_code=400, detail="Invalid Turnstile token")
+        return None

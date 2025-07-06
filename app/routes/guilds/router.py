@@ -2,7 +2,7 @@ from fastapi import APIRouter, Security, BackgroundTasks
 
 from app.core.auth import verify_bearer_token
 from app.routes.guilds import dict_api, connection_command_api, subscriptions_api, settings_api, \
-    connection_states_api, trusted_roles_api, character_usage_api, message_link_expand_pref_api
+    connection_states_api, trusted_roles_api, character_usage_api, message_link_expand_pref_api, quick_reports_api
 from app.schemas.api_response import PlainAPIResponse
 from app.services import guild_resources, logs
 
@@ -15,6 +15,7 @@ router.include_router(connection_command_api.router)
 router.include_router(connection_states_api.router)
 router.include_router(message_link_expand_pref_api.router)
 router.include_router(subscriptions_api.router)
+router.include_router(quick_reports_api.router)
 
 
 @router.post("/{guild_id}", response_model=PlainAPIResponse)
