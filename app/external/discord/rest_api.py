@@ -32,4 +32,4 @@ async def push_webhook(content: dict | list):
     async with aiohttp.ClientSession() as session:
         async with session.post(DISCORD_REPORT_CH_WEBHOOK_URL, json=content) as res:
             res.raise_for_status()
-            return await res.json()
+            return res.status == 204
