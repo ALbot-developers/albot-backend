@@ -34,7 +34,7 @@ This route handles both GET and POST requests for bug reporting:
 
 ### Bug Reports Table
 
-The bug reports are stored in a database table named `bug_reports` with the following structure:
+The bug reports are stored in a database table named `quick_reports` with the following structure:
 
 | Field       | Type     | Description                                    |
 |-------------|----------|------------------------------------------------|
@@ -115,7 +115,7 @@ The report feature depends on:
 
 When re-implementing this feature in a different project:
 
-1. Set up a database table with the same structure as the bug_reports table
+1. Set up a database table with the same structure as the quick_reports table
 2. Create a Discord webhook for receiving notifications
 3. Implement the routes for handling GET and POST requests
 4. Create templates for the report form and thank you page
