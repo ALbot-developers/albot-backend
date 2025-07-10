@@ -20,6 +20,9 @@ def create_checkout_session(user_id: int, plan: str):
         metadata={
             "discord_id": user_id,
             "plan": plan
+        },
+        consent_collection={
+            'terms_of_service': 'required'
         }
     )
     return stripe_session

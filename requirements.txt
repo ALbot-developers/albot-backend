@@ -3,6 +3,6 @@ fastapi==0.112.2
 python-dotenv==1.0.1
 uvicorn==0.32.0
 itsdangerous==2.2.0
-aiohttp==3.10.5
-stripe==10.12.0
+aiohttp==3.12.13
+stripe==12.4.0b2
 sentry-sdk[fastapi]==2.18.0
