@@ -14,7 +14,11 @@ async def get(guild_id: int):
         row = await conn.fetchrow('SELECT * FROM settings_data WHERE guild_id = $1', guild_id)
         # convert the row to a dictionary
         if row is None:
-            return await get_default()
+            default_settings = await get_default()
+            return GuildSettings.model_copy(
+                default_settings,
+                update={"guild_id": guild_id}
+            )
         return GuildSettings.from_db(dict(row))
 
 

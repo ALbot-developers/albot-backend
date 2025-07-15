@@ -17,6 +17,7 @@ router = APIRouter()
 async def get_guild_settings_api(guild_id: int, subscription: Subscription = Depends(get_subscription),
                                  _auth=Security(verify_all_tokens)):
     settings = await guild_settings.get(guild_id)
+    # 有効な契約がない場合、プレミアム設定はデフォルト値を適用
     if subscription is None:
         default_settings = await get_default()
         for key in PremiumSettings.__annotations__.keys():

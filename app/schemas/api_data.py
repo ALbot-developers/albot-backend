@@ -9,7 +9,7 @@ from app.schemas.metrics import Metrics
 # todo: connection_state(単数形)に修正
 ConnectionStateData = create_model("ConnectionStateDataModel", connection_states=(ConnectionState, ...))
 DictData = create_model("DictDataModel", dict_=(dict, Field(..., alias="dict")))
-GuildSettingsData = create_model("GuildSettingsDataModel", settings=(GuildSettings | DefaultSettings, ...))
+GuildSettingsData = create_model("GuildSettingsDataModel", settings=(GuildSettings, ...))
 SubscriptionsData = create_model("SubscriptionsDataModel", subscriptions=(list[Subscription], ...))
 MetricsData = create_model("MetricsDataModel", metrics=(Metrics, ...))
 ShardConnectionCommandsData = create_model("ShardConnectionCommandsDataModel", commands=(dict, ...))
