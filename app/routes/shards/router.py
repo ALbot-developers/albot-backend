@@ -18,7 +18,6 @@ router.include_router(metrics_api.router)
 # todo: 将来的には死活監視の情報を使用
 @router.get("", response_model=ShardsListAPIResponse)
 async def index(
-        _auth=Security(verify_session),
         status: Literal["online", "offline", "all"] = "all"
 ):
     return ShardsListAPIResponse(
