@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get("", response_model=MetricsAPIResponse)
-async def get_metrics(_auth=Security(verify_all_tokens)):
+async def get_metrics():
     data = await metrics.get()
     return MetricsAPIResponse(
         message="Fetched metrics.",
