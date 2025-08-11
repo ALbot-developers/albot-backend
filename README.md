@@ -2,7 +2,7 @@
 
 ## CI/CD
 
-### API Schema Validation
+### API Schema Validation (構築中)
 
 このプロジェクトでは、[Schemathesis](https://github.com/schemathesis/schemathesis)
 を使用してFastAPIのOpenAPI定義を参照したスキーマに準拠した応答が返ってくるかのテストを自動化しています。このテストはGitHub
