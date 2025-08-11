@@ -40,6 +40,7 @@ sentry_sdk.init(
     environment=constants.SENTRY_ENV,
 )
 app = FastAPI(lifespan=lifespan, root_path=f"/{API_VERSION}")
+app.openapi_version = "3.0.2"
 # noinspection PyTypeChecker
 app.add_middleware(SessionMiddleware, secret_key=constants.SESSION_SECRET, domain=constants.SESSION_DOMAIN)
 # noinspection PyTypeChecker
