@@ -20,7 +20,7 @@ async def provision():
         # shard_idを取得
         shard_id = row['shard_id']
         tts_key = row["tts_key"]
-        heartbeat_token = row["shardd_token"]
+        heartbeat_token = row["healthchecks_token"]
         # is_assignedをtrueに更新
         await conn.execute(
             'UPDATE shard_data SET is_assigned = true WHERE shard_id = $1', shard_id
