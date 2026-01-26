@@ -38,7 +38,6 @@ async def delete_subscription(subscription_id: str):
             raise CustomHTTPException(404, "Subscription not found")
         guild_id: int | None = subscription.guild_id
         if guild_id is not None:
-            # registered_guild_table.delete(guild_id=guild_id)
             characters_limit = dict(wavenet=5000, standard=10000)
             # 使える文字数をリセット
             await conn.execute(
@@ -94,6 +93,7 @@ async def update_subscription(subscription_id: str, price_id: str):
 
 async def handle_checkout_completed(event: stripe.Event):
     sub_id = event.data['object']['subscription']
+    customer_id = event.data['object']['customer']
     metadata = event.data['object']["metadata"]
     if "discord_id" not in metadata:
         # donation
@@ -102,6 +102,15 @@ async def handle_checkout_completed(event: stripe.Event):
     plan = metadata['plan']
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
+
+        # 顧客IDを紐付け
+        await conn.execute("""
+                           INSERT INTO users (user_id, stripe_customer_id, updated_at)
+                           VALUES ($1, $2, NOW())
+                           ON CONFLICT (user_id) DO UPDATE SET stripe_customer_id = EXCLUDED.stripe_customer_id,
+                                                               updated_at         = NOW()
+                           """, int(user_id), customer_id)
+
         await conn.execute("""
                         INSERT INTO subscriptions (sub_id, plan, user_id)
                         VALUES ($1, $2, $3) ON CONFLICT (sub_id) DO UPDATE set user_id = excluded.user_id

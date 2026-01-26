@@ -108,7 +108,7 @@ async def checkout_session(payload: CheckoutSessionCreate, request: Request, res
     user_info = UserPIIResponse.from_dict(request.session["user_info"])
     if payload.plan not in constants.PRICE_IDS:
         raise CustomHTTPException(status_code=400, detail="Invalid plan.")
-    stripe_session = create_checkout_session(int(user_info.id), payload.plan)
+    stripe_session = await create_checkout_session(int(user_info.id), payload.plan)
     return URLAPIResponse(
         message="Created checkout session.",
         data=URLData(
