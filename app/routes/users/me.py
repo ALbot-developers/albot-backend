@@ -11,7 +11,7 @@ from app.schemas.checkout_session import CheckoutSessionCreate
 from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
 from app.services import subscriptions
 from app.services import user
-from app.services.stripe import create_checkout_session
+from app.services.stripe import create_checkout_session, create_customer_portal_session
 
 router = APIRouter()
 
@@ -113,5 +113,19 @@ async def checkout_session(payload: CheckoutSessionCreate, request: Request, res
         message="Created checkout session.",
         data=URLData(
             url=stripe_session.url
+        )
+    )
+
+
+@router.get("/customer-portal", response_model=URLAPIResponse)
+async def get_customer_portal(request: Request, _auth=Security(verify_session)):
+    user_info = UserPIIResponse.from_dict(request.session["user_info"])
+    portal_session = await create_customer_portal_session(int(user_info.id))
+    if not portal_session:
+        raise CustomHTTPException(status_code=400, detail="Stripe customer ID not found.")
+    return URLAPIResponse(
+        message="Created customer portal session.",
+        data=URLData(
+            url=portal_session.url
         )
     )

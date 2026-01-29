@@ -38,3 +38,18 @@ async def create_checkout_session(user_id: int, plan: str):
 
     stripe_session = stripe.checkout.Session.create(**params)
     return stripe_session
+
+
+async def create_customer_portal_session(user_id: int):
+    # DBから既存の顧客IDを取得
+    async with get_connection_pool().acquire() as conn:
+        customer_id = await conn.fetchval("SELECT stripe_customer_id FROM users WHERE user_id = $1", user_id)
+
+    if not customer_id:
+        return None
+
+    portal_session = stripe.billing_portal.Session.create(
+        customer=customer_id,
+        return_url="https://mypage.albot.info/",
+    )
+    return portal_session
