@@ -6,8 +6,9 @@ GoogleTTSVoiceCode = Annotated[str, Field(pattern=r'^[a-z]{2}-[A-Z]{2,3}-(Wavene
 
 class GuildSettingsUpdate(BaseModel):
     lang: Optional[str] = None
-    character_limit: Optional[int] = None
-    speech_speed: Optional[float] = None
+    character_limit: Optional[int] = Field(default=None, le=4000, ge=0,
+                                           description="Maximum character limit for messages")
+    speech_speed: Optional[float] = Field(default=None, ge=0.1, le=4.0, description="Speech speed multiplier")
     read_name: Optional[bool] = None
     custom_voice: Optional[GoogleTTSVoiceCode] = None
     translate: Optional[bool] = None
