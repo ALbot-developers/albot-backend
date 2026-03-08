@@ -1,17 +1,18 @@
-from fastapi import APIRouter, Security, Request, Response
+from fastapi import APIRouter, Security, Request, Response, UploadFile, File
 
 from app import constants
 from app.core.auth import verify_session
 from app.core.error import CustomHTTPException
 from app.external.discord.models import UserPIIResponse
-from app.schemas.api_data import UserInfoData, SubscriptionsData, GuildsListData, GuildInfoData, URLData
+from app.schemas.api_data import UserInfoData, SubscriptionsData, GuildsListData, GuildInfoData, URLData, VoiceModelData
 from app.schemas.api_response import UserInfoAPIResponse, ListSubscriptionsAPIResponse, PlainAPIResponse, \
-    GuildsListAPIResponse, GuildInfoAPIResponse, URLAPIResponse
+    GuildsListAPIResponse, GuildInfoAPIResponse, URLAPIResponse, VoiceModelAPIResponse
 from app.schemas.checkout_session import CheckoutSessionCreate
 from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
 from app.services import subscriptions
 from app.services import user
 from app.services.stripe import create_checkout_session, create_customer_portal_session
+from app.services.voice_clone import create_voice, save_voice_model, get_voice_model
 
 router = APIRouter()
 
@@ -128,4 +129,42 @@ async def get_customer_portal(request: Request, _auth=Security(verify_session)):
         data=URLData(
             url=portal_session.url
         )
+    )
+
+
+ALLOWED_AUDIO_TYPES = {"audio/wav", "audio/mpeg", "audio/mp3", "audio/m4a", "audio/x-m4a", "audio/mp4"}
+MAX_AUDIO_SIZE = 10 * 1024 * 1024  # 10MB
+
+
+@router.post("/voice-model", response_model=VoiceModelAPIResponse)
+async def create_voice_model_api(request: Request, audio: UploadFile = File(...), _auth=Security(verify_session)):
+    user_info = UserPIIResponse.from_dict(request.session["user_info"])
+
+    if audio.content_type not in ALLOWED_AUDIO_TYPES:
+        raise CustomHTTPException(status_code=400, detail="Unsupported audio format. Supported: WAV, MP3, M4A.")
+
+    audio_data = await audio.read()
+    if len(audio_data) > MAX_AUDIO_SIZE:
+        raise CustomHTTPException(status_code=400, detail="Audio file too large. Maximum size is 10MB.")
+
+    try:
+        voice = await create_voice(audio_data, audio.content_type)
+    except RuntimeError as e:
+        raise CustomHTTPException(status_code=502, detail=str(e))
+
+    await save_voice_model(int(user_info.id), voice)
+
+    return VoiceModelAPIResponse(
+        message="Voice model created.",
+        data=VoiceModelData(voice_model=voice)
+    )
+
+
+@router.get("/voice-model", response_model=VoiceModelAPIResponse)
+async def get_voice_model_api(request: Request, _auth=Security(verify_session)):
+    user_info = UserPIIResponse.from_dict(request.session["user_info"])
+    voice_model = await get_voice_model(int(user_info.id))
+    return VoiceModelAPIResponse(
+        message="Fetched voice model.",
+        data=VoiceModelData(voice_model=voice_model)
     )

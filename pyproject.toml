@@ -9,6 +9,7 @@ dependencies = [
     "fastapi==0.116.1",
     "itsdangerous==2.2.0",
     "python-dotenv==1.0.1",
+    "python-multipart>=0.0.22",
     "sentry-sdk==3.0.0a2",
     "stripe==12.4.0b2",
     "uvicorn==0.32.0",

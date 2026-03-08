@@ -1,7 +1,7 @@
 from pydantic import create_model, Field, BaseModel
 
 from app.external.discord.models import UserPIIResponse, PartialGuild
-from app.models.settings import GuildSettings, DefaultSettings
+from app.models.settings import GuildSettings
 from app.models.subscription import Subscription
 from app.schemas.connection_state import ConnectionState
 from app.schemas.metrics import Metrics
@@ -18,3 +18,4 @@ UserInfoData: type[BaseModel] = create_model("UserInfoDataModel", info=(UserPIIR
 GuildsListData: type[BaseModel] = create_model("GuildsListDataModel", guilds=(list[PartialGuild], ...))
 GuildInfoData: type[BaseModel] = create_model("GuildInfoData", info=(PartialGuild, ...))
 URLData: type[BaseModel] = create_model("URLDataModel", url=(str, ...))
+VoiceModelData: type[BaseModel] = create_model("VoiceModelDataModel", voice_model=(str | None, ...))

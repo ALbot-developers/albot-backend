@@ -4,7 +4,7 @@ from app.models.character_usage import CharacterUsages
 from app.models.shards import ProvisioningConfig
 from app.models.trusted_roles import TrustedRoles
 from app.schemas.api_data import ConnectionStateData, DictData, SubscriptionsData, MetricsData, GuildSettingsData, \
-    ShardConnectionCommandsData, ShardsListData, UserInfoData, GuildsListData, GuildInfoData, URLData
+    ShardConnectionCommandsData, ShardsListData, UserInfoData, GuildsListData, GuildInfoData, URLData, VoiceModelData
 from app.schemas.connection_command import ConnectionCommand
 from app.schemas.message_link_expand_pref import MessageLinkExpansionPreference
 
@@ -93,3 +93,8 @@ class GuildsListAPIResponse(BaseModel):
 class GuildInfoAPIResponse(BaseModel):
     message: str
     data: GuildInfoData
+
+
+class VoiceModelAPIResponse(BaseModel):
+    message: str
+    data: VoiceModelData
