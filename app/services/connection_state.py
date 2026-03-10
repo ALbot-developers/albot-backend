@@ -1,10 +1,45 @@
 import json
+import re
 
+from app.core.error import CustomHTTPException
+from app.db.connection import get_connection_pool
 from app.schemas.connection_state import ConnectionStateCreate, ConnectionState
 from app.services import guild_settings, guild_dict, character_usages
 
 with open("app/static/gtts_languages.json") as f:
     gtts_languages = json.load(f)
+
+_GTTS_VOICE_PATTERN = re.compile(r"^([a-z]{2,3}-[A-Z]{2})-(?:Wavenet|Standard)-([A-Z])$")
+
+
+def _is_valid_gtts_voice(voice: str) -> bool:
+    m = _GTTS_VOICE_PATTERN.match(voice)
+    if not m:
+        return False
+    lang, letter = m.group(1), m.group(2)
+    if lang not in gtts_languages:
+        return False
+    lang_voices = gtts_languages[lang]
+    voice_type = voice.split("-")[-2].lower()
+    return voice_type in lang_voices and letter in lang_voices[voice_type]
+
+
+async def _is_cloned_voice(voice: str, guild_id: int) -> bool:
+    async with get_connection_pool().acquire() as conn:
+        row = await conn.fetchval(
+            "SELECT 1 FROM cloned_voices WHERE voice = $1 AND guild_id = $2",
+            voice, guild_id
+        )
+    return row is not None
+
+
+async def _validate_custom_voice(voice: str, guild_id: int):
+    if _is_valid_gtts_voice(voice):
+        return
+    if await _is_cloned_voice(voice, guild_id):
+        return
+    raise CustomHTTPException(400,
+                              "Invalid custom_voice: not a valid Google TTS voice code and not found in cloned voices for this guild.")
 
 
 def set_voice(lang: str, custom_voice: str):
@@ -42,9 +77,11 @@ async def create(guild_id: int, options: ConnectionStateCreate):
     translate = False if language_code == "auto" else (
         options.translate if options.translate else settings_data.translate or False
     )
-    voices = set_voice(language_code, settings_data.custom_voice)
+    custom_voice = options.custom_voice if options.custom_voice else settings_data.custom_voice
+    if custom_voice:
+        await _validate_custom_voice(custom_voice, guild_id)
+    voices = set_voice(language_code, custom_voice)
     read_guild = settings_data.read_guild if options.read_guild is None else options.read_guild
-    voice_clone_mode = options.voice_clone_mode if options.voice_clone_mode else settings_data.voice_clone_mode or "off"
     return ConnectionState(
         guild_id=guild_id,
         vc_id=options.vc_id,
@@ -54,7 +91,7 @@ async def create(guild_id: int, options: ConnectionStateCreate):
         translate=translate,
         wavenet_voice=voices[0],
         standard_voice=voices[1],
-        custom_voice=settings_data.custom_voice,
+        custom_voice=custom_voice,
         read_name=options.read_name if options.read_name else settings_data.read_name or False,
         dict=dict_data,
         dict_keys=dict_keys,
@@ -64,6 +101,5 @@ async def create(guild_id: int, options: ConnectionStateCreate):
         read_guild=read_guild,
         read_name_on_join=settings_data.read_name_on_join,
         read_name_on_leave=settings_data.read_name_on_leave,
-        read_not_joined_users=settings_data.read_not_joined_users,
-        voice_clone_mode=voice_clone_mode
+        read_not_joined_users=settings_data.read_not_joined_users
     )
