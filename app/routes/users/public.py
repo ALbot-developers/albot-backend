@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Security, Response
 
 from app.core.auth import verify_bearer_token
-from app.schemas.api_data import SubscriptionsData, VoiceModelData
-from app.schemas.api_response import ListSubscriptionsAPIResponse, PlainAPIResponse, VoiceModelAPIResponse
+from app.schemas.api_data import SubscriptionsData, ClonedVoice, ClonedVoicesListData
+from app.schemas.api_response import ListSubscriptionsAPIResponse, PlainAPIResponse, ClonedVoicesListAPIResponse
 from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
 from app.services import subscriptions
-from app.services.voice_clone import get_voice_model
+from app.services.voice_clone import list_by_user
 
 router = APIRouter()
 
@@ -70,13 +70,14 @@ async def renew_subscriptions_api(
     )
 
 
-@router.get("/{user_id}/voice-model", response_model=VoiceModelAPIResponse)
-async def get_user_voice_model_api(
+@router.get("/{user_id}/cloned-voices", response_model=ClonedVoicesListAPIResponse)
+async def list_user_cloned_voices_api(
         user_id: int,
         _auth=Security(verify_bearer_token)
 ):
-    voice_model = await get_voice_model(user_id)
-    return VoiceModelAPIResponse(
-        message="Fetched voice model.",
-        data=VoiceModelData(voice_model=voice_model)
+    rows = await list_by_user(user_id)
+    voices = [ClonedVoice(**row) for row in rows]
+    return ClonedVoicesListAPIResponse(
+        message="Fetched cloned voices.",
+        data=ClonedVoicesListData(voices=voices)
     )

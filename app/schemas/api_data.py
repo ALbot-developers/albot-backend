@@ -18,4 +18,13 @@ UserInfoData: type[BaseModel] = create_model("UserInfoDataModel", info=(UserPIIR
 GuildsListData: type[BaseModel] = create_model("GuildsListDataModel", guilds=(list[PartialGuild], ...))
 GuildInfoData: type[BaseModel] = create_model("GuildInfoData", info=(PartialGuild, ...))
 URLData: type[BaseModel] = create_model("URLDataModel", url=(str, ...))
-VoiceModelData: type[BaseModel] = create_model("VoiceModelDataModel", voice_model=(str | None, ...))
+
+
+class ClonedVoice(BaseModel):
+    guild_id: int
+    user_id: int
+    voice: str
+
+
+ClonedVoiceData: type[BaseModel] = create_model("ClonedVoiceDataModel", voice=(ClonedVoice, ...))
+ClonedVoicesListData: type[BaseModel] = create_model("ClonedVoicesListDataModel", voices=(list[ClonedVoice], ...))

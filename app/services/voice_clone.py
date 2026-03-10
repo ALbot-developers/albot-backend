@@ -40,17 +40,28 @@ async def create_voice(audio_data: bytes, mime_type: str) -> str:
         raise RuntimeError(f"Failed to parse voice response: {e}")
 
 
-async def save_voice_model(user_id: int, voice_model: str):
+async def save_cloned_voice(guild_id: int, user_id: int, voice: str):
     async with get_connection_pool().acquire() as conn:
         await conn.execute(
-            "UPDATE users SET voice_model = $1, updated_at = now() WHERE user_id = $2",
-            voice_model, user_id
+            "INSERT INTO cloned_voices (guild_id, user_id, voice) VALUES ($1, $2, $3) "
+            "ON CONFLICT (voice) DO UPDATE SET guild_id = $1, user_id = $2",
+            guild_id, user_id, voice
         )
 
 
-async def get_voice_model(user_id: int) -> str | None:
+async def list_by_guild(guild_id: int) -> list[dict]:
     async with get_connection_pool().acquire() as conn:
-        return await conn.fetchval(
-            "SELECT voice_model FROM users WHERE user_id = $1",
+        rows = await conn.fetch(
+            "SELECT guild_id, user_id, voice FROM cloned_voices WHERE guild_id = $1",
+            guild_id
+        )
+    return [dict(row) for row in rows]
+
+
+async def list_by_user(user_id: int) -> list[dict]:
+    async with get_connection_pool().acquire() as conn:
+        rows = await conn.fetch(
+            "SELECT guild_id, user_id, voice FROM cloned_voices WHERE user_id = $1",
             user_id
         )
+    return [dict(row) for row in rows]
