@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Security, Response
 
 from app.core.auth import verify_bearer_token
-from app.schemas.api_data import SubscriptionsData
-from app.schemas.api_response import ListSubscriptionsAPIResponse, PlainAPIResponse
+from app.schemas.api_data import SubscriptionsData, VoiceModelData
+from app.schemas.api_response import ListSubscriptionsAPIResponse, PlainAPIResponse, VoiceModelAPIResponse
 from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
 from app.services import subscriptions
+from app.services.voice_clone import get_voice_model
 
 router = APIRouter()
 
@@ -66,4 +67,16 @@ async def renew_subscriptions_api(
     response.status_code = status
     return PlainAPIResponse(
         message=message
+    )
+
+
+@router.get("/{user_id}/voice-model", response_model=VoiceModelAPIResponse)
+async def get_user_voice_model_api(
+        user_id: int,
+        _auth=Security(verify_bearer_token)
+):
+    voice_model = await get_voice_model(user_id)
+    return VoiceModelAPIResponse(
+        message="Fetched voice model.",
+        data=VoiceModelData(voice_model=voice_model)
     )

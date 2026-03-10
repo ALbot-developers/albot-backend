@@ -50,9 +50,8 @@ async def get_default() -> DefaultSettings:
             continue
         column_default = row["column_default"]
         if isinstance(column_default, str):
-            if "::text" in column_default:
-                column_default = column_default.replace("'::text", "")
-                column_default = column_default.replace("'", "")
+            if "::" in column_default:
+                column_default = column_default.split("::")[0].strip("'")
         column_default = fix_value_type(column_default, row["data_type"])
         default_settings[row["column_name"]] = column_default
     return DefaultSettings.model_validate(default_settings)

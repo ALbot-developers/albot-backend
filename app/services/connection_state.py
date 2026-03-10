@@ -44,6 +44,7 @@ async def create(guild_id: int, options: ConnectionStateCreate):
     )
     voices = set_voice(language_code, settings_data.custom_voice)
     read_guild = settings_data.read_guild if options.read_guild is None else options.read_guild
+    voice_clone_mode = options.voice_clone_mode if options.voice_clone_mode else settings_data.voice_clone_mode or "off"
     return ConnectionState(
         guild_id=guild_id,
         vc_id=options.vc_id,
@@ -63,5 +64,6 @@ async def create(guild_id: int, options: ConnectionStateCreate):
         read_guild=read_guild,
         read_name_on_join=settings_data.read_name_on_join,
         read_name_on_leave=settings_data.read_name_on_leave,
-        read_not_joined_users=settings_data.read_not_joined_users
+        read_not_joined_users=settings_data.read_not_joined_users,
+        voice_clone_mode=voice_clone_mode
     )

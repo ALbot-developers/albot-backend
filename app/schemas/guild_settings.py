@@ -17,3 +17,4 @@ class GuildSettingsUpdate(BaseModel):
     read_guild: Optional[bool] = None
     read_not_joined_users: Optional[bool] = None
     audio_api: Optional[Literal["gtts", "openai"]] = None
+    voice_clone_mode: Optional[Literal["off", "caller", "speaker"]] = None

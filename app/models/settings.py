@@ -17,6 +17,7 @@ class GuildSettings(BaseModel):
     read_not_joined_users: bool
     audio_api: Literal["gtts", "openai"]
     custom_voice: Optional[str] = None
+    voice_clone_mode: Literal["off", "caller", "speaker"] = "off"
 
     @classmethod
     def from_db(cls, row: dict):
@@ -35,3 +36,4 @@ class PremiumSettings:
     read_name_on_leave: Optional[bool] = None
     read_name_on_join: Optional[bool] = None
     custom_voice: Optional[str] = None
+    voice_clone_mode: Optional[str] = None

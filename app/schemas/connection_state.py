@@ -15,6 +15,7 @@ class ConnectionStateCreate:
     lang: Optional[str] = None
     character_limit: Optional[int] = None
     translate: Optional[bool] = None
+    voice_clone_mode: Optional[Literal["off", "caller", "speaker"]] = None
 
 
 @dataclass
@@ -38,5 +39,6 @@ class ConnectionState:
     read_name_on_join: bool
     read_name_on_leave: bool
     read_not_joined_users: bool
+    voice_clone_mode: Literal["off", "caller", "speaker"]
     unix_time_connected: float = time.time()
     sync_count: int = 0
