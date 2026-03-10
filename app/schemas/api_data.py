@@ -24,6 +24,7 @@ class ClonedVoice(BaseModel):
     guild_id: int
     user_id: int
     voice: str
+    label: str
 
 
 ClonedVoiceData: type[BaseModel] = create_model("ClonedVoiceDataModel", voice=(ClonedVoice, ...))
