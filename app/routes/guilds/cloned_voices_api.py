@@ -14,7 +14,7 @@ ALLOWED_AUDIO_TYPES = {"audio/wav", "audio/mpeg", "audio/mp3", "audio/m4a", "aud
 MAX_AUDIO_SIZE = 10 * 1024 * 1024  # 10MB
 
 
-@router.post("/{guild_id}/cloned-voices", response_model=ClonedVoiceAPIResponse)
+@router.post("/{guild_id}/cloned_voices", response_model=ClonedVoiceAPIResponse)
 async def create_cloned_voice_api(
         guild_id: int,
         request: Request,
@@ -45,7 +45,7 @@ async def create_cloned_voice_api(
     )
 
 
-@router.get("/{guild_id}/cloned-voices", response_model=ClonedVoicesListAPIResponse)
+@router.get("/{guild_id}/cloned_voices", response_model=ClonedVoicesListAPIResponse)
 async def list_cloned_voices_api(guild_id: int, _auth=Security(verify_all_tokens)):
     rows = await list_by_guild(guild_id)
     voices = [ClonedVoice(**row) for row in rows]
