@@ -70,7 +70,7 @@ async def renew_subscriptions_api(
     )
 
 
-@router.get("/{user_id}/cloned-voices", response_model=ClonedVoicesListAPIResponse)
+@router.get("/{user_id}/cloned_voices", response_model=ClonedVoicesListAPIResponse)
 async def list_user_cloned_voices_api(
         user_id: int,
         _auth=Security(verify_bearer_token)

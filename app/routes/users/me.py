@@ -133,7 +133,7 @@ async def get_customer_portal(request: Request, _auth=Security(verify_session)):
     )
 
 
-@router.get("/cloned-voices", response_model=ClonedVoicesListAPIResponse)
+@router.get("/cloned_voices", response_model=ClonedVoicesListAPIResponse)
 async def list_my_cloned_voices_api(request: Request, _auth=Security(verify_session)):
     user_info = UserPIIResponse.from_dict(request.session["user_info"])
     rows = await list_by_user(int(user_info.id))
