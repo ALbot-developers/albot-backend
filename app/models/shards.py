@@ -8,4 +8,5 @@ class ProvisioningConfig(BaseModel):
     sentry_dsn: str
     tts_key: str
     sakura_tts_key: str
+    dashscope_tts_key: str
     heartbeat_token: str

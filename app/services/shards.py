@@ -30,6 +30,7 @@ async def provision():
         shard_id=shard_id,
         discord_token=constants.BOT_DISCORD_TOKEN,
         sakura_tts_key=constants.SAKURA_TTS_KEY,
+        dashscope_tts_key=constants.DASHSCOPE_API_KEY,
         sentry_dsn=constants.BOT_SENTRY_DSN,
         tts_key=tts_key,
         heartbeat_token=heartbeat_token
