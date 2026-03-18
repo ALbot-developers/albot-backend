@@ -7,4 +7,5 @@ class ProvisioningConfig(BaseModel):
     discord_token: str
     sentry_dsn: str
     tts_key: str
+    sakura_tts_key: str
     heartbeat_token: str
