@@ -3,6 +3,7 @@ import re
 
 from app.core.error import CustomHTTPException
 from app.db.connection import get_connection_pool
+from app.models.custom_voices import is_character_voice
 from app.schemas.connection_state import ConnectionStateCreate, ConnectionState
 from app.services import guild_settings, guild_dict, character_usages
 
@@ -35,6 +36,8 @@ async def _is_cloned_voice(voice: str, guild_id: int) -> bool:
 
 async def _validate_custom_voice(voice: str, guild_id: int):
     if _is_valid_gtts_voice(voice):
+        return
+    if is_character_voice(voice):
         return
     if await _is_cloned_voice(voice, guild_id):
         return
