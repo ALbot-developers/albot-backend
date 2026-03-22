@@ -5,6 +5,7 @@ from app.db.connection import get_connection_pool
 from app.models.settings import GuildSettings, PremiumSettings, DefaultSettings
 from app.models.subscription import Subscription
 from app.schemas.guild_settings import GuildSettingsUpdate
+from app.services.voice_validation import validate_custom_voice
 
 
 async def get(guild_id: int):
@@ -65,7 +66,6 @@ async def update(guild_id: int, settings: GuildSettingsUpdate, subscription: Sub
         if not attributes:
             raise CustomHTTPException(status_code=400, detail="No settings data provided.")
         if 'custom_voice' in attributes and attributes['custom_voice'] is not None:
-            from app.services.voice_validation import validate_custom_voice
             await validate_custom_voice(attributes['custom_voice'], guild_id)
         # if subscription is None and PremiumSettings in attributes, return an error
         if subscription is None:
