@@ -64,6 +64,9 @@ async def update(guild_id: int, settings: GuildSettingsUpdate, subscription: Sub
         attributes = {k: (None if v == "" else v) for k, v in settings.__dict__.items() if v is not None}
         if not attributes:
             raise CustomHTTPException(status_code=400, detail="No settings data provided.")
+        if 'custom_voice' in attributes and attributes['custom_voice'] is not None:
+            from app.services.voice_validation import validate_custom_voice
+            await validate_custom_voice(attributes['custom_voice'], guild_id)
         # if subscription is None and PremiumSettings in attributes, return an error
         if subscription is None:
             if any(k in attributes for k in PremiumSettings.__annotations__.keys()):

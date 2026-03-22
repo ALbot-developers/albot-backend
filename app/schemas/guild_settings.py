@@ -1,8 +1,7 @@
-from typing import Optional, Literal, Annotated
+from typing import Optional, Literal
 
 from pydantic import BaseModel, Field
 
-GoogleTTSVoiceCode = Annotated[str, Field(pattern=r'^[a-z]{2}-[A-Z]{2,3}-(Wavenet|Standard)-[A-Za-z]$')]
 
 class GuildSettingsUpdate(BaseModel):
     lang: Optional[str] = None
@@ -10,7 +9,7 @@ class GuildSettingsUpdate(BaseModel):
                                            description="Maximum character limit for messages")
     speech_speed: Optional[float] = Field(default=None, ge=0.1, le=4.0, description="Speech speed multiplier")
     read_name: Optional[bool] = None
-    custom_voice: Optional[GoogleTTSVoiceCode] = None
+    custom_voice: Optional[str] = None
     translate: Optional[bool] = None
     read_name_on_join: Optional[bool] = None
     read_name_on_leave: Optional[bool] = None
