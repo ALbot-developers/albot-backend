@@ -138,7 +138,7 @@ async def change_plan(sub_id: str, user_id: int, new_plan: str):
         }]
     )
 
-    # DB のプランを更新
+    # DB のプランを更新 (Webhookを待たず、WEBに結果を即反映するため）
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         await conn.execute(
