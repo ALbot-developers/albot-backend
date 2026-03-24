@@ -62,7 +62,7 @@ async def update(guild_id: int, settings: GuildSettingsUpdate, subscription: Sub
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         # get all attributes with values
-        attributes = {k: (None if v == "" else v) for k, v in settings.__dict__.items() if v is not None}
+        attributes = {k: (None if v == "" else v) for k, v in settings.model_dump(exclude_unset=True).items()}
         if not attributes:
             raise CustomHTTPException(status_code=400, detail="No settings data provided.")
         if 'custom_voice' in attributes and attributes['custom_voice'] is not None:
