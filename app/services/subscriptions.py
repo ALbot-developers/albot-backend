@@ -138,6 +138,14 @@ async def change_plan(sub_id: str, user_id: int, new_plan: str):
         }]
     )
 
+    # DB のプランを更新
+    async with get_connection_pool().acquire() as conn:
+        conn: asyncpg.connection.Connection
+        await conn.execute(
+            "UPDATE subscriptions SET plan = $1, last_updated = NOW() WHERE sub_id = $2",
+            new_plan, sub_id
+        )
+
 
 async def renew(sub_id: str, user_id: int, new_plan: str) -> tuple[int, str]:
     if not await _does_subscription_exist(user_id, sub_id):
