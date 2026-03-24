@@ -5,7 +5,7 @@ from app.db.connection import get_connection_pool
 
 
 async def create_checkout_session(user_id: int, plan: str):
-    success_url = "https://mypage.albot.info/subscribed"
+    success_url = "https://mypage.albot.info/apply-subscription"
     cancel_url = f"https://albot.info/#pricing"
     price_id = constants.PRICE_IDS[plan]
 
