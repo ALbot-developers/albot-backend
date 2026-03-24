@@ -9,7 +9,7 @@ from app.schemas.api_data import UserInfoData, SubscriptionsData, GuildsListData
 from app.schemas.api_response import UserInfoAPIResponse, ListSubscriptionsAPIResponse, PlainAPIResponse, \
     GuildsListAPIResponse, GuildInfoAPIResponse, URLAPIResponse, ClonedVoicesListAPIResponse
 from app.schemas.checkout_session import CheckoutSessionCreate
-from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew
+from app.schemas.subscription import SubscriptionActivate, SubscriptionRenew, SubscriptionPlanUpdate
 from app.services import subscriptions
 from app.services import user
 from app.services.stripe import create_checkout_session, create_customer_portal_session
@@ -79,6 +79,18 @@ async def renew_subscriptions_api(
     status, message = await subscriptions.renew(sub_id, int(user_info.id), payload.new_plan)
     response.status_code = status
     return PlainAPIResponse(message=message)
+
+
+@router.patch("/subscriptions/{sub_id}", response_model=PlainAPIResponse)
+async def change_subscription_plan_api(
+        sub_id: str,
+        payload: SubscriptionPlanUpdate,
+        request: Request,
+        _auth=Security(verify_session)
+):
+    user_info = UserPIIResponse.from_dict(request.session["user_info"])
+    await subscriptions.change_plan(sub_id, int(user_info.id), payload.plan)
+    return PlainAPIResponse(message="Successfully changed plan.")
 
 
 @router.get("/guilds", response_model=GuildsListAPIResponse)

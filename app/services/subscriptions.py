@@ -9,12 +9,13 @@ import sentry_sdk
 import stripe
 
 from app.constants import PRICE_IDS
+from app.core.error import CustomHTTPException
 from app.db.connection import get_connection_pool
 from app.models.subscription import Subscription
 
 QUOTAS = {
     1: {'wavenet': 20000, 'standard': 40000},
-    2: {'wavenet': 80000, 'standard': 160000}
+    2: {'wavenet': 100000, 'standard': 200000}
 }
 
 
@@ -114,6 +115,28 @@ async def activate(sub_id: str, user_id: int, guild_id: int) -> tuple[int, str]:
             metadata={"user_id": row['user_id'], "guild_id": str(guild_id)},
         )
     return 200, "Successfully activated."
+
+
+async def change_plan(sub_id: str, user_id: int, new_plan: str):
+    """サブスクリプションのプランを変更する (DB + Stripe)"""
+    if new_plan not in PRICE_IDS:
+        raise CustomHTTPException(status_code=400, detail="Invalid plan.")
+    if not await _does_subscription_exist(user_id, sub_id):
+        raise CustomHTTPException(status_code=404, detail="Subscription not found.")
+
+    new_price_id = PRICE_IDS[new_plan]
+
+    # Stripe のサブスクリプションを更新
+    stripe_sub = stripe.Subscription.retrieve(sub_id)
+    stripe.Subscription.modify(
+        sub_id,
+        cancel_at_period_end=False,
+        proration_behavior="create_prorations",
+        items=[{
+            'id': stripe_sub['items']['data'][0].id,
+            'price': new_price_id,
+        }]
+    )
 
 
 async def renew(sub_id: str, user_id: int, new_plan: str) -> tuple[int, str]:

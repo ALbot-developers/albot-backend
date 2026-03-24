@@ -24,9 +24,10 @@ async def is_event_duplicated(event: stripe.Event):
             return True
         else:
             await conn.execute("""
-            INSERT INTO stripe_webhook_log (event_id, event_type, obj_id) 
-            VALUES ($1, $2, $3)
-            """, event.stripe_id, event.type, event.data['object']['id'])
+                               INSERT INTO stripe_webhook_log (event_id, event_type, obj_id)
+                               VALUES ($1, $2, $3)
+                               """, event.stripe_id, event.type, event.data['object']['id']
+                               )
             return False
 
 
@@ -65,10 +66,11 @@ async def update_subscription(subscription_id: str, price_id: str):
     async with get_connection_pool().acquire() as conn:
         conn: asyncpg.connection.Connection
         await conn.execute("""
-                            INSERT INTO subscriptions (sub_id, plan, last_updated) 
-                            VALUES ($1, $2, $3)
-                            ON CONFLICT (sub_id) DO UPDATE SET plan = excluded.plan, last_updated = excluded.last_updated
-                        """, subscription_id, new_plan, datetime.now())
+                           INSERT INTO subscriptions (sub_id, plan, last_updated)
+                           VALUES ($1, $2, $3)
+                           ON CONFLICT (sub_id) DO UPDATE SET plan         = excluded.plan,
+                                                              last_updated = excluded.last_updated
+                           """, subscription_id, new_plan, datetime.now())
         if guild_id is not None:
             if "1" in new_plan:
                 character_limit = {'wavenet': 20000, 'standard': 40000}
@@ -76,19 +78,18 @@ async def update_subscription(subscription_id: str, price_id: str):
                 character_limit = {'wavenet': 100000, 'standard': 200000}
             else:
                 raise ValueError("Invalid plan.")
-            if subscription.sub_start != datetime.today():
-                await conn.execute(
-                    """
-                    INSERT INTO word_count (guild_id, subscription, wavenet_count_now, standard_count_now, limit_word_count, is_overwritten)
-                    VALUES ($1, $2, 0, 0, $3, true)
-                    ON CONFLICT (guild_id) DO UPDATE SET 
-                    subscription=excluded.subscription, 
-                    wavenet_count_now=0, 
-                    standard_count_now=0, 
-                    limit_word_count=excluded.limit_word_count, 
-                    is_overwritten=excluded.is_overwritten
-                    """, guild_id, new_plan, json.dumps(character_limit)
-                )
+            await conn.execute(
+                """
+                INSERT INTO word_count (guild_id, subscription, wavenet_count_now, standard_count_now,
+                                        limit_word_count, is_overwritten)
+                VALUES ($1, $2, 0, 0, $3, true)
+                ON CONFLICT (guild_id) DO UPDATE SET subscription=excluded.subscription,
+                                                     wavenet_count_now=0,
+                                                     standard_count_now=0,
+                                                     limit_word_count=excluded.limit_word_count,
+                                                     is_overwritten=excluded.is_overwritten
+                """, guild_id, new_plan, json.dumps(character_limit)
+            )
 
 
 async def handle_checkout_completed(event: stripe.Event):
@@ -112,9 +113,10 @@ async def handle_checkout_completed(event: stripe.Event):
                            """, int(user_id), customer_id)
 
         await conn.execute("""
-                        INSERT INTO subscriptions (sub_id, plan, user_id)
-                        VALUES ($1, $2, $3) ON CONFLICT (sub_id) DO UPDATE set user_id = excluded.user_id
-                    """, sub_id, plan, int(user_id))
+                           INSERT INTO subscriptions (sub_id, plan, user_id)
+                           VALUES ($1, $2, $3)
+                           ON CONFLICT (sub_id) DO UPDATE set user_id = excluded.user_id
+                           """, sub_id, plan, int(user_id))
         stripe.Subscription.modify(
             sub_id,
             metadata={"user_id": user_id}

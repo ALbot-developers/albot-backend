@@ -7,3 +7,7 @@ class SubscriptionActivate(BaseModel):
 
 class SubscriptionRenew(BaseModel):
     new_plan: str
+
+
+class SubscriptionPlanUpdate(BaseModel):
+    plan: str
