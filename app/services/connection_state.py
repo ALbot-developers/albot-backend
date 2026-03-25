@@ -1,6 +1,7 @@
+from app.models.custom_voices import is_character_voice
 from app.schemas.connection_state import ConnectionStateCreate, ConnectionState
 from app.services import guild_settings, guild_dict, character_usages
-from app.services.voice_validation import validate_custom_voice, gtts_languages
+from app.services.voice_validation import validate_custom_voice, gtts_languages, is_valid_gtts_voice
 
 
 def set_voice(lang: str, custom_voice: str):
@@ -24,9 +25,17 @@ def set_voice(lang: str, custom_voice: str):
     primary_voice_type = voice_type_list[0]
     standard_voice = f"{lang}-Standard-{primary_voice_type}"
     if custom_voice:
-        custom_voice_type = custom_voice.split("-")[-2]
-        wavenet_voice = custom_voice if custom_voice_type == "Wavenet" else wavenet_voice
-        standard_voice = custom_voice if custom_voice_type == "Standard" else standard_voice
+        if is_valid_gtts_voice(custom_voice):
+            # Google TTS声コードの場合、WavenetかStandardかを判定して割り当て
+            custom_voice_type = custom_voice.split("-")[-2]
+            wavenet_voice = custom_voice if custom_voice_type == "Wavenet" else wavenet_voice
+            standard_voice = custom_voice if custom_voice_type == "Standard" else standard_voice
+        elif is_character_voice(custom_voice):
+            # Sakura TTS声の場合、Wavenetに割り当て
+            wavenet_voice = custom_voice
+        else:
+            # その他の声（クローン音声など）はWavenetに割り当て
+            wavenet_voice = custom_voice
     return wavenet_voice, standard_voice
 
 
